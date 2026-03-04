@@ -1,0 +1,210 @@
+{
+  "info": {
+    "name": "AI Support",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "organization_id",
+      "value": "00000000-0000-0000-0000-000000000001"
+    }
+  ],
+  "item": [
+    {
+      "name": "Knowledge",
+      "item": [
+        {
+          "name": "Upload Knowledge - Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has success: true', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Response has message', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.message).to.include('Successfully uploaded');",
+                  "});",
+                  "",
+                  "pm.test('data contains totalChunks and savedChunks', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.data).to.have.property('totalChunks');",
+                  "  pm.expect(json.data).to.have.property('savedChunks');",
+                  "  pm.expect(json.data.savedChunks).to.be.above(0);",
+                  "});",
+                  "",
+                  "pm.test('savedChunks <= totalChunks', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.data.savedChunks).to.be.at.most(json.data.totalChunks);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organization_id\": \"{{organization_id}}\",\n  \"content\": \"Our refund policy allows customers to return any product within 30 days of purchase. To initiate a return, customers must contact support with their order number. Refunds are processed within 5-7 business days after the item is received. Digital products are non-refundable once downloaded.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/knowledge",
+              "host": ["{{base_url}}"],
+              "path": ["knowledge"]
+            }
+          }
+        },
+        {
+          "name": "Upload Knowledge - Missing organization_id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Response has error message', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.message).to.exist;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Some valid content that is long enough to pass validation.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/knowledge",
+              "host": ["{{base_url}}"],
+              "path": ["knowledge"]
+            }
+          }
+        },
+        {
+          "name": "Upload Knowledge - Invalid UUID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Validation error for organization_id', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.message).to.exist;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organization_id\": \"not-a-valid-uuid\",\n  \"content\": \"Some valid content that is long enough to pass validation.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/knowledge",
+              "host": ["{{base_url}}"],
+              "path": ["knowledge"]
+            }
+          }
+        },
+        {
+          "name": "Upload Knowledge - Content Too Short",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Validation error for content', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.message).to.exist;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organization_id\": \"{{organization_id}}\",\n  \"content\": \"short\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/knowledge",
+              "host": ["{{base_url}}"],
+              "path": ["knowledge"]
+            }
+          }
+        },
+        {
+          "name": "Upload Knowledge - Empty Body",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/knowledge",
+              "host": ["{{base_url}}"],
+              "path": ["knowledge"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
