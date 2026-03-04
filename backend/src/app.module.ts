@@ -4,12 +4,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { OrganizationsController } from './organizations/organizations.controller';
 import { OrganizationsService } from './organizations/organizations.service';
-import { SupabaseService } from './supabase/supabase.service';
 import { AiModule } from './ai/ai.module';
+import { SupabaseModule } from './supabase/supabase.module';
+import { KnowledgeModule } from './knowledge/knowledge.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), AiModule],
+  imports: [ConfigModule.forRoot(), AiModule, SupabaseModule, KnowledgeModule],
   controllers: [AppController, OrganizationsController],
-  providers: [AppService, OrganizationsService, SupabaseService],
+  providers: [AppService, OrganizationsService],
 })
 export class AppModule {}
