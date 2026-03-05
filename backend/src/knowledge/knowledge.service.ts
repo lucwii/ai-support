@@ -14,26 +14,83 @@ export interface UploadKnowledgeResult {
   chunks: ChunkResult[];
 }
 
+export interface RelevantDocument {
+  id: string;
+  content: string;
+  similarity: number;
+}
+
 @Injectable()
 export class KnowledgeService {
   private readonly logger = new Logger(KnowledgeService.name);
 
-  // Chunk size u karakterima – 800 je sweet spot između konteksta i preciznosti
   private readonly CHUNK_SIZE = 800;
-  // Overlap između chunkova – 100 karaktera da ne izgubimo kontekst na rubovima
   private readonly CHUNK_OVERLAP = 100;
+
+  // Koliko top chunkova vraćamo GPT-u kao kontekst
+  private readonly TOP_K = 5;
+
+  // Minimalna sličnost – ispod ovoga chunk se ignoriše (0–1 skala)
+  private readonly SIMILARITY_THRESHOLD = 0.5;
 
   constructor(
     private readonly aiService: AiService,
     private readonly supabaseService: SupabaseService,
   ) {}
 
+
+  async findRelevantDocuments(
+    organizationId: string,
+    embedding: number[],
+  ): Promise<RelevantDocument[]> {
+    this.logger.debug(
+      `Searching relevant documents for org: ${organizationId}`,
+    );
+
+    const { data, error } = await this.supabaseService.db.rpc(
+      'match_knowledge_embeddings',
+      {
+        query_embedding: JSON.stringify(embedding),
+        match_organization_id: organizationId,
+        match_threshold: this.SIMILARITY_THRESHOLD,
+        match_count: this.TOP_K,
+      },
+    );
+
+    if (error) {
+      this.logger.error(`Similarity search failed: ${error.message}`);
+      return [];
+    }
+
+    if (!data || data.length === 0) {
+      this.logger.warn(`No relevant documents found for org: ${organizationId}`);
+      return [];
+    }
+
+    this.logger.debug(`Found ${data.length} relevant documents`);
+
+    return (data as any[]).map((row) => ({
+      id: row.id,
+      content: row.content,
+      similarity: row.similarity,
+    }));
+  }
+
   /**
-   * Glavni flow:
-   * 1. Podeli tekst na chunkove
-   * 2. Za svaki chunk kreiraj embedding
-   * 3. Upiši u knowledge_embeddings
+   * Convenience metoda – prima tekst pitanja, interno kreira embedding,
+   * pa poziva findRelevantDocuments.
+   * Koristiće je TicketsService direktno u Ticket 5.
    */
+  async findRelevantDocumentsByText(
+    organizationId: string,
+    questionText: string,
+  ): Promise<RelevantDocument[]> {
+    const embedding = await this.aiService.createEmbedding(questionText);
+    return this.findRelevantDocuments(organizationId, embedding);
+  }
+
+
+
   async uploadKnowledge(
     organizationId: string,
     content: string,
@@ -46,16 +103,11 @@ export class KnowledgeService {
     const results: ChunkResult[] = [];
     let savedChunks = 0;
 
-    // Procesujemo sekvencijalno da ne bombardujemo OpenAI API
     for (let i = 0; i < chunks.length; i++) {
       const chunk = chunks[i];
-
       try {
-        // Korak 1: Kreiraj embedding za chunk
         const embedding = await this.aiService.createEmbedding(chunk);
 
-        // Korak 2: Upiši u Supabase
-        // embedding mora biti kao string '[0.1, 0.2, ...]' za pgvector
         const { error } = await this.supabaseService.db
           .from('knowledge_embeddings')
           .insert({
@@ -78,55 +130,29 @@ export class KnowledgeService {
       }
     }
 
-    this.logger.log(`Upload complete: ${savedChunks}/${chunks.length} chunks saved`);
-
-    return {
-      totalChunks: chunks.length,
-      savedChunks,
-      chunks: results,
-    };
+    return { totalChunks: chunks.length, savedChunks, chunks: results };
   }
 
-  /**
-   * Seče tekst na chunkove sa overlapom.
-   *
-   * Zašto overlap?
-   * Ako se rečenica nalazi na granici dva chunka, bez overlapa
-   * bi bila "isečena" i embedding bi izgubio kontekst.
-   *
-   * Primer sa CHUNK_SIZE=800, OVERLAP=100:
-   * chunk[0] = chars 0–800
-   * chunk[1] = chars 700–1500
-   * chunk[2] = chars 1400–2200
-   */
   splitIntoChunks(text: string): string[] {
     const chunks: string[] = [];
     const normalized = text.replace(/\r\n/g, '\n').trim();
-
     let start = 0;
 
     while (start < normalized.length) {
       let end = start + this.CHUNK_SIZE;
 
-      // Ako nismo na kraju teksta, pokušaj da završiš na kraju rečenice
-      // da ne sečemo usred reči/misli
       if (end < normalized.length) {
         const lastPeriod = normalized.lastIndexOf('.', end);
         const lastNewline = normalized.lastIndexOf('\n', end);
         const naturalBreak = Math.max(lastPeriod, lastNewline);
 
-        // Koristi prirodni prelom samo ako nije previše daleko nazad
         if (naturalBreak > start + this.CHUNK_SIZE / 2) {
           end = naturalBreak + 1;
         }
       }
 
       const chunk = normalized.slice(start, end).trim();
-      if (chunk.length > 0) {
-        chunks.push(chunk);
-      }
-
-      // Sledeći chunk počinje sa overlapom unazad
+      if (chunk.length > 0) chunks.push(chunk);
       start = end - this.CHUNK_OVERLAP;
     }
 
