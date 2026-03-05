@@ -7,9 +7,10 @@ import { OrganizationsService } from './organizations/organizations.service';
 import { AiModule } from './ai/ai.module';
 import { SupabaseModule } from './supabase/supabase.module';
 import { KnowledgeModule } from './knowledge/knowledge.module';
+import { AiAnswerModule } from './ai-answer/ai-answer.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), AiModule, SupabaseModule, KnowledgeModule],
+  imports: [ConfigModule.forRoot(), AiModule, SupabaseModule, KnowledgeModule, AiAnswerModule],
   controllers: [AppController, OrganizationsController],
   providers: [AppService, OrganizationsService],
 })
