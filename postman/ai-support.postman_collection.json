@@ -11,6 +11,10 @@
     {
       "key": "organization_id",
       "value": "00000000-0000-0000-0000-000000000001"
+    },
+    {
+      "key": "ticket_id",
+      "value": ""
     }
   ],
   "item": [
@@ -201,6 +205,438 @@
               "raw": "{{base_url}}/knowledge",
               "host": ["{{base_url}}"],
               "path": ["knowledge"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tickets",
+      "item": [
+        {
+          "name": "Create Ticket - Success (triggers AI pipeline)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has success: true', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('data.ticket exists with required fields', function () {",
+                  "  const ticket = pm.response.json().data.ticket;",
+                  "  pm.expect(ticket).to.have.property('id');",
+                  "  pm.expect(ticket).to.have.property('organization_id');",
+                  "  pm.expect(ticket).to.have.property('content');",
+                  "  pm.expect(ticket).to.have.property('status');",
+                  "  pm.expect(ticket).to.have.property('created_at');",
+                  "});",
+                  "",
+                  "pm.test('ticket.status is auto_answered or pending_agent', function () {",
+                  "  const status = pm.response.json().data.ticket.status;",
+                  "  pm.expect(['auto_answered', 'pending_agent']).to.include(status);",
+                  "});",
+                  "",
+                  "pm.test('ticket.ai_response is a non-empty string', function () {",
+                  "  const ai_response = pm.response.json().data.ticket.ai_response;",
+                  "  pm.expect(ai_response).to.be.a('string').and.have.length.above(0);",
+                  "});",
+                  "",
+                  "pm.test('ticket.confidence is between 0 and 100', function () {",
+                  "  const confidence = pm.response.json().data.ticket.confidence;",
+                  "  pm.expect(confidence).to.be.at.least(0).and.at.most(100);",
+                  "});",
+                  "",
+                  "pm.test('wasAutoAnswered is boolean', function () {",
+                  "  const wasAutoAnswered = pm.response.json().data.wasAutoAnswered;",
+                  "  pm.expect(wasAutoAnswered).to.be.a('boolean');",
+                  "});",
+                  "",
+                  "pm.test('message is present', function () {",
+                  "  const message = pm.response.json().data.message;",
+                  "  pm.expect(message).to.be.a('string').and.have.length.above(0);",
+                  "});",
+                  "",
+                  "// Sacuvaj ticket_id za sledece testove",
+                  "const ticketId = pm.response.json().data.ticket.id;",
+                  "if (ticketId) {",
+                  "  pm.collectionVariables.set('ticket_id', ticketId);",
+                  "  console.log('Saved ticket_id:', ticketId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organization_id\": \"{{organization_id}}\",\n  \"content\": \"What is your refund policy and how long does it take to process a refund?\",\n  \"customer_email\": \"test@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tickets",
+              "host": ["{{base_url}}"],
+              "path": ["tickets"]
+            }
+          }
+        },
+        {
+          "name": "Create Ticket - Without Email (optional field)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('ticket.customer_email is null', function () {",
+                  "  const email = pm.response.json().data.ticket.customer_email;",
+                  "  pm.expect(email).to.be.null;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organization_id\": \"{{organization_id}}\",\n  \"content\": \"How do I contact customer support for help with my order?\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tickets",
+              "host": ["{{base_url}}"],
+              "path": ["tickets"]
+            }
+          }
+        },
+        {
+          "name": "Create Ticket - Missing organization_id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Validation error message exists', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.message).to.exist;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"What is your refund policy?\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tickets",
+              "host": ["{{base_url}}"],
+              "path": ["tickets"]
+            }
+          }
+        },
+        {
+          "name": "Create Ticket - Invalid UUID for organization_id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Validation error message exists', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.message).to.exist;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organization_id\": \"not-a-valid-uuid\",\n  \"content\": \"What is your refund policy?\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tickets",
+              "host": ["{{base_url}}"],
+              "path": ["tickets"]
+            }
+          }
+        },
+        {
+          "name": "Create Ticket - Content Too Short (< 5 chars)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Validation error message exists', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.message).to.exist;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organization_id\": \"{{organization_id}}\",\n  \"content\": \"Hi\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tickets",
+              "host": ["{{base_url}}"],
+              "path": ["tickets"]
+            }
+          }
+        },
+        {
+          "name": "Create Ticket - Empty Body",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tickets",
+              "host": ["{{base_url}}"],
+              "path": ["tickets"]
+            }
+          }
+        },
+        {
+          "name": "Get All Tickets - Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success: true', function () {",
+                  "  pm.expect(pm.response.json().success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('data is an array', function () {",
+                  "  pm.expect(pm.response.json().data).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('total matches data length', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.total).to.equal(json.data.length);",
+                  "});",
+                  "",
+                  "pm.test('each ticket has required fields', function () {",
+                  "  const tickets = pm.response.json().data;",
+                  "  tickets.forEach(function (ticket) {",
+                  "    pm.expect(ticket).to.have.property('id');",
+                  "    pm.expect(ticket).to.have.property('organization_id');",
+                  "    pm.expect(ticket).to.have.property('content');",
+                  "    pm.expect(ticket).to.have.property('status');",
+                  "    pm.expect(ticket).to.have.property('created_at');",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/tickets?organization_id={{organization_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tickets"],
+              "query": [
+                { "key": "organization_id", "value": "{{organization_id}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Tickets - Missing organization_id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Error message exists', function () {",
+                  "  pm.expect(pm.response.json().message).to.exist;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/tickets",
+              "host": ["{{base_url}}"],
+              "path": ["tickets"]
+            }
+          }
+        },
+        {
+          "name": "Get Ticket By ID - Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success: true', function () {",
+                  "  pm.expect(pm.response.json().success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('data.ticket exists', function () {",
+                  "  const ticket = pm.response.json().data.ticket;",
+                  "  pm.expect(ticket).to.have.property('id');",
+                  "  pm.expect(ticket.id).to.equal(pm.collectionVariables.get('ticket_id'));",
+                  "});",
+                  "",
+                  "pm.test('data.logs is an array', function () {",
+                  "  pm.expect(pm.response.json().data.logs).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('at least one log entry exists (ai_response_generated)', function () {",
+                  "  const logs = pm.response.json().data.logs;",
+                  "  pm.expect(logs.length).to.be.above(0);",
+                  "  const actions = logs.map(l => l.action);",
+                  "  pm.expect(actions).to.include('ai_response_generated');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/tickets/{{ticket_id}}?organization_id={{organization_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tickets", "{{ticket_id}}"],
+              "query": [
+                { "key": "organization_id", "value": "{{organization_id}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Ticket By ID - Missing organization_id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Error message exists', function () {",
+                  "  pm.expect(pm.response.json().message).to.exist;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/tickets/{{ticket_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tickets", "{{ticket_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Ticket By ID - Not Found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 404', function () {",
+                  "  pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "pm.test('Error message exists', function () {",
+                  "  pm.expect(pm.response.json().message).to.exist;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/tickets/00000000-0000-0000-0000-000000000000?organization_id={{organization_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tickets", "00000000-0000-0000-0000-000000000000"],
+              "query": [
+                { "key": "organization_id", "value": "{{organization_id}}" }
+              ]
             }
           }
         }
