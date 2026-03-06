@@ -5,11 +5,14 @@ import {
   HttpCode,
   HttpStatus,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { KnowledgeService } from './knowledge.service';
 import { CreateKnowledgeDto } from './dto/create-knowledge.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('knowledge')
+@UseGuards(AuthGuard)
 export class KnowledgeController {
   constructor(private readonly knowledgeService: KnowledgeService) {}
 

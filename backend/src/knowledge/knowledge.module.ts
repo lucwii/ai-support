@@ -3,11 +3,13 @@ import { KnowledgeService } from './knowledge.service';
 import { KnowledgeController } from './knowledge.controller';
 import { AiModule } from '../ai/ai.module';
 import { SupabaseModule } from '../supabase/supabase.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
-    AiModule,       // da možemo inject-ovati AiService
-    SupabaseModule, // da možemo inject-ovati SupabaseService
+    AiModule,
+    SupabaseModule,
+    AuthModule,
   ],
   controllers: [KnowledgeController],
   providers: [KnowledgeService],
