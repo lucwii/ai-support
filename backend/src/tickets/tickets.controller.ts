@@ -8,11 +8,14 @@ import {
   HttpCode,
   HttpStatus,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { TicketsService } from './dto/tickets.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('tickets')
+@UseGuards(AuthGuard)
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
