@@ -17,6 +17,24 @@ export async function loginWithEmail(email: string, password: string) {
   return { user: data.user, error: null }
 }
 
+export async function registerWithEmail(fullName: string, email: string, password: string) {
+  const supabase = createClient()
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { full_name: fullName },
+    },
+  })
+
+  if (error) {
+    return { user: null, error: error.message }
+  }
+
+  return { user: data.user, error: null }
+}
+
 export async function loginWithGoogle() {
   const supabase = createClient()
 
