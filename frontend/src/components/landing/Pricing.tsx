@@ -63,13 +63,28 @@ export default function Pricing() {
             <span className="text-[14px] font-medium" style={{ color: annual ? '#64748B' : '#F1F5F9' }}>Monthly</span>
             <button
               onClick={() => setAnnual(!annual)}
-              className="relative w-12 h-6 rounded-full transition-colors duration-200"
-              style={{ background: annual ? '#6366F1' : '#1E293B' }}
+              className="relative rounded-full transition-all duration-300 focus:outline-none"
+              style={{
+                width: 48,
+                height: 26,
+                background: annual
+                  ? 'linear-gradient(135deg, #6366F1, #8B5CF6)'
+                  : 'transparent',
+                border: annual ? 'none' : '2px solid #334155',
+                boxShadow: annual ? '0 0 12px rgba(99,102,241,0.4)' : 'none',
+              }}
               aria-label="Toggle billing period"
             >
               <span
-                className="absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform duration-200"
-                style={{ transform: annual ? 'translateX(26px)' : 'translateX(2px)' }}
+                className="absolute rounded-full transition-all duration-300"
+                style={{
+                  width: 18,
+                  height: 18,
+                  top: annual ? 4 : 2,
+                  left: annual ? 26 : 2,
+                  background: annual ? '#FFFFFF' : '#64748B',
+                  boxShadow: annual ? '0 1px 4px rgba(0,0,0,0.3)' : 'none',
+                }}
               />
             </button>
             <span className="text-[14px] font-medium" style={{ color: annual ? '#F1F5F9' : '#64748B' }}>
