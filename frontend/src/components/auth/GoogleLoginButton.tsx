@@ -17,7 +17,6 @@ export default function GoogleLoginButton() {
       setError(error)
       setLoading(false)
     }
-    // On success, Supabase redirects to Google — no need to handle here
   }
 
   return (
@@ -25,10 +24,21 @@ export default function GoogleLoginButton() {
       <button
         onClick={handleGoogleLogin}
         disabled={loading}
-        className="w-full flex items-center justify-center gap-3 border border-gray-200 text-gray-700 bg-white px-5 py-2.5 rounded-full font-medium hover:border-blue-300 hover:text-blue-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-center gap-3 font-medium text-[14px] py-2.5 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{
+          background: '#FFFFFF',
+          color: '#1a1a2e',
+          border: '1px solid rgba(255,255,255,0.15)',
+        }}
+        onMouseEnter={(e) => {
+          if (!loading) (e.currentTarget as HTMLButtonElement).style.background = '#F8F9FA'
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLButtonElement).style.background = '#FFFFFF'
+        }}
       >
         {loading ? (
-          <svg className="animate-spin w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none">
+          <svg className="w-4 h-4 animate-spin" style={{ color: '#94A3B8' }} viewBox="0 0 24 24" fill="none">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
           </svg>
@@ -44,7 +54,7 @@ export default function GoogleLoginButton() {
       </button>
 
       {error && (
-        <p className="mt-2 text-xs text-red-500 text-center">{error}</p>
+        <p className="mt-2 text-[12px] text-center" style={{ color: '#FCA5A5' }}>{error}</p>
       )}
     </div>
   )

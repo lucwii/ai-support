@@ -30,37 +30,63 @@ export default function RegisterForm() {
     router.push('/auth/onboarding')
   }
 
+  const inputStyle = {
+    background: '#1E293B',
+    border: '1px solid rgba(255,255,255,0.08)',
+    color: '#F1F5F9',
+  }
+
+  function handleFocus(e: React.FocusEvent<HTMLInputElement>) {
+    e.target.style.border = '1px solid #6366F1'
+    e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.15)'
+  }
+  function handleBlur(e: React.FocusEvent<HTMLInputElement>) {
+    e.target.style.border = '1px solid rgba(255,255,255,0.08)'
+    e.target.style.boxShadow = 'none'
+  }
+
   return (
-    <div className="w-full max-w-md">
-      {/* Header */}
+    <div className="w-full max-w-[440px]">
+      {/* Logo */}
       <div className="text-center mb-8">
-        <Link href="/" className="inline-flex items-center gap-2 font-bold text-xl text-blue-600 mb-6">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M22 2L11 13" />
-            <path d="M22 2L15 22l-4-9-9-4 20-7z" />
-          </svg>
-          TicketPilot AI
+        <Link href="/" className="inline-flex items-center gap-2.5 mb-7">
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center"
+            style={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}
+          >
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+            </svg>
+          </div>
+          <span className="font-sora font-semibold text-[18px] text-white">SupportAI</span>
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900 mt-4 mb-2">Create your account</h1>
-        <p className="text-sm text-gray-500">Start your free trial — no credit card required</p>
+        <h1 className="font-sora font-bold text-[26px] mb-2" style={{ color: '#FFFFFF', letterSpacing: '-0.02em' }}>
+          Get started free
+        </h1>
+        <p className="text-[14px]" style={{ color: '#64748B' }}>
+          Resolve 90% of support tickets automatically
+        </p>
       </div>
 
       {/* Card */}
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8">
-        {/* Google signup */}
+      <div
+        className="glass-card p-8"
+        style={{ background: 'rgba(15,23,42,0.85)' }}
+      >
+        {/* Google */}
         <GoogleLoginButton />
 
         {/* Divider */}
         <div className="flex items-center gap-3 my-6">
-          <div className="flex-1 h-px bg-gray-200" />
-          <span className="text-xs text-gray-400 font-medium">or continue with email</span>
-          <div className="flex-1 h-px bg-gray-200" />
+          <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
+          <span className="text-[12px] font-medium" style={{ color: '#475569' }}>or continue with email</span>
+          <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label htmlFor="fullName" className="block text-[13px] font-medium mb-1.5" style={{ color: '#94A3B8' }}>
               Full name
             </label>
             <input
@@ -71,12 +97,15 @@ export default function RegisterForm() {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               placeholder="Jane Smith"
-              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              className="w-full rounded-lg px-4 py-2.5 text-[14px] outline-none transition-all duration-150"
+              style={inputStyle}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
             />
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label htmlFor="email" className="block text-[13px] font-medium mb-1.5" style={{ color: '#94A3B8' }}>
               Work email
             </label>
             <input
@@ -87,12 +116,15 @@ export default function RegisterForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@company.com"
-              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              className="w-full rounded-lg px-4 py-2.5 text-[14px] outline-none transition-all duration-150"
+              style={inputStyle}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label htmlFor="password" className="block text-[13px] font-medium mb-1.5" style={{ color: '#94A3B8' }}>
               Password
             </label>
             <input
@@ -104,12 +136,18 @@ export default function RegisterForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Min. 8 characters"
-              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              className="w-full rounded-lg px-4 py-2.5 text-[14px] outline-none transition-all duration-150"
+              style={inputStyle}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
             />
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-xs text-red-600">
+            <div
+              className="rounded-lg px-4 py-3 text-[13px]"
+              style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#FCA5A5' }}
+            >
               {error}
             </div>
           )}
@@ -117,24 +155,28 @@ export default function RegisterForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2.5 rounded-full font-medium text-sm hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed mt-1"
+            className="w-full text-white font-semibold py-3 rounded-lg text-[14px] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-px mt-1"
+            style={{
+              background: loading ? '#4F46E5' : 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+              boxShadow: '0 4px 16px rgba(99,102,241,0.3)',
+            }}
           >
-            {loading ? 'Creating account...' : 'Create Account'}
+            {loading ? 'Creating account...' : 'Create Account →'}
           </button>
         </form>
 
-        <p className="text-center text-xs text-gray-400 mt-5">
+        <p className="text-center text-[12px] mt-5" style={{ color: '#475569' }}>
           By signing up you agree to our{' '}
-          <Link href="/terms" className="text-blue-600 hover:underline">Terms of Service</Link>
+          <Link href="/terms" className="hover:text-indigo-400 transition-colors" style={{ color: '#64748B' }}>Terms</Link>
           {' '}and{' '}
-          <Link href="/privacy" className="text-blue-600 hover:underline">Privacy Policy</Link>.
+          <Link href="/privacy" className="hover:text-indigo-400 transition-colors" style={{ color: '#64748B' }}>Privacy Policy</Link>.
         </p>
       </div>
 
       {/* Footer link */}
-      <p className="text-center text-sm text-gray-500 mt-6">
+      <p className="text-center text-[14px] mt-6" style={{ color: '#64748B' }}>
         Already have an account?{' '}
-        <Link href="/auth/login" className="text-blue-600 font-medium hover:underline">
+        <Link href="/auth/login" className="font-medium transition-colors duration-150 hover:text-indigo-400" style={{ color: '#6366F1' }}>
           Sign in
         </Link>
       </p>
