@@ -1,83 +1,133 @@
+import ScrollReveal from '@/components/ui/ScrollReveal'
+
 const features = [
   {
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-        <polyline points="9 22 9 12 15 12 15 22" />
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" /><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
       </svg>
     ),
-    title: 'Multi-tenant ready',
-    description:
-      'Each organization has its own isolated knowledge base and ticket history. Deploy for one team or hundreds.',
+    title: 'Answers from your data, not the internet',
+    body: 'Unlike generic AI chatbots, SupportAI only answers from your uploaded knowledge base. No hallucination. No off-brand responses.',
+    featured: true,
   },
   {
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
       </svg>
     ),
-    title: 'AI confidence scoring',
-    description:
-      'Every suggestion comes with a confidence score. Know which answers are safe to auto-send and which need a human eye.',
+    title: "AI that knows what it doesn't know",
+    body: 'Every response comes with a confidence score. High confidence? Auto-resolved. Low confidence? Routed to your team with the AI draft ready.',
   },
   {
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-        <polyline points="14 2 14 8 20 8" />
-        <line x1="16" y1="13" x2="8" y2="13" />
-        <line x1="16" y1="17" x2="8" y2="17" />
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" /><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
       </svg>
     ),
-    title: 'Full ticket logging',
-    description:
-      'Complete history of every AI suggestion, agent edit, and final response — for auditing, training, and improvement.',
+    title: 'Update your AI in seconds',
+    body: 'Changed your return policy? Launched a new product? Paste the new docs and your AI support agent knows immediately. No retraining.',
   },
   {
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="7" height="7" rx="1" />
-        <rect x="14" y="3" width="7" height="7" rx="1" />
-        <rect x="3" y="14" width="7" height="7" rx="1" />
-        <rect x="14" y="14" width="7" height="7" rx="1" />
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" />
       </svg>
     ),
-    title: 'Simple dashboard',
-    description:
-      'Monitor open tickets, AI suggestions, resolution rates, and team performance — all in one clean interface.',
+    title: 'Full visibility for your team',
+    body: 'Agents see every ticket, AI response, confidence score, and source document. One-click approve or edit. Complete audit trail.',
+  },
+  {
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+      </svg>
+    ),
+    title: 'Your knowledge base stays yours',
+    body: "Each organization's data is completely isolated. Your knowledge base is never used to train other customers' AI agents.",
+  },
+  {
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+      </svg>
+    ),
+    title: 'Support that never sleeps',
+    body: 'Your AI agent is online at 3am, on weekends, on holidays. Customers in every timezone get instant answers without waiting.',
   },
 ]
 
 export default function Features() {
   return (
-    <section id="features" className="py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="max-w-2xl mx-auto text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 text-xs font-semibold px-4 py-1.5 rounded-full mb-6 tracking-wide uppercase">
+    <section id="features" className="py-[120px]" style={{ background: 'var(--bg-base)' }}>
+      <div className="max-w-[1200px] mx-auto px-6">
+        {/* Header */}
+        <ScrollReveal className="text-center mb-16">
+          <p className="text-[12px] font-semibold tracking-[0.1em] uppercase mb-4" style={{ color: '#6366F1' }}>
             Features
-          </div>
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-            Everything your support team needs
-          </h2>
-          <p className="text-lg text-gray-600">
-            Built for SaaS and e-commerce support teams that want AI without losing control.
           </p>
-        </div>
+          <h2
+            className="font-sora font-bold mb-5"
+            style={{ fontSize: 'clamp(32px, 4vw, 48px)', letterSpacing: '-0.02em', color: '#FFFFFF' }}
+          >
+            Everything your support team needs.
+            <br />
+            <span style={{ color: '#64748B' }}>Nothing they don&apos;t.</span>
+          </h2>
+        </ScrollReveal>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {features.map((f) => (
-            <div
-              key={f.title}
-              className="flex gap-5 p-7 rounded-2xl border border-gray-100 hover:border-blue-200 hover:shadow-sm transition-all duration-300"
-            >
-              <div className="w-12 h-12 bg-blue-600 text-white rounded-xl flex items-center justify-center shrink-0">
-                {f.icon}
+        {/* Grid */}
+        <div className="grid md:grid-cols-3 gap-4 auto-rows-fr">
+          {features.map((f, i) => (
+            <ScrollReveal key={f.title} delay={i * 80} className={f.featured ? 'md:col-span-2' : ''}>
+              <div
+                className="glass-card p-7 h-full group cursor-default transition-all duration-200 hover:-translate-y-1 relative overflow-hidden"
+              >
+                {/* Top gradient border for featured */}
+                {f.featured && (
+                  <div
+                    className="absolute top-0 left-0 right-0 h-[2px]"
+                    style={{ background: 'linear-gradient(90deg, #6366F1, #8B5CF6, #06B6D4)' }}
+                  />
+                )}
+
+                <div className="flex items-start gap-5">
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5 transition-colors duration-200 group-hover:bg-[rgba(99,102,241,0.25)]"
+                    style={{ background: 'rgba(99,102,241,0.15)', color: '#818CF8' }}
+                  >
+                    {f.icon}
+                  </div>
+                  <div className="flex-1">
+                    <h3
+                      className="font-sora font-semibold text-[17px] mb-2.5"
+                      style={{ color: '#FFFFFF' }}
+                    >
+                      {f.title}
+                    </h3>
+                    <p className="text-[14px] leading-[1.75]" style={{ color: '#94A3B8' }}>
+                      {f.body}
+                    </p>
+
+                    {/* Featured extra visual */}
+                    {f.featured && (
+                      <div className="mt-4 flex gap-2 flex-wrap">
+                        {['RAG Pipeline', 'Vector Search', 'Zero Hallucination', 'Your Data Only'].map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-[11px] font-medium px-2.5 py-1 rounded-md"
+                            style={{ background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)', color: '#818CF8' }}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-              <div>
-                <h3 className="text-base font-semibold text-gray-900 mb-1.5">{f.title}</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">{f.description}</p>
-              </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>
