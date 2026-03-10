@@ -17,18 +17,17 @@
   --text-muted: #475569;
 }
 
-@theme inline {
-  --color-background: var(--bg-base);
-  --color-foreground: var(--text-primary);
-}
-
 *, *::before, *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  background-color: #080C18;
+  color-scheme: dark;
+}
 
 body {
-  background: var(--bg-base);
-  color: var(--text-primary);
+  background-color: #080C18;
+  color: #FFFFFF;
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
