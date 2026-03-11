@@ -2,9 +2,9 @@ import {
   Injectable,
   Logger,
   ConflictException,
-  NotFoundException,
 } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
+import type { CreateOrganizationDto } from './dto/create-organization.dto';
 
 @Injectable()
 export class OrganizationsService {
@@ -20,8 +20,8 @@ export class OrganizationsService {
    * organization_members tabela zna koji user pripada kojoj org i sa kojom rolom.
    * Obe su potrebne da bi sistem znao "koji dashboard da pokaže ovom useru".
    */
-  async createOrganization(userId: string, name: string) {
-    this.logger.log(`Creating organization "${name}" for user: ${userId}`);
+  async createOrganization(userId: string, dto: CreateOrganizationDto) {
+    this.logger.log(`Creating organization "${dto.name}" for user: ${userId}`);
 
     // Proveravamo da user već nema organizaciju
     // Jedan user = jedna organizacija za sada
@@ -38,7 +38,15 @@ export class OrganizationsService {
     // Korak 1: Kreiraj organizaciju
     const { data: organization, error: orgError } = await this.supabaseService.db
       .from('organizations')
-      .insert({ name, owner_id: userId })
+      .insert({
+        name: dto.name,
+        industry: dto.industry,
+        primary_language: dto.primary_language,
+        team_size: dto.team_size ?? null,
+        monthly_tickets: dto.monthly_tickets ?? null,
+        website: dto.website ?? null,
+        owner_id: userId,
+      })
       .select()
       .single();
 
