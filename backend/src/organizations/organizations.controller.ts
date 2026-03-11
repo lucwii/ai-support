@@ -27,7 +27,7 @@ export class OrganizationsController {
   ) {
     const organization = await this.organizationsService.createOrganization(
       user.sub,
-      dto.name,
+      dto,
     );
 
     return {
