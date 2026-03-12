@@ -8,7 +8,7 @@ interface Props {
 export default function OnboardingSidebar({ currentStep }: Props) {
   return (
     <div
-      className="w-[260px] shrink-0 flex flex-col p-8"
+      className="hidden md:flex w-[240px] shrink-0 flex-col p-8"
       style={{
         background: '#0A0F1E',
         borderRight: '1px solid rgba(255,255,255,0.05)',
@@ -40,12 +40,11 @@ export default function OnboardingSidebar({ currentStep }: Props) {
       {/* Steps */}
       <div className="flex flex-col gap-1">
         {STEPS.map((s, i) => {
-          const done = i < currentStep
+          const done   = i < currentStep
           const active = i === currentStep
 
           return (
             <div key={i} className="flex items-start gap-3 py-2.5">
-              {/* Indicator */}
               <div className="mt-0.5 shrink-0">
                 {done ? (
                   <div
@@ -66,22 +65,19 @@ export default function OnboardingSidebar({ currentStep }: Props) {
                 ) : (
                   <div
                     className="w-5 h-5 rounded-full"
-                    style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)' }}
+                    style={{ border: '1px solid rgba(255,255,255,0.1)' }}
                   />
                 )}
               </div>
 
-              {/* Label */}
               <div>
                 <p
                   className="text-[13px] font-medium leading-tight"
-                  style={{
-                    color: done ? '#10B981' : active ? '#F1F5F9' : '#334155',
-                  }}
+                  style={{ color: done ? '#10B981' : active ? '#F1F5F9' : '#334155' }}
                 >
                   {s.title}
                 </p>
-                <p className="text-[12px] mt-0.5" style={{ color: '#1E293B' }}>
+                <p className="text-[12px] mt-0.5" style={{ color: '#334155' }}>
                   {s.description}
                 </p>
               </div>
