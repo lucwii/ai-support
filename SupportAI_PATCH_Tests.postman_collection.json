@@ -1,0 +1,279 @@
+{
+  "info": {
+    "name": "SupportAI — PATCH Tickets Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "PASTE_YOUR_SUPABASE_JWT_HERE",
+      "type": "string"
+    },
+    {
+      "key": "ticket_id",
+      "value": "PASTE_A_TICKET_ID_HERE",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. GET /tickets — find a ticket_id to test with",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/tickets?organization_id=PASTE_ORG_ID_HERE",
+          "host": ["{{base_url}}"],
+          "path": ["tickets"],
+          "query": [
+            {
+              "key": "organization_id",
+              "value": "PASTE_ORG_ID_HERE"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const body = pm.response.json();",
+              "pm.test('Returns tickets array', () => {",
+              "  pm.expect(body.success).to.be.true;",
+              "  pm.expect(body.data).to.be.an('array');",
+              "});",
+              "",
+              "// Auto-save first pending_agent ticket id for next tests",
+              "const pending = body.data?.find(t => t.status === 'pending_agent');",
+              "if (pending) {",
+              "  pm.collectionVariables.set('ticket_id', pending.id);",
+              "  console.log('ticket_id set to:', pending.id);",
+              "} else {",
+              "  console.warn('No pending_agent ticket found — set ticket_id manually');",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. PATCH — Resolve with AI response (happy path)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"resolved\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/tickets/{{ticket_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["tickets", "{{ticket_id}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const body = pm.response.json();",
+              "pm.test('success = true', () => {",
+              "  pm.expect(body.success).to.be.true;",
+              "});",
+              "",
+              "pm.test('Ticket status is resolved', () => {",
+              "  pm.expect(body.data.status).to.equal('resolved');",
+              "});",
+              "",
+              "pm.test('No agent_response (AI response used)', () => {",
+              "  pm.expect(body.data.agent_response).to.be.null;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. PATCH — Resolve with custom agent response",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"resolved\",\n  \"agent_response\": \"Hello! Thank you for reaching out. Here is a custom answer from our support agent.\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/tickets/{{ticket_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["tickets", "{{ticket_id}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const body = pm.response.json();",
+              "pm.test('Ticket status is resolved', () => {",
+              "  pm.expect(body.data.status).to.equal('resolved');",
+              "});",
+              "",
+              "pm.test('agent_response is saved', () => {",
+              "  pm.expect(body.data.agent_response).to.be.a('string');",
+              "  pm.expect(body.data.agent_response.length).to.be.greaterThan(0);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. PATCH — 401 Unauthorized (no token)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"resolved\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/tickets/{{ticket_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["tickets", "{{ticket_id}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 401', () => {",
+              "  pm.response.to.have.status(401);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. PATCH — 404 Not Found (invalid ticket id)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"resolved\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/tickets/00000000-0000-0000-0000-000000000000",
+          "host": ["{{base_url}}"],
+          "path": ["tickets", "00000000-0000-0000-0000-000000000000"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 404', () => {",
+              "  pm.response.to.have.status(404);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. PATCH — 400 Bad Request (invalid status value)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"not_a_valid_status\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/tickets/{{ticket_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["tickets", "{{ticket_id}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 400', () => {",
+              "  pm.response.to.have.status(400);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
