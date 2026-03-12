@@ -12,12 +12,12 @@ export const STEPS: StepMeta[] = [
 ]
 
 export const INDUSTRIES: SelectOption<Industry>[] = [
-  { value: 'saas',       label: 'SaaS',        icon: '⚡' },
-  { value: 'ecommerce',  label: 'E-commerce',   icon: '🛍️' },
-  { value: 'healthcare', label: 'Healthcare',   icon: '🏥' },
-  { value: 'fintech',    label: 'Fintech',      icon: '💳' },
-  { value: 'education',  label: 'Education',    icon: '🎓' },
-  { value: 'other',      label: 'Other',        icon: '🏢' },
+  { value: 'saas',       label: 'SaaS' },
+  { value: 'ecommerce',  label: 'E-commerce' },
+  { value: 'healthcare', label: 'Healthcare' },
+  { value: 'fintech',    label: 'Fintech' },
+  { value: 'education',  label: 'Education' },
+  { value: 'other',      label: 'Other' },
 ]
 
 export const TEAM_SIZES: SelectOption<TeamSize>[] = [
@@ -35,11 +35,11 @@ export const MONTHLY_TICKETS: SelectOption<MonthlyTickets>[] = [
   { value: '2000+',     label: '2,000+' },
 ]
 
-export const LANGUAGES: (SelectOption<PrimaryLanguage> & { flag: string })[] = [
-  { value: 'english', label: 'English',                       flag: '🇬🇧' },
-  { value: 'bschr',   label: 'Bosnian / Serbian / Croatian',  flag: '🇧🇦' },
-  { value: 'german',  label: 'German',                        flag: '🇩🇪' },
-  { value: 'french',  label: 'French',                        flag: '🇫🇷' },
-  { value: 'spanish', label: 'Spanish',                       flag: '🇪🇸' },
-  { value: 'other',   label: 'Other',                         flag: '🌐' },
+export const LANGUAGES: SelectOption<PrimaryLanguage>[] = [
+  { value: 'english', label: 'English' },
+  { value: 'bschr',   label: 'Bosnian / Serbian / Croatian' },
+  { value: 'german',  label: 'German' },
+  { value: 'french',  label: 'French' },
+  { value: 'spanish', label: 'Spanish' },
+  { value: 'other',   label: 'Other' },
 ]
