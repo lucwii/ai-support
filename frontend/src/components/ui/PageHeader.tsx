@@ -8,7 +8,7 @@ interface PageHeaderProps {
 
 export default function PageHeader({ title, subtitle, action }: PageHeaderProps) {
   return (
-    <div className="flex items-start justify-between mb-8">
+    <div className="flex items-start justify-between mb-6 lg:mb-8 gap-4">
       <div>
         <h1 className="text-2xl font-bold text-[#F1F5F9] tracking-tight font-sora">
           {title}

@@ -44,46 +44,48 @@ export default function RecentTicketsTable({
           description="Tickets will appear here as they come in."
         />
       ) : (
-        <table className="w-full">
-          <thead>
-            <tr className="bg-white/[0.02] border-b border-white/[0.06]">
-              <th className="text-[11px] font-semibold uppercase tracking-widest text-[#475569] py-3 px-4 text-left">
-                Question
-              </th>
-              <th className="text-[11px] font-semibold uppercase tracking-widest text-[#475569] py-3 px-4 text-left w-40">
-                Status
-              </th>
-              <th className="text-[11px] font-semibold uppercase tracking-widest text-[#475569] py-3 px-4 text-left w-32">
-                Date
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {recent.map((ticket) => (
-              <tr
-                key={ticket.id}
-                onClick={() =>
-                  router.push(
-                    `/dashboard/tickets/${ticket.id}?organization_id=${organizationId}`,
-                  )
-                }
-                className="border-b border-white/[0.04] last:border-0 hover:bg-white/[0.03] cursor-pointer transition-colors duration-100"
-              >
-                <td className="py-3.5 px-4 text-sm text-[#CBD5E1]">
-                  {ticket.content.length > 75
-                    ? ticket.content.slice(0, 75) + '…'
-                    : ticket.content}
-                </td>
-                <td className="py-3.5 px-4">
-                  <StatusBadge status={ticket.status} />
-                </td>
-                <td className="py-3.5 px-4 text-xs text-[#475569]">
-                  {formatDistanceToNow(new Date(ticket.created_at), { addSuffix: true })}
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[480px]">
+            <thead>
+              <tr className="bg-white/[0.02] border-b border-white/[0.06]">
+                <th className="text-[11px] font-semibold uppercase tracking-widest text-[#475569] py-3 px-4 text-left">
+                  Question
+                </th>
+                <th className="text-[11px] font-semibold uppercase tracking-widest text-[#475569] py-3 px-4 text-left w-40">
+                  Status
+                </th>
+                <th className="text-[11px] font-semibold uppercase tracking-widest text-[#475569] py-3 px-4 text-left w-32 hidden sm:table-cell">
+                  Date
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {recent.map((ticket) => (
+                <tr
+                  key={ticket.id}
+                  onClick={() =>
+                    router.push(
+                      `/dashboard/tickets/${ticket.id}?organization_id=${organizationId}`,
+                    )
+                  }
+                  className="border-b border-white/[0.04] last:border-0 hover:bg-white/[0.03] cursor-pointer transition-colors duration-100"
+                >
+                  <td className="py-3.5 px-4 text-sm text-[#CBD5E1]">
+                    {ticket.content.length > 75
+                      ? ticket.content.slice(0, 75) + '…'
+                      : ticket.content}
+                  </td>
+                  <td className="py-3.5 px-4">
+                    <StatusBadge status={ticket.status} />
+                  </td>
+                  <td className="py-3.5 px-4 text-xs text-[#475569] hidden sm:table-cell">
+                    {formatDistanceToNow(new Date(ticket.created_at), { addSuffix: true })}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   )

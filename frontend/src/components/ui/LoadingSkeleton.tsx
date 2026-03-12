@@ -19,7 +19,7 @@ function Shimmer({ className }: { className: string }) {
 export default function LoadingSkeleton({ type = 'block', rows = 5 }: LoadingSkeletonProps) {
   if (type === 'stat') {
     return (
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="bg-[#0F172A] border border-white/[0.06] rounded-2xl p-6">
             <Shimmer className="w-10 h-10 rounded-xl" />
