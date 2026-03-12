@@ -1,7 +1,14 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { SupabaseService } from 'src/supabase/supabase.service';
 import { AiAnswerService } from 'src/ai-answer/ai-answer.service';
+import { EmailService } from 'src/email/email.service';
 import { CreateTicketDto } from './create-ticket.dto';
+import { UpdateTicketDto } from './update-ticket.dto';
 
 export type TicketStatus = 'processing' | 'auto_answered' | 'pending_agent' | 'resolved';
 
@@ -10,6 +17,7 @@ export interface Ticket {
   organization_id: string;
   content: string;
   ai_response: string | null;
+  agent_response: string | null;
   confidence: number | null;
   status: TicketStatus;
   customer_email: string | null;
@@ -29,14 +37,12 @@ export class TicketsService {
   constructor(
     private readonly supabaseService: SupabaseService,
     private readonly aiAnswerService: AiAnswerService,
+    private readonly emailService: EmailService,
   ) {}
 
-  
   async createTicket(dto: CreateTicketDto): Promise<CreateTicketResult> {
     this.logger.log(`Creating ticket for org: ${dto.organization_id}`);
 
-    // ── Korak 1: Kreiraj tiket sa inicijalnim statusom "processing" ────────
-    // Upisujemo odmah u bazu da imamo ID pre nego što AI završi
     const { data: newTicket, error: insertError } = await this.supabaseService.db
       .from('tickets')
       .insert({
@@ -55,24 +61,17 @@ export class TicketsService {
       throw new Error(`Failed to create ticket: ${insertError?.message}`);
     }
 
-    this.logger.debug(`Ticket created with id: ${newTicket.id}`);
-
-    // ── Korak 2: Pokreni kompletan AI pipeline ─────────────────────────────
-    // generateAnswer interno radi:
-    //   createEmbedding → findRelevantDocuments → generateResponse
     const aiResult = await this.aiAnswerService.generateAnswer(
       dto.organization_id,
       dto.content,
     );
 
-    // ── Korak 3: Odluči status na osnovu confidence ────────────────────────
     const status = this.aiAnswerService.determineTicketStatus(aiResult.confidence);
 
     this.logger.log(
       `Ticket ${newTicket.id} → confidence: ${aiResult.confidence}% → status: "${status}"`,
     );
 
-    // ── Korak 4: Ažuriraj tiket sa AI odgovorom ───────────────────────────
     const { data: updatedTicket, error: updateError } = await this.supabaseService.db
       .from('tickets')
       .update({
@@ -90,7 +89,6 @@ export class TicketsService {
       throw new Error(`Failed to update ticket: ${updateError?.message}`);
     }
 
-    // ── Korak 5: Upiši log u ticket_logs ──────────────────────────────────
     await this.writeTicketLog({
       ticketId: newTicket.id,
       organizationId: dto.organization_id,
@@ -104,13 +102,28 @@ export class TicketsService {
       },
     });
 
+    // Auto-send email when AI answers with high confidence
+    if (status === 'auto_answered' && dto.customer_email) {
+      const { data: org } = await this.supabaseService.db
+        .from('organizations')
+        .select('name')
+        .eq('id', dto.organization_id)
+        .single();
+
+      await this.emailService.sendTicketResolvedEmail({
+        to: dto.customer_email,
+        ticketContent: dto.content,
+        response: aiResult.answer,
+        organizationName: org?.name ?? 'Support Team',
+      });
+    }
+
     return {
       ticket: updatedTicket as Ticket,
       wasAutoAnswered: status === 'auto_answered',
     };
   }
 
-  
   async getTickets(organizationId: string): Promise<Ticket[]> {
     const { data, error } = await this.supabaseService.db
       .from('tickets')
@@ -126,10 +139,10 @@ export class TicketsService {
     return (data ?? []) as Ticket[];
   }
 
-  async getTicketById(ticketId: string, organizationId: string): Promise<{
-    ticket: Ticket;
-    logs: any[];
-  }> {
+  async getTicketById(
+    ticketId: string,
+    organizationId: string,
+  ): Promise<{ ticket: Ticket; logs: any[] }> {
     const { data: ticket, error } = await this.supabaseService.db
       .from('tickets')
       .select('*')
@@ -153,7 +166,73 @@ export class TicketsService {
     };
   }
 
-  // ── Privatne helper metode ─────────────────────────────────────────────────
+  async updateTicket(
+    ticketId: string,
+    organizationId: string,
+    organizationName: string,
+    dto: UpdateTicketDto,
+  ): Promise<Ticket> {
+    const { data: existing, error: fetchError } = await this.supabaseService.db
+      .from('tickets')
+      .select('*')
+      .eq('id', ticketId)
+      .eq('organization_id', organizationId)
+      .single();
+
+    if (fetchError || !existing) {
+      throw new NotFoundException(`Ticket ${ticketId} not found`);
+    }
+
+    const updatePayload: Record<string, any> = {
+      status: dto.status,
+      updated_at: new Date().toISOString(),
+    };
+
+    if (dto.agent_response) {
+      updatePayload.agent_response = dto.agent_response;
+    }
+
+    const { data: updated, error: updateError } = await this.supabaseService.db
+      .from('tickets')
+      .update(updatePayload)
+      .eq('id', ticketId)
+      .eq('organization_id', organizationId)
+      .select('*')
+      .single();
+
+    if (updateError || !updated) {
+      throw new InternalServerErrorException('Failed to update ticket');
+    }
+
+    await this.writeTicketLog({
+      ticketId,
+      organizationId,
+      action: 'agent_resolved',
+      message: dto.agent_response
+        ? 'Agent sent a custom response'
+        : 'Agent resolved the ticket',
+      metadata: {
+        previous_status: existing.status,
+        new_status: dto.status,
+        has_agent_response: !!dto.agent_response,
+      },
+    });
+
+    // Send email to customer when ticket is resolved
+    if (dto.status === 'resolved' && existing.customer_email) {
+      const responseText =
+        dto.agent_response ?? existing.ai_response ?? 'Your ticket has been resolved.';
+
+      await this.emailService.sendTicketResolvedEmail({
+        to: existing.customer_email,
+        ticketContent: existing.content,
+        response: responseText,
+        organizationName,
+      });
+    }
+
+    return updated as Ticket;
+  }
 
   private async writeTicketLog(params: {
     ticketId: string;
@@ -162,18 +241,15 @@ export class TicketsService {
     message: string;
     metadata?: Record<string, any>;
   }): Promise<void> {
-    const { error } = await this.supabaseService.db
-      .from('ticket_logs')
-      .insert({
-        ticket_id: params.ticketId,
-        organization_id: params.organizationId,
-        action: params.action,
-        message: params.message,
-        metadata: params.metadata ?? {},
-      });
+    const { error } = await this.supabaseService.db.from('ticket_logs').insert({
+      ticket_id: params.ticketId,
+      organization_id: params.organizationId,
+      action: params.action,
+      message: params.message,
+      metadata: params.metadata ?? {},
+    });
 
     if (error) {
-      // Log greška ali ne bacamo exception – log nije kritičan za flow
       this.logger.error(`Failed to write ticket log: ${error.message}`);
     }
   }
