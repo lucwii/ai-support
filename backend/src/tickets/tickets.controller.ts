@@ -2,22 +2,31 @@ import {
   Controller,
   Post,
   Get,
+  Patch,
   Body,
   Param,
   Query,
   HttpCode,
   HttpStatus,
   BadRequestException,
+  NotFoundException,
   UseGuards,
 } from '@nestjs/common';
 import { TicketsService } from './dto/tickets.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
+import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { AuthGuard } from '../auth/auth.guard';
+import { GetUser } from '../auth/get-user.decorator';
+import type { JwtPayload } from '../auth/types/jwt-payload.types';
+import { OrganizationsService } from '../organizations/organizations.service';
 
 @Controller('tickets')
 @UseGuards(AuthGuard)
 export class TicketsController {
-  constructor(private readonly ticketsService: TicketsService) {}
+  constructor(
+    private readonly ticketsService: TicketsService,
+    private readonly organizationsService: OrganizationsService,
+  ) {}
 
   
   @Post()
@@ -68,6 +77,31 @@ export class TicketsController {
     return {
       success: true,
       data: result,
+    };
+  }
+
+  @Patch(':id')
+  async updateTicket(
+    @Param('id') ticketId: string,
+    @Body() dto: UpdateTicketDto,
+    @GetUser() user: JwtPayload,
+  ) {
+    const organization = await this.organizationsService.getOrganizationByUserId(user.sub);
+
+    if (!organization) {
+      throw new NotFoundException('Organization not found');
+    }
+
+    const ticket = await this.ticketsService.updateTicket(
+      ticketId,
+      organization.id,
+      organization.name,
+      dto,
+    );
+
+    return {
+      success: true,
+      data: ticket,
     };
   }
 }
