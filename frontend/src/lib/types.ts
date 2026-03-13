@@ -5,6 +5,7 @@ export interface Ticket {
   organization_id: string
   content: string
   ai_response: string | null
+  agent_response: string | null
   confidence: number | null
   status: TicketStatus
   customer_email: string | null
