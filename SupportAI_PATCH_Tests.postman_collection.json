@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "SupportAI — PATCH Tickets Tests",
+    "name": "SupportAI — Full Flow Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -10,268 +10,473 @@
       "type": "string"
     },
     {
+      "key": "supabase_url",
+      "value": "https://dhhrqhwudwklgrvajmgv.supabase.co",
+      "type": "string"
+    },
+    {
+      "key": "supabase_anon_key",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRoaHJxaHd1ZHdrbGdydmFqbWd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1NjI4MjIsImV4cCI6MjA4ODEzODgyMn0.rh7oYIbpTN1aWPDZYWV8pohSFk0owKYe2R96XoTwHfY",
+      "type": "string"
+    },
+    {
+      "key": "email",
+      "value": "testuser@supportai.dev",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "TestPassword123!",
+      "type": "string"
+    },
+    {
       "key": "token",
-      "value": "PASTE_YOUR_SUPABASE_JWT_HERE",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "organization_id",
+      "value": "",
       "type": "string"
     },
     {
       "key": "ticket_id",
-      "value": "PASTE_A_TICKET_ID_HERE",
+      "value": "",
       "type": "string"
     }
   ],
   "item": [
     {
-      "name": "0. GET /tickets — find a ticket_id to test with",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{token}}"
-          }
-        ],
-        "url": {
-          "raw": "{{base_url}}/tickets?organization_id=PASTE_ORG_ID_HERE",
-          "host": ["{{base_url}}"],
-          "path": ["tickets"],
-          "query": [
+      "name": "0. Setup — Auth & Data",
+      "item": [
+        {
+          "name": "0.1 Register (Supabase) — kreira nalog",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "apikey", "value": "{{supabase_anon_key}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{supabase_url}}/auth/v1/signup",
+              "host": ["{{supabase_url}}"],
+              "path": ["auth", "v1", "signup"]
+            }
+          },
+          "event": [
             {
-              "key": "organization_id",
-              "value": "PASTE_ORG_ID_HERE"
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 200 = kreiran nalog, 400 = vec postoji — oba su OK za nas",
+                  "pm.test('Register OK or user already exists', () => {",
+                  "  pm.expect([200, 400]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "  console.log('Nalog uspjesno kreiran. Nastavi sa Login korakom.');",
+                  "} else {",
+                  "  console.warn('Korisnik vec postoji — idemo direktno na Login.');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "0.2 Login (Supabase) — dobija token",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "apikey", "value": "{{supabase_anon_key}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{supabase_url}}/auth/v1/token?grant_type=password",
+              "host": ["{{supabase_url}}"],
+              "path": ["auth", "v1", "token"],
+              "query": [{ "key": "grant_type", "value": "password" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login uspjesan (200)', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test('Odgovor sadrzi access_token', () => {",
+                  "  pm.expect(body.access_token).to.be.a('string').and.not.empty;",
+                  "});",
+                  "",
+                  "if (body.access_token) {",
+                  "  pm.collectionVariables.set('token', body.access_token);",
+                  "  console.log('Token sacuvan u kolekcijsku varijablu token');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "0.3 Create Organization — kreira firmu",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Firma d.o.o.\",\n  \"industry\": \"saas\",\n  \"primary_language\": \"bschr\",\n  \"team_size\": \"1-10\",\n  \"monthly_tickets\": \"<100\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/organizations",
+              "host": ["{{base_url}}"],
+              "path": ["organizations"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 201 = kreirana nova firma, 409 = firma vec postoji za ovog usera",
+                  "pm.test('Organizacija kreirana ili vec postoji', () => {",
+                  "  pm.expect([201, 409]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "if (pm.response.code === 201 && body.data?.id) {",
+                  "  pm.collectionVariables.set('organization_id', body.data.id);",
+                  "  console.log('organization_id postavljen na:', body.data.id);",
+                  "} else if (pm.response.code === 409) {",
+                  "  console.warn('Firma vec postoji za ovog usera. Pokreni korak 0.3b da dobijes organization_id.');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "0.3b GET My Organization — ako firma vec postoji",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/organizations/me",
+              "host": ["{{base_url}}"],
+              "path": ["organizations", "me"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "if (body.data?.id) {",
+                  "  pm.collectionVariables.set('organization_id', body.data.id);",
+                  "  console.log('organization_id preuzet od postojece firme:', body.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "0.4 Create Ticket — kreira test tiket",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organization_id\": \"{{organization_id}}\",\n  \"content\": \"Kako mogu da resetujem lozinku za moj nalog? Ne mogu da se prijavim vec nekoliko dana.\",\n  \"customer_email\": \"kupac@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tickets",
+              "host": ["{{base_url}}"],
+              "path": ["tickets"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Tiket kreiran (201)', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test('Odgovor sadrzi ticket', () => {",
+                  "  pm.expect(body.success).to.be.true;",
+                  "  pm.expect(body.data.ticket.id).to.be.a('string');",
+                  "});",
+                  "",
+                  "if (body.data?.ticket?.id) {",
+                  "  pm.collectionVariables.set('ticket_id', body.data.ticket.id);",
+                  "  console.log('ticket_id postavljen na:', body.data.ticket.id);",
+                  "  console.log('wasAutoAnswered:', body.data.wasAutoAnswered);",
+                  "  console.log('Status tiketa:', body.data.ticket.status);",
+                  "}",
+                  "",
+                  "// Upozorenje ako je tiket auto-odgovoren (nece biti pending_agent)",
+                  "if (body.data?.wasAutoAnswered) {",
+                  "  console.warn('AI je automatski odgovorio na tiket (status: auto_answered). Za PATCH testove potreban je pending_agent tiket — provjeri korak 1 u PATCH sekciji.');",
+                  "}"
+                ]
+              }
             }
           ]
         }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Status 200', () => {",
-              "  pm.response.to.have.status(200);",
-              "});",
-              "",
-              "const body = pm.response.json();",
-              "pm.test('Returns tickets array', () => {",
-              "  pm.expect(body.success).to.be.true;",
-              "  pm.expect(body.data).to.be.an('array');",
-              "});",
-              "",
-              "// Auto-save first pending_agent ticket id for next tests",
-              "const pending = body.data?.find(t => t.status === 'pending_agent');",
-              "if (pending) {",
-              "  pm.collectionVariables.set('ticket_id', pending.id);",
-              "  console.log('ticket_id set to:', pending.id);",
-              "} else {",
-              "  console.warn('No pending_agent ticket found — set ticket_id manually');",
-              "}"
-            ]
-          }
-        }
       ]
     },
     {
-      "name": "1. PATCH — Resolve with AI response (happy path)",
-      "request": {
-        "method": "PATCH",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{token}}"
+      "name": "1. PATCH Tickets — Testovi",
+      "item": [
+        {
+          "name": "1.0 GET /tickets — provjeri tikete i nadji pending_agent",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tickets?organization_id={{organization_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tickets"],
+              "query": [{ "key": "organization_id", "value": "{{organization_id}}" }]
+            }
           },
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"status\": \"resolved\"\n}"
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('Vraca niz tiketa', () => {",
+                  "  pm.expect(body.success).to.be.true;",
+                  "  pm.expect(body.data).to.be.an('array');",
+                  "});",
+                  "",
+                  "// Automatski postavi prvi pending_agent tiket za PATCH testove",
+                  "const pending = body.data?.find(t => t.status === 'pending_agent');",
+                  "if (pending) {",
+                  "  pm.collectionVariables.set('ticket_id', pending.id);",
+                  "  console.log('ticket_id azuriran na pending_agent tiket:', pending.id);",
+                  "} else {",
+                  "  console.warn('Nema pending_agent tiketa — kreiraj novi tiket u koraku 0.4 ili cekaj da AI procijeni tiket.');",
+                  "}"
+                ]
+              }
+            }
+          ]
         },
-        "url": {
-          "raw": "{{base_url}}/tickets/{{ticket_id}}",
-          "host": ["{{base_url}}"],
-          "path": ["tickets", "{{ticket_id}}"]
-        }
-      },
-      "event": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Status 200', () => {",
-              "  pm.response.to.have.status(200);",
-              "});",
-              "",
-              "const body = pm.response.json();",
-              "pm.test('success = true', () => {",
-              "  pm.expect(body.success).to.be.true;",
-              "});",
-              "",
-              "pm.test('Ticket status is resolved', () => {",
-              "  pm.expect(body.data.status).to.equal('resolved');",
-              "});",
-              "",
-              "pm.test('No agent_response (AI response used)', () => {",
-              "  pm.expect(body.data.agent_response).to.be.null;",
-              "});"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "name": "2. PATCH — Resolve with custom agent response",
-      "request": {
-        "method": "PATCH",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{token}}"
+          "name": "1.1 PATCH — Resolve (happy path)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"resolved\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tickets/{{ticket_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tickets", "{{ticket_id}}"]
+            }
           },
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"status\": \"resolved\",\n  \"agent_response\": \"Hello! Thank you for reaching out. Here is a custom answer from our support agent.\"\n}"
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('success = true', () => {",
+                  "  pm.expect(body.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Status tiketa je resolved', () => {",
+                  "  pm.expect(body.data.status).to.equal('resolved');",
+                  "});",
+                  "",
+                  "pm.test('Nema agent_response (koristen AI odgovor)', () => {",
+                  "  pm.expect(body.data.agent_response).to.be.null;",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
-        "url": {
-          "raw": "{{base_url}}/tickets/{{ticket_id}}",
-          "host": ["{{base_url}}"],
-          "path": ["tickets", "{{ticket_id}}"]
-        }
-      },
-      "event": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Status 200', () => {",
-              "  pm.response.to.have.status(200);",
-              "});",
-              "",
-              "const body = pm.response.json();",
-              "pm.test('Ticket status is resolved', () => {",
-              "  pm.expect(body.data.status).to.equal('resolved');",
-              "});",
-              "",
-              "pm.test('agent_response is saved', () => {",
-              "  pm.expect(body.data.agent_response).to.be.a('string');",
-              "  pm.expect(body.data.agent_response.length).to.be.greaterThan(0);",
-              "});"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "name": "3. PATCH — 401 Unauthorized (no token)",
-      "request": {
-        "method": "PATCH",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"status\": \"resolved\"\n}"
-        },
-        "url": {
-          "raw": "{{base_url}}/tickets/{{ticket_id}}",
-          "host": ["{{base_url}}"],
-          "path": ["tickets", "{{ticket_id}}"]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Status 401', () => {",
-              "  pm.response.to.have.status(401);",
-              "});"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "name": "4. PATCH — 404 Not Found (invalid ticket id)",
-      "request": {
-        "method": "PATCH",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{token}}"
+          "name": "1.2 PATCH — Resolve sa custom agent odgovorom",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"resolved\",\n  \"agent_response\": \"Zdravo! Hvala sto ste nas kontaktirali. Ovdje je prilagodjeni odgovor od naseg agenta podrske.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tickets/{{ticket_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tickets", "{{ticket_id}}"]
+            }
           },
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"status\": \"resolved\"\n}"
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test('Status tiketa je resolved', () => {",
+                  "  pm.expect(body.data.status).to.equal('resolved');",
+                  "});",
+                  "",
+                  "pm.test('agent_response je sacuvan', () => {",
+                  "  pm.expect(body.data.agent_response).to.be.a('string');",
+                  "  pm.expect(body.data.agent_response.length).to.be.greaterThan(0);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
-        "url": {
-          "raw": "{{base_url}}/tickets/00000000-0000-0000-0000-000000000000",
-          "host": ["{{base_url}}"],
-          "path": ["tickets", "00000000-0000-0000-0000-000000000000"]
-        }
-      },
-      "event": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Status 404', () => {",
-              "  pm.response.to.have.status(404);",
-              "});"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "name": "5. PATCH — 400 Bad Request (invalid status value)",
-      "request": {
-        "method": "PATCH",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{token}}"
+          "name": "1.3 PATCH — 401 Unauthorized (bez tokena)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"resolved\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tickets/{{ticket_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tickets", "{{ticket_id}}"]
+            }
           },
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"status\": \"not_a_valid_status\"\n}"
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
-        "url": {
-          "raw": "{{base_url}}/tickets/{{ticket_id}}",
-          "host": ["{{base_url}}"],
-          "path": ["tickets", "{{ticket_id}}"]
-        }
-      },
-      "event": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Status 400', () => {",
-              "  pm.response.to.have.status(400);",
-              "});"
-            ]
-          }
+          "name": "1.4 PATCH — 404 Not Found (nepostojeci ticket id)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"resolved\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tickets/00000000-0000-0000-0000-000000000000",
+              "host": ["{{base_url}}"],
+              "path": ["tickets", "00000000-0000-0000-0000-000000000000"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => {",
+                  "  pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "1.5 PATCH — 400 Bad Request (nevalidan status)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"not_a_valid_status\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tickets/{{ticket_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tickets", "{{ticket_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ]
         }
       ]
     }
