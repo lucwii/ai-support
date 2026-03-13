@@ -9,11 +9,14 @@ interface SidebarNavItemProps {
   icon: LucideIcon
   href: string
   badge?: number
+  exact?: boolean
 }
 
-export default function SidebarNavItem({ label, icon: Icon, href, badge }: SidebarNavItemProps) {
+export default function SidebarNavItem({ label, icon: Icon, href, badge, exact = false }: SidebarNavItemProps) {
   const pathname = usePathname()
-  const isActive = pathname === href || pathname.startsWith(href + '/')
+  const isActive = exact
+    ? pathname === href
+    : pathname === href || pathname.startsWith(href + '/')
 
   return (
     <Link

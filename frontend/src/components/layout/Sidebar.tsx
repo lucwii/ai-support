@@ -21,7 +21,7 @@ const navSections = (pendingCount: number) => [
   {
     label: 'GENERAL',
     items: [
-      { label: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
+      { label: 'Dashboard', icon: LayoutDashboard, href: '/dashboard', exact: true },
       { label: 'Inbox', icon: Inbox, href: '/dashboard/inbox', badge: pendingCount },
       { label: 'All Tickets', icon: ListChecks, href: '/dashboard/tickets' },
     ],
