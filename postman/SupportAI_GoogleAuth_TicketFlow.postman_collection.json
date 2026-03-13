@@ -1,0 +1,613 @@
+{
+  "info": {
+    "name": "SupportAI — Google Auth + Ticket Flow",
+    "description": "Kompletan flow: Google OAuth autentifikacija → organizacija → kreiranje i pregled tiketa.\n\n⚠️  NAPOMENA o Google OAuth:\nGoogle login koristi browser OAuth flow (redirect + consent screen) i ne može se u potpunosti automatizovati kroz Postman API pozive. Korak 1.1 objašnjava kako da dobiješ token iz browsera i nastaviš testiranje u Postmanu.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "supabase_url",
+      "value": "https://dhhrqhwudwklgrvajmgv.supabase.co",
+      "type": "string"
+    },
+    {
+      "key": "supabase_anon_key",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRoaHJxaHd1ZHdrbGdydmFqbWd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1NjI4MjIsImV4cCI6MjA4ODEzODgyMn0.rh7oYIbpTN1aWPDZYWV8pohSFk0owKYe2R96XoTwHfY",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "description": "Supabase JWT access_token. Popuni ga nakon Google login koraka.",
+      "type": "string"
+    },
+    {
+      "key": "organization_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ticket_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Auth — Dobij token",
+      "description": "Google OAuth zahtijeva browser. Opcija A: token iz browsera. Opcija B: email/password login direktno u Postmanu.",
+      "item": [
+        {
+          "name": "1.1 [OPCIJA A] Google OAuth — Otvori URL u browseru",
+          "description": "Google OAuth nije REST poziv koji se može automatizovati — zahtijeva interakciju korisnika u browseru (Google consent screen).\n\n📋 KORACI:\n1. Pokreni frontend: cd frontend && npm run dev\n2. Otvori http://localhost:3000/auth/login u browseru\n3. Klikni 'Continue with Google' i uloguj se\n4. Nakon što te preusmjeri na dashboard, otvori DevTools (F12)\n5. Idi na tab: Application → Local Storage → http://localhost:3000\n6. Pronađi ključ koji počinje sa 'sb-...auth-token'\n7. Klikni na njega → nađi 'access_token' u JSON-u\n8. Kopiraj vrijednost i zalijepi je u Collection Variable 'token'\n\nALTERNATIVA putem konzole:\n> const { data } = await window.__supabase.auth.getSession()\n> console.log(data.session.access_token)\n\nNakon što imaš token, nastavi sa korakom 2.1.",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{supabase_url}}/auth/v1/authorize?provider=google&redirect_to=http://localhost:3000/auth/callback",
+              "host": ["{{supabase_url}}"],
+              "path": ["auth", "v1", "authorize"],
+              "query": [
+                { "key": "provider", "value": "google" },
+                { "key": "redirect_to", "value": "http://localhost:3000/auth/callback" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Ovaj request ce vratiti 302 redirect ka Google consent screenu.",
+                  "// Postman prati redirect automatski.",
+                  "// Kopiraj token iz browsera kako je opisano u opisu zahtjeva."
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "1.2 [OPCIJA B] Email/Password Login — Direktno u Postmanu",
+          "description": "Alternativa za Google OAuth. Koristi email/password nalog u Supabase-u.\nKorisno za automatizovano testiranje bez potrebe za browserom.",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "apikey", "value": "{{supabase_anon_key}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tvoj@email.com\",\n  \"password\": \"TvojaLozinka123!\"\n}"
+            },
+            "url": {
+              "raw": "{{supabase_url}}/auth/v1/token?grant_type=password",
+              "host": ["{{supabase_url}}"],
+              "path": ["auth", "v1", "token"],
+              "query": [{ "key": "grant_type", "value": "password" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login uspjesan (200)', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test('Odgovor sadrzi access_token', () => {",
+                  "  pm.expect(body.access_token).to.be.a('string').and.not.empty;",
+                  "});",
+                  "",
+                  "if (body.access_token) {",
+                  "  pm.collectionVariables.set('token', body.access_token);",
+                  "  console.log('✅ Token sacuvan. Trajanje sesije:', body.expires_in, 'sekundi');",
+                  "  console.log('Korisnik:', body.user?.email);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "1.3 Verifikuj token — GET /organizations/me",
+          "description": "Provjeri da li token radi i da li je korisnik vec napravio organizaciju.",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/organizations/me",
+              "host": ["{{base_url}}"],
+              "path": ["organizations", "me"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Token validan (200)', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "if (body.data?.id) {",
+                  "  pm.collectionVariables.set('organization_id', body.data.id);",
+                  "  console.log('✅ Organizacija pronadjena:', body.data.name);",
+                  "  console.log('organization_id postavljen na:', body.data.id);",
+                  "} else {",
+                  "  console.warn('Korisnik nema organizaciju. Pokreni korak 2.1 da je kreiras.');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Organizacija",
+      "description": "Kreiranje organizacije za ulogovanog korisnika. Preskoči ako organizacija već postoji (korak 1.3 je automatski postavio organization_id).",
+      "item": [
+        {
+          "name": "2.1 POST /organizations — Kreiraj organizaciju",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Moja Firma d.o.o.\",\n  \"industry\": \"saas\",\n  \"primary_language\": \"bschr\",\n  \"team_size\": \"1-10\",\n  \"monthly_tickets\": \"<100\",\n  \"website\": \"https://mojafirma.ba\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/organizations",
+              "host": ["{{base_url}}"],
+              "path": ["organizations"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Organizacija kreirana (201)', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test('Odgovor sadrzi id organizacije', () => {",
+                  "  pm.expect(body.success).to.be.true;",
+                  "  pm.expect(body.data.id).to.be.a('string');",
+                  "});",
+                  "",
+                  "if (body.data?.id) {",
+                  "  pm.collectionVariables.set('organization_id', body.data.id);",
+                  "  console.log('✅ Organizacija kreirana:', body.data.name);",
+                  "  console.log('organization_id:', body.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Ticket Flow",
+      "description": "Kreiranje tiketa, pregled liste, pregled detalja jednog tiketa i resolvovanje.",
+      "item": [
+        {
+          "name": "3.1 POST /tickets — Kreiraj tiket (niska pouzdanost AI-a)",
+          "description": "Kreira tiket sa pitanjem za koji AI vjerovatno neće imati odgovor u knowledge bazi → status će biti pending_agent.",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organization_id\": \"{{organization_id}}\",\n  \"content\": \"Imam problem sa fakturisanjem. Dobio sam dvostruko naplacivanje u aprilu i trebam povrat novca sto prije. Narudzba #INV-2024-0042.\",\n  \"customer_email\": \"kupac.test@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tickets",
+              "host": ["{{base_url}}"],
+              "path": ["tickets"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Tiket kreiran (201)', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test('Odgovor sadrzi ticket objekat', () => {",
+                  "  pm.expect(body.success).to.be.true;",
+                  "  pm.expect(body.data.ticket).to.have.property('id');",
+                  "  pm.expect(body.data.ticket).to.have.property('status');",
+                  "});",
+                  "",
+                  "if (body.data?.ticket?.id) {",
+                  "  pm.collectionVariables.set('ticket_id', body.data.ticket.id);",
+                  "  console.log('✅ Tiket kreiran, ID:', body.data.ticket.id);",
+                  "  console.log('Status:', body.data.ticket.status);",
+                  "  console.log('AI auto-odgovorio:', body.data.wasAutoAnswered);",
+                  "  if (body.data.ticket.confidence !== null) {",
+                  "    console.log('AI pouzdanost:', body.data.ticket.confidence + '%');",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3.2 POST /tickets — Kreiraj tiket (vjerovatno AI auto-odgovor)",
+          "description": "Kreira tiket s generičkim pitanjem. Ovisno o knowledge bazi, AI može automatski odgovoriti → status auto_answered.",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organization_id\": \"{{organization_id}}\",\n  \"content\": \"Kako mogu resetovati lozinku za moj nalog?\",\n  \"customer_email\": \"drugi.kupac@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tickets",
+              "host": ["{{base_url}}"],
+              "path": ["tickets"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Tiket kreiran (201)', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test('Status je validan', () => {",
+                  "  pm.expect(['processing', 'auto_answered', 'pending_agent']).to.include(body.data.ticket.status);",
+                  "});",
+                  "",
+                  "console.log('Status tiketa:', body.data.ticket.status);",
+                  "console.log('AI pouzdanost:', body.data.ticket.confidence + '%');",
+                  "console.log('Auto-odgovoren:', body.data.wasAutoAnswered);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3.3 GET /tickets — Lista svih tiketa organizacije",
+          "description": "Preuzima sve tikete za organizaciju. Automatski postavlja ticket_id na prvi pending_agent tiket za testiranje PATCH-a.",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tickets?organization_id={{organization_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tickets"],
+              "query": [{ "key": "organization_id", "value": "{{organization_id}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test('Vraca niz tiketa', () => {",
+                  "  pm.expect(body.success).to.be.true;",
+                  "  pm.expect(body.data).to.be.an('array');",
+                  "});",
+                  "",
+                  "const tickets = body.data ?? [];",
+                  "const byStatus = tickets.reduce((acc, t) => {",
+                  "  acc[t.status] = (acc[t.status] || 0) + 1;",
+                  "  return acc;",
+                  "}, {});",
+                  "",
+                  "console.log('Ukupno tiketa:', tickets.length);",
+                  "console.log('Po statusu:', JSON.stringify(byStatus));",
+                  "",
+                  "const pending = tickets.find(t => t.status === 'pending_agent');",
+                  "if (pending) {",
+                  "  pm.collectionVariables.set('ticket_id', pending.id);",
+                  "  console.log('✅ ticket_id postavljen na pending_agent tiket:', pending.id);",
+                  "} else {",
+                  "  console.warn('Nema pending_agent tiketa — ticket_id ostaje na prethodnoj vrijednosti.');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3.4 GET /tickets/:id — Detalji jednog tiketa",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tickets/{{ticket_id}}?organization_id={{organization_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tickets", "{{ticket_id}}"],
+              "query": [{ "key": "organization_id", "value": "{{organization_id}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test('Odgovor sadrzi ticket i logove', () => {",
+                  "  pm.expect(body.success).to.be.true;",
+                  "  pm.expect(body.data).to.have.property('ticket');",
+                  "  pm.expect(body.data).to.have.property('logs');",
+                  "  pm.expect(body.data.logs).to.be.an('array');",
+                  "});",
+                  "",
+                  "const ticket = body.data.ticket;",
+                  "console.log('Tiket ID:', ticket.id);",
+                  "console.log('Status:', ticket.status);",
+                  "console.log('AI pouzdanost:', ticket.confidence + '%');",
+                  "console.log('Broj logova:', body.data.logs.length);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3.5 PATCH /tickets/:id — Resolve sa AI odgovorom",
+          "description": "Agent resolvuje tiket i šalje kupcu AI-generisani odgovor.",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"resolved\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tickets/{{ticket_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tickets", "{{ticket_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test('Tiket je resolved', () => {",
+                  "  pm.expect(body.success).to.be.true;",
+                  "  pm.expect(body.data.status).to.equal('resolved');",
+                  "});",
+                  "",
+                  "pm.test('Nema custom agent_response', () => {",
+                  "  pm.expect(body.data.agent_response).to.be.null;",
+                  "});",
+                  "",
+                  "console.log('✅ Tiket resolvovan sa AI odgovorom.');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3.6 PATCH /tickets/:id — Resolve sa custom odgovorom agenta",
+          "description": "Agent piše vlastiti odgovor i šalje ga kupcu. Tiket se zatvara.",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"resolved\",\n  \"agent_response\": \"Zdravo! Pregledao sam vaš nalog i preusmjerio zahtjev za povrat novca ka finansijskom timu. Povrat će biti procesiran u roku od 3-5 radnih dana na vašu karticu. Hvala na strpljenju!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tickets/{{ticket_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tickets", "{{ticket_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test('Tiket je resolved', () => {",
+                  "  pm.expect(body.success).to.be.true;",
+                  "  pm.expect(body.data.status).to.equal('resolved');",
+                  "});",
+                  "",
+                  "pm.test('agent_response je sacuvan', () => {",
+                  "  pm.expect(body.data.agent_response).to.be.a('string');",
+                  "  pm.expect(body.data.agent_response.length).to.be.greaterThan(0);",
+                  "});",
+                  "",
+                  "console.log('✅ Tiket resolvovan sa custom odgovorom agenta.');",
+                  "console.log('Odgovor:', body.data.agent_response);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Edge Cases",
+      "description": "Negativni testovi — greške koje backend treba pravilno da vrati.",
+      "item": [
+        {
+          "name": "4.1 GET /tickets — 400 Missing organization_id",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tickets",
+              "host": ["{{base_url}}"],
+              "path": ["tickets"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 — organizaation_id nedostaje', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "4.2 GET /tickets/:id — 404 Nepostojeci tiket",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tickets/00000000-0000-0000-0000-000000000000?organization_id={{organization_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tickets", "00000000-0000-0000-0000-000000000000"],
+              "query": [{ "key": "organization_id", "value": "{{organization_id}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404 — tiket ne postoji', () => {",
+                  "  pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "4.3 POST /tickets — 401 Bez tokena",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organization_id\": \"{{organization_id}}\",\n  \"content\": \"Test bez autentifikacije.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tickets",
+              "host": ["{{base_url}}"],
+              "path": ["tickets"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401 — token nedostaje', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "4.4 PATCH /tickets/:id — 400 Nevalidan status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"nepostojeci_status\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tickets/{{ticket_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tickets", "{{ticket_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 — nevalidan enum status', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
