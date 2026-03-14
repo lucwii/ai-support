@@ -124,6 +124,20 @@ export class TicketsService {
     };
   }
 
+  async getPublicTicketById(ticketId: string): Promise<Pick<Ticket, 'id' | 'content' | 'status' | 'ai_response' | 'agent_response' | 'created_at'>> {
+    const { data: ticket, error } = await this.supabaseService.db
+      .from('tickets')
+      .select('id, content, status, ai_response, agent_response, created_at')
+      .eq('id', ticketId)
+      .single();
+
+    if (error || !ticket) {
+      throw new NotFoundException(`Ticket ${ticketId} not found`);
+    }
+
+    return ticket;
+  }
+
   async getTickets(organizationId: string): Promise<Ticket[]> {
     const { data, error } = await this.supabaseService.db
       .from('tickets')
