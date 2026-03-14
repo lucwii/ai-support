@@ -21,14 +21,12 @@ import type { JwtPayload } from '../auth/types/jwt-payload.types';
 import { OrganizationsService } from '../organizations/organizations.service';
 
 @Controller('tickets')
-@UseGuards(AuthGuard)
 export class TicketsController {
   constructor(
     private readonly ticketsService: TicketsService,
     private readonly organizationsService: OrganizationsService,
   ) {}
 
-  
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createTicket(@Body() dto: CreateTicketDto) {
@@ -46,8 +44,18 @@ export class TicketsController {
     };
   }
 
-  
+  @Get('public/:id')
+  async getPublicTicketById(@Param('id') id: string) {
+    const ticket = await this.ticketsService.getPublicTicketById(id);
+
+    return {
+      success: true,
+      data: ticket,
+    };
+  }
+
   @Get()
+  @UseGuards(AuthGuard)
   async getTickets(@Query('organization_id') organizationId: string) {
     if (!organizationId) {
       throw new BadRequestException('organization_id query param is required');
@@ -62,8 +70,8 @@ export class TicketsController {
     };
   }
 
-  
   @Get(':id')
+  @UseGuards(AuthGuard)
   async getTicketById(
     @Param('id') id: string,
     @Query('organization_id') organizationId: string,
@@ -81,6 +89,7 @@ export class TicketsController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard)
   async updateTicket(
     @Param('id') ticketId: string,
     @Body() dto: UpdateTicketDto,
