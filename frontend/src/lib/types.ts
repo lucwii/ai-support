@@ -1,5 +1,14 @@
 export type TicketStatus = 'processing' | 'auto_answered' | 'pending_agent' | 'resolved'
 
+export interface PublicTicket {
+  id: string
+  content: string
+  status: TicketStatus
+  ai_response: string | null
+  agent_response: string | null
+  created_at: string
+}
+
 export interface Ticket {
   id: string
   organization_id: string
