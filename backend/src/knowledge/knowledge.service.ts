@@ -91,6 +91,36 @@ export class KnowledgeService {
 
 
 
+  async getKnowledge(organizationId: string) {
+    const { data, error } = await this.supabaseService.db
+      .from('knowledge_embeddings')
+      .select('id, content, created_at')
+      .eq('organization_id', organizationId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      this.logger.error(`Failed to fetch knowledge: ${error.message}`);
+      return [];
+    }
+
+    return data ?? [];
+  }
+
+  async deleteKnowledge(id: string, organizationId: string): Promise<boolean> {
+    const { error } = await this.supabaseService.db
+      .from('knowledge_embeddings')
+      .delete()
+      .eq('id', id)
+      .eq('organization_id', organizationId);
+
+    if (error) {
+      this.logger.error(`Failed to delete knowledge chunk ${id}: ${error.message}`);
+      return false;
+    }
+
+    return true;
+  }
+
   async uploadKnowledge(
     organizationId: string,
     content: string,
