@@ -1,10 +1,15 @@
 import {
   Controller,
   Post,
+  Get,
+  Delete,
   Body,
+  Query,
+  Param,
   HttpCode,
   HttpStatus,
   BadRequestException,
+  NotFoundException,
   UseGuards,
 } from '@nestjs/common';
 import { KnowledgeService } from './knowledge.service';
@@ -15,6 +20,50 @@ import { AuthGuard } from '../auth/auth.guard';
 @UseGuards(AuthGuard)
 export class KnowledgeController {
   constructor(private readonly knowledgeService: KnowledgeService) {}
+
+  /**
+   * GET /knowledge?organization_id=xxx
+   * Vraća sve knowledge chunkove za organizaciju.
+   */
+  @Get()
+  async getKnowledge(@Query('organization_id') organizationId: string) {
+    if (!organizationId) {
+      throw new BadRequestException('organization_id is required');
+    }
+
+    const data = await this.knowledgeService.getKnowledge(organizationId);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  /**
+   * DELETE /knowledge/:id?organization_id=xxx
+   * Briše jedan knowledge chunk.
+   */
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  async deleteKnowledge(
+    @Param('id') id: string,
+    @Query('organization_id') organizationId: string,
+  ) {
+    if (!organizationId) {
+      throw new BadRequestException('organization_id is required');
+    }
+
+    const deleted = await this.knowledgeService.deleteKnowledge(id, organizationId);
+
+    if (!deleted) {
+      throw new NotFoundException('Knowledge chunk not found');
+    }
+
+    return {
+      success: true,
+      message: 'Knowledge chunk deleted successfully',
+    };
+  }
 
   /**
    * POST /knowledge
