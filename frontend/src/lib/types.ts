@@ -34,6 +34,13 @@ export interface Organization {
   created_at: string
 }
 
+export interface Knowledge {
+  id: string
+  organization_id: string
+  content: string
+  created_at: string
+}
+
 export interface TicketLog {
   id: string
   ticket_id: string
