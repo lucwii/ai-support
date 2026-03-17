@@ -107,19 +107,7 @@ export class OrganizationsService {
       .from('organization_members')
       .select(`
         role,
-        organizations (
-          id,
-          name,
-          owner_id,
-          industry,
-          primary_language,
-          team_size,
-          monthly_tickets,
-          website,
-          email_on_new_ticket,
-          email_on_low_confidence,
-          created_at
-        )
+        organizations (*)
       `)
       .eq('user_id', userId)
       .single();
@@ -174,7 +162,7 @@ export class OrganizationsService {
 
     const { data, error } = await this.supabaseService.db
       .from('organization_members')
-      .select('id, user_id, role, email, full_name, created_at')
+      .select('*')
       .eq('organization_id', org.id)
       .order('created_at', { ascending: true });
 
@@ -183,7 +171,7 @@ export class OrganizationsService {
       throw new Error(`Failed to get members: ${error.message}`);
     }
 
-    // Dohvati i pending invite-ove
+    // organization_invites tabela postoji tek nakon migracije — graceful fallback
     const { data: invites } = await this.supabaseService.db
       .from('organization_invites')
       .select('id, email, role, status, created_at')
