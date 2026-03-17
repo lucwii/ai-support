@@ -31,6 +31,33 @@ export interface Organization {
   monthly_tickets: string | null
   website: string | null
   owner_id: string
+  email_on_new_ticket: boolean
+  email_on_low_confidence: boolean
+  role: string
+  created_at: string
+}
+
+export interface OrgPreferences {
+  email_on_new_ticket: boolean
+  email_on_low_confidence: boolean
+}
+
+export type MemberRole = 'owner' | 'admin' | 'agent'
+
+export interface OrgMember {
+  id: string
+  user_id: string
+  role: MemberRole
+  email: string | null
+  full_name: string | null
+  created_at: string
+}
+
+export interface OrgPendingInvite {
+  id: string
+  email: string
+  role: 'admin' | 'agent'
+  status: 'pending'
   created_at: string
 }
 
