@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import {
   LayoutDashboard,
   Inbox,
-  ListChecks,
   BookOpen,
   Plug2,
   Settings,
@@ -23,7 +22,6 @@ const navSections = (pendingCount: number) => [
     items: [
       { label: 'Dashboard', icon: LayoutDashboard, href: '/dashboard', exact: true },
       { label: 'Inbox', icon: Inbox, href: '/dashboard/inbox', badge: pendingCount },
-      { label: 'All Tickets', icon: ListChecks, href: '/dashboard/tickets' },
     ],
   },
   {
