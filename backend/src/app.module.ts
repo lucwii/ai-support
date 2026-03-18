@@ -9,9 +9,10 @@ import { KnowledgeModule } from './knowledge/knowledge.module';
 import { AiAnswerModule } from './ai-answer/ai-answer.module';
 import { TicketsModule } from './tickets/tickets.module';
 import { AuthModule } from './auth/auth.module';
+import { WidgetModule } from './widget/widget.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), AiModule, SupabaseModule, KnowledgeModule, AiAnswerModule, TicketsModule, AuthModule, OrganizationsModule],
+  imports: [ConfigModule.forRoot(), AiModule, SupabaseModule, KnowledgeModule, AiAnswerModule, TicketsModule, AuthModule, OrganizationsModule, WidgetModule],
   controllers: [AppController],
   providers: [AppService],
 })
