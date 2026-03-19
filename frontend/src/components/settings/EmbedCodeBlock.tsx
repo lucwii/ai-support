@@ -14,6 +14,7 @@ interface Props {
 export default function EmbedCodeBlock({ orgId, accentColor, position, placeholderText, buttonText }: Props) {
   const [copied, setCopied] = useState(false)
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
 
   const code = `<script
   src="${appUrl}/widget.js"
@@ -22,6 +23,7 @@ export default function EmbedCodeBlock({ orgId, accentColor, position, placehold
   data-position="${position}"
   data-placeholder="${placeholderText}"
   data-button-text="${buttonText}"
+  data-api="${apiUrl}"
 ></script>`
 
   const handleCopy = async () => {
