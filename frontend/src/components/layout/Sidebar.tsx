@@ -133,13 +133,19 @@ export default function Sidebar() {
         transition={{ delay: 0.4, duration: 0.3 }}
       >
         <div className="flex items-center gap-2.5 px-2">
-          <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
-            <span className="text-xs font-semibold text-indigo-400">{initials}</span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-[#F1F5F9] truncate">{userName || '—'}</p>
-            <p className="text-xs text-[#475569] truncate">{userEmail}</p>
-          </div>
+          <motion.button
+            onClick={() => router.push('/dashboard/profile')}
+            className="flex items-center gap-2.5 flex-1 min-w-0 rounded-lg hover:bg-white/[0.04] transition-colors duration-150 -mx-1.5 px-1.5 py-1"
+            whileTap={{ scale: 0.97 }}
+          >
+            <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
+              <span className="text-xs font-semibold text-indigo-400">{initials}</span>
+            </div>
+            <div className="flex-1 min-w-0 text-left">
+              <p className="text-sm font-medium text-[#F1F5F9] truncate">{userName || '—'}</p>
+              <p className="text-xs text-[#475569] truncate">{userEmail}</p>
+            </div>
+          </motion.button>
           <motion.button
             onClick={handleLogout}
             className="text-[#475569] hover:text-[#94A3B8] transition-colors duration-150 flex-shrink-0"
