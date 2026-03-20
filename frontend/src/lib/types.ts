@@ -68,6 +68,13 @@ export interface Knowledge {
   created_at: string
 }
 
+export interface UserProfile {
+  id: string
+  email: string
+  full_name: string
+  provider: string
+}
+
 export interface TicketLog {
   id: string
   ticket_id: string
