@@ -30,7 +30,7 @@ export default function DashboardPage() {
 
       {/* Chart + Recent tickets */}
       <div className="flex flex-col gap-6 mt-6">
-        <TicketsChart data={stats.chartData} />
+        <TicketsChart tickets={tickets} />
 
         {organization && (
           <RecentTicketsTable
