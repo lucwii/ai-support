@@ -55,7 +55,8 @@ export async function middleware(request: NextRequest) {
       )
       const data = await res.json()
       return !!data?.data
-    } catch {
+    } catch (err) {
+      console.error('[middleware] hasOrganization failed:', err)
       return false
     }
   }

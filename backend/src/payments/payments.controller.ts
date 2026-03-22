@@ -4,13 +4,13 @@ import {
   Get,
   Body,
   Headers,
-  RawBodyRequest,
   Req,
   UseGuards,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { Request } from 'express';
+import type { RawBodyRequest } from '@nestjs/common';
+import type { Request } from 'express';
 import { PaymentsService } from './payments.service';
 import { CreateCheckoutDto } from './dto/create-checkout.dto';
 import { AuthGuard } from '../auth/auth.guard';
