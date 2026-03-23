@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import apiClient from '@/lib/axios'
 import type { UserProfile } from '@/lib/types'
 
 export function useProfile() {
@@ -11,20 +12,21 @@ export function useProfile() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user }, error: err }) => {
-      if (err || !user) {
-        setError('Failed to load profile')
-      } else {
-        const meta = user.user_metadata
-        setProfile({
-          id: user.id,
-          email: user.email ?? '',
-          full_name: meta?.full_name ?? meta?.name ?? '',
-          provider: user.app_metadata?.provider ?? 'email',
-        })
-      }
-      setLoading(false)
-    })
+    // Pozivamo nas backend umesto Supabase direktno.
+    //
+    // Pre: supabase.auth.getUser() → vraca samo ono sto je u JWT tokenu
+    //      (id, email, user_metadata) — bez created_at, bez ticket_count
+    //
+    // Sada: apiClient.get('/profile/me') → backend poziva admin.getUserById()
+    //       i dodatno queryuje tickets tabelu, pa vraca enriched objekat
+    //       sa svim poljima koja nam trebaju za novu stranicu.
+    //
+    // apiClient automatski dodaje Authorization header sa Supabase JWT tokenom
+    // (pogledaj src/lib/axios.ts → request interceptor) pa ne moramo nista rucno.
+    apiClient.get<{ data: UserProfile }>('/profile/me')
+      .then(({ data: res }) => setProfile(res.data))
+      .catch(() => setError('Failed to load profile'))
+      .finally(() => setLoading(false))
   }, [])
 
   const updateProfile = useCallback(async (data: { full_name?: string; email?: string }) => {
@@ -38,19 +40,36 @@ export function useProfile() {
 
     const meta = res.user.user_metadata
     const updated: UserProfile = {
-      id: res.user.id,
+      ...profile!,
       email: res.user.email ?? '',
       full_name: meta?.full_name ?? meta?.name ?? '',
-      provider: res.user.app_metadata?.provider ?? 'email',
     }
     setProfile(updated)
     return updated
-  }, [supabase.auth])
+  }, [supabase.auth, profile])
 
   const updatePassword = useCallback(async (newPassword: string) => {
     const { error: err } = await supabase.auth.updateUser({ password: newPassword })
     if (err) throw new Error(err.message)
   }, [supabase.auth])
 
-  return { profile, loading, error, updateProfile, updatePassword }
+  const uploadAvatar = useCallback(async (file: File) => {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const { data: res } = await apiClient.post<{ data: { avatar_url: string } }>(
+      '/profile/me/avatar',
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } }
+    )
+
+    setProfile((prev) => prev ? { ...prev, avatar_url: res.data.avatar_url } : prev)
+    return res.data.avatar_url
+  }, [])
+
+  const deleteAccount = useCallback(async () => {
+    await apiClient.delete('/profile/me')
+  }, [])
+
+  return { profile, loading, error, updateProfile, updatePassword, uploadAvatar, deleteAccount }
 }

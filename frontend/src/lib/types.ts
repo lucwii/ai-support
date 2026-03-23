@@ -73,6 +73,9 @@ export interface UserProfile {
   email: string
   full_name: string
   provider: string
+  avatar_url: string | null
+  created_at: string
+  ticket_count: number
 }
 
 export interface TicketLog {
