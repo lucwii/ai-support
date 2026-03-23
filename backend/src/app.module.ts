@@ -11,9 +11,10 @@ import { TicketsModule } from './tickets/tickets.module';
 import { AuthModule } from './auth/auth.module';
 import { WidgetModule } from './widget/widget.module';
 import { PaymentsModule } from './payments/payments.module';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), AiModule, SupabaseModule, KnowledgeModule, AiAnswerModule, TicketsModule, AuthModule, OrganizationsModule, WidgetModule, PaymentsModule],
+  imports: [ConfigModule.forRoot(), AiModule, SupabaseModule, KnowledgeModule, AiAnswerModule, TicketsModule, AuthModule, OrganizationsModule, WidgetModule, PaymentsModule, ProfileModule],
   controllers: [AppController],
   providers: [AppService],
 })
