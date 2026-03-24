@@ -34,6 +34,7 @@ export default function AvatarSection({ profile, onUpload }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [imgError, setImgError] = useState(false)
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -60,11 +61,12 @@ export default function AvatarSection({ profile, onUpload }: Props) {
 
         {/* Avatar */}
         <div className="relative shrink-0">
-          {profile.avatar_url ? (
+          {profile.avatar_url && !imgError ? (
             <img
               src={profile.avatar_url}
               alt={profile.full_name}
               className="w-16 h-16 rounded-full object-cover ring-2 ring-white/[0.06]"
+              onError={() => setImgError(true)}
             />
           ) : (
             <div className={`w-16 h-16 rounded-full flex items-center justify-center text-white text-xl font-semibold ${colorClass}`}>
