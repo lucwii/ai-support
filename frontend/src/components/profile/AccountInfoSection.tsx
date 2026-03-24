@@ -20,7 +20,7 @@ export default function AccountInfoSection({ profile }: Props) {
     <div className="bg-[#0F172A] border border-white/[0.06] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.4)] p-6">
       <h2 className="text-base font-semibold text-[#F1F5F9] mb-5">Account Info</h2>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <InfoCard
           icon={<CalendarDays className="w-4 h-4" />}
           label="Member since"

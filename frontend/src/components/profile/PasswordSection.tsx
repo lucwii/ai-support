@@ -78,7 +78,7 @@ export default function PasswordSection({ onUpdatePassword }: Props) {
         </Field>
       </div>
 
-      <div className="flex items-center justify-between mt-6 pt-5 border-t border-white/[0.06]">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-6 pt-5 border-t border-white/[0.06]">
         <div>
           {(error || validationError) && (
             <p className="text-sm text-red-400">{error ?? validationError}</p>
@@ -88,7 +88,7 @@ export default function PasswordSection({ onUpdatePassword }: Props) {
         <button
           onClick={handleSave}
           disabled={!canSave}
-          className="inline-flex items-center gap-2 bg-[#6366F1] hover:bg-[#4F46E5] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2 rounded-xl transition-all duration-150 hover:-translate-y-px disabled:hover:translate-y-0"
+          className="inline-flex items-center justify-center gap-2 bg-[#6366F1] hover:bg-[#4F46E5] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2 rounded-xl transition-all duration-150 hover:-translate-y-px disabled:hover:translate-y-0 w-full sm:w-auto"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <KeyRound className="w-4 h-4" />}
           Update password
