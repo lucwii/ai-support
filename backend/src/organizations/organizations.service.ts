@@ -10,6 +10,7 @@ import { EmailService } from '../email/email.service';
 import type { CreateOrganizationDto } from './dto/create-organization.dto';
 import type { UpdateOrganizationDto } from './dto/update-organization.dto';
 import type { UpdatePreferencesDto } from './dto/update-preferences.dto';
+import type { UpdateWidgetSettingsDto } from './dto/update-widget-settings.dto';
 import type { InviteMemberDto } from './dto/invite-member.dto';
 
 @Injectable()
@@ -285,6 +286,36 @@ export class OrganizationsService {
     }
 
     return { removed: true };
+  }
+
+  /**
+   * Update widget postavki organizacije.
+   */
+  async updateWidgetSettings(userId: string, dto: UpdateWidgetSettingsDto) {
+    const org = await this.getOrganizationByUserId(userId);
+    if (!org) throw new NotFoundException('Organization not found');
+    if (org.role !== 'owner' && org.role !== 'admin') {
+      throw new ForbiddenException('Only owner or admin can update widget settings');
+    }
+
+    const { data, error } = await this.supabaseService.db
+      .from('organizations')
+      .update({
+        ...(dto.accent_color !== undefined && { widget_accent_color: dto.accent_color }),
+        ...(dto.position !== undefined && { widget_position: dto.position }),
+        ...(dto.placeholder_text !== undefined && { widget_placeholder_text: dto.placeholder_text }),
+        ...(dto.button_text !== undefined && { widget_button_text: dto.button_text }),
+      })
+      .eq('id', org.id)
+      .select('widget_accent_color, widget_position, widget_placeholder_text, widget_button_text')
+      .single();
+
+    if (error) {
+      this.logger.error(`Failed to update widget settings: ${error.message}`);
+      throw new Error(`Failed to update widget settings: ${error.message}`);
+    }
+
+    return data;
   }
 
   /**
