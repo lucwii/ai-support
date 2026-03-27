@@ -16,7 +16,7 @@ export class WidgetService {
 
     const { data, error } = await this.supabaseService.db
       .from('organizations')
-      .select('id, name, industry, primary_language')
+      .select('id, name, industry, primary_language, widget_accent_color, widget_position, widget_placeholder_text, widget_button_text')
       .eq('id', orgId)
       .single();
 
@@ -29,6 +29,10 @@ export class WidgetService {
       name: data.name,
       industry: data.industry,
       primary_language: data.primary_language,
+      accent_color: data.widget_accent_color ?? '#6366F1',
+      position: data.widget_position ?? 'bottom-right',
+      placeholder_text: data.widget_placeholder_text ?? 'How can we help you today?',
+      button_text: data.widget_button_text ?? 'Send message',
     };
   }
 }

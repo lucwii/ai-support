@@ -14,6 +14,7 @@ import { OrganizationsService } from './organizations.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
+import { UpdateWidgetSettingsDto } from './dto/update-widget-settings.dto';
 import { InviteMemberDto } from './dto/invite-member.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { GetUser } from '../auth/get-user.decorator';
@@ -47,6 +48,17 @@ export class OrganizationsController {
   ) {
     const organization = await this.organizationsService.updateOrganization(user.sub, dto);
     return { success: true, data: organization };
+  }
+
+  // ── Widget settings ───────────────────────────────────────────────────────
+
+  @Patch('me/widget-settings')
+  async updateWidgetSettings(
+    @GetUser() user: JwtPayload,
+    @Body() dto: UpdateWidgetSettingsDto,
+  ) {
+    const data = await this.organizationsService.updateWidgetSettings(user.sub, dto);
+    return { success: true, data };
   }
 
   // ── Members ────────────────────────────────────────────────────────────────
