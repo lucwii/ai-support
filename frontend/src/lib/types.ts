@@ -33,8 +33,19 @@ export interface Organization {
   owner_id: string
   email_on_new_ticket: boolean
   email_on_low_confidence: boolean
+  widget_accent_color: string
+  widget_position: 'bottom-right' | 'bottom-left'
+  widget_placeholder_text: string
+  widget_button_text: string
   role: string
   created_at: string
+}
+
+export interface WidgetSettings {
+  accent_color: string
+  position: 'bottom-right' | 'bottom-left'
+  placeholder_text: string
+  button_text: string
 }
 
 export interface OrgPreferences {
