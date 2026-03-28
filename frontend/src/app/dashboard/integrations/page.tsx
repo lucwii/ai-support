@@ -1,31 +1,26 @@
 'use client'
 
-import { useState } from 'react'
 import PageHeader from '@/components/ui/PageHeader'
 import WidgetColorPicker from '@/components/settings/WidgetColorPicker'
 import WidgetPreview from '@/components/settings/WidgetPreview'
 import EmbedCodeBlock from '@/components/settings/EmbedCodeBlock'
+import Toast from '@/components/ui/Toast'
 import { useOrganization } from '@/hooks/useOrganization'
-
-interface WidgetConfig {
-  accentColor: string
-  position: 'bottom-right' | 'bottom-left'
-  placeholderText: string
-  buttonText: string
-}
+import { useWidgetSettings } from '@/hooks/useWidgetSettings'
+import { useToast } from '@/hooks/useToast'
 
 export default function IntegrationsPage() {
   const { organization, loading } = useOrganization()
+  const { settings, setField, saving, save } = useWidgetSettings(organization)
+  const { toasts, addToast, removeToast } = useToast()
 
-  const [config, setConfig] = useState<WidgetConfig>({
-    accentColor: '#6366F1',
-    position: 'bottom-right',
-    placeholderText: 'How can we help you today?',
-    buttonText: 'Send message',
-  })
-
-  const setField = <K extends keyof WidgetConfig>(key: K, value: WidgetConfig[K]) => {
-    setConfig((prev) => ({ ...prev, [key]: value }))
+  const handleSave = async () => {
+    try {
+      await save()
+      addToast('Widget settings saved', 'success')
+    } catch {
+      addToast('Failed to save settings', 'error')
+    }
   }
 
   return (
@@ -55,8 +50,8 @@ export default function IntegrationsPage() {
 
               <Field label="Accent color">
                 <WidgetColorPicker
-                  value={config.accentColor}
-                  onChange={(color) => setField('accentColor', color)}
+                  value={settings.accent_color}
+                  onChange={(color) => setField('accent_color', color)}
                 />
               </Field>
 
@@ -67,7 +62,7 @@ export default function IntegrationsPage() {
                       key={pos}
                       onClick={() => setField('position', pos)}
                       className={`flex-1 py-2 rounded-xl text-xs font-medium border transition-colors duration-150 ${
-                        config.position === pos
+                        settings.position === pos
                           ? 'bg-[#6366F1]/10 border-[#6366F1]/50 text-[#6366F1]'
                           : 'bg-[#060D1A] border-white/[0.06] text-[#475569] hover:text-[#94A3B8]'
                       }`}
@@ -81,8 +76,8 @@ export default function IntegrationsPage() {
               <Field label="Opening message">
                 <input
                   type="text"
-                  value={config.placeholderText}
-                  onChange={(e) => setField('placeholderText', e.target.value)}
+                  value={settings.placeholder_text}
+                  onChange={(e) => setField('placeholder_text', e.target.value)}
                   placeholder="How can we help you today?"
                   className={inputClass}
                   maxLength={100}
@@ -92,22 +87,30 @@ export default function IntegrationsPage() {
               <Field label="Submit button text">
                 <input
                   type="text"
-                  value={config.buttonText}
-                  onChange={(e) => setField('buttonText', e.target.value)}
+                  value={settings.button_text}
+                  onChange={(e) => setField('button_text', e.target.value)}
                   placeholder="Send message"
                   className={inputClass}
                   maxLength={30}
                 />
               </Field>
+
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="mt-2 self-start px-5 py-2 rounded-xl text-sm font-medium bg-[#6366F1] text-white hover:bg-[#4F46E5] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
+              >
+                {saving ? 'Saving...' : 'Save changes'}
+              </button>
             </div>
 
             {/* Right — preview */}
             <WidgetPreview
               orgName={organization.name}
-              accentColor={config.accentColor}
-              position={config.position}
-              placeholderText={config.placeholderText}
-              buttonText={config.buttonText}
+              accentColor={settings.accent_color}
+              position={settings.position}
+              placeholderText={settings.placeholder_text}
+              buttonText={settings.button_text}
             />
           </div>
 
@@ -115,14 +118,16 @@ export default function IntegrationsPage() {
           <div className="mt-8 pt-6 border-t border-white/[0.06]">
             <EmbedCodeBlock
               orgId={organization.id}
-              accentColor={config.accentColor}
-              position={config.position}
-              placeholderText={config.placeholderText}
-              buttonText={config.buttonText}
+              accentColor={settings.accent_color}
+              position={settings.position}
+              placeholderText={settings.placeholder_text}
+              buttonText={settings.button_text}
             />
           </div>
         </div>
       )}
+
+      <Toast toasts={toasts} onRemove={removeToast} />
     </div>
   )
 }
