@@ -12,7 +12,7 @@ public class LoginPage
     private By emailField = By.Id("email");
     private By passwordField = By.Id("password");
     private By submitButton = By.CssSelector("button[type='submit']");
-    private By errorMessage = By.CssSelector("div[style*='rgba(239,68,68']");
+    private By errorMessage = By.CssSelector("div[style*='rgba(239']");
     private By pageHeading = By.TagName("h1");
     private By forgotPasswordLink = By.CssSelector("a[href='/auth/forgot-password']");
     private By signUpLink = By.CssSelector("a[href='/auth/register']");
@@ -37,7 +37,7 @@ public class LoginPage
 
     public void EnterPassword(string password)
     {
-        driver.FindElement(passwordField);
+        wait.Until(ExpectedConditions.ElementIsVisible(passwordField));
         driver.FindElement(passwordField).SendKeys(password);
     }
 
@@ -63,7 +63,7 @@ public class LoginPage
     {
         try
         {
-            wait.Until(ExpectedConditions.UrlContains("/dashboard"));
+            wait.Until(ExpectedConditions.UrlContains("/auth/onboarding"));
             return true;
         }
         catch
@@ -84,7 +84,9 @@ public class LoginPage
 
     public void ClickSignUpLink()
     {
-        driver.FindElement(signUpLink).Click();
+        var element = wait.Until(ExpectedConditions.ElementToBeClickable(signUpLink));
+        ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].scrollIntoView(true);", element);
+        element.Click();
     }
 
     public string GetPageHeading()
