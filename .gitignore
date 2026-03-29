@@ -50,3 +50,7 @@ next-env.d.ts
 *.seed
 *.pid.lock
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# .NET build output
+bin/
+obj/
