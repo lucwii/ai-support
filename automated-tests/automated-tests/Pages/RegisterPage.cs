@@ -67,7 +67,7 @@ public class RegisterPage
     {
         try
         {
-            wait.Until(ExpectedConditions.UrlContains("/auth/login"));
+            wait.Until(ExpectedConditions.UrlContains("/auth/onboarding"));
             return true;
         }
         catch
