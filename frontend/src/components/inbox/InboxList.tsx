@@ -5,15 +5,17 @@ import InboxRow from '@/components/inbox/InboxRow'
 
 interface InboxListProps {
   tickets: Ticket[]
+  emptyTitle?: string
+  emptyDescription?: string
 }
 
-export default function InboxList({ tickets }: InboxListProps) {
+export default function InboxList({ tickets, emptyTitle, emptyDescription }: InboxListProps) {
   if (tickets.length === 0) {
     return (
       <EmptyState
         icon={Inbox}
-        title="No tickets here"
-        description="All caught up! New tickets will appear as they come in."
+        title={emptyTitle ?? 'No tickets here'}
+        description={emptyDescription ?? 'All caught up! New tickets will appear as they come in.'}
       />
     )
   }

@@ -7,10 +7,12 @@ import { TicketStatus } from '@/lib/types'
 import PageHeader from '@/components/ui/PageHeader'
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton'
 import InboxFilters, { InboxFilter } from '@/components/inbox/InboxFilters'
+import InboxSearch from '@/components/inbox/InboxSearch'
 import InboxList from '@/components/inbox/InboxList'
 
 export default function InboxPage() {
   const [activeFilter, setActiveFilter] = useState<InboxFilter>('all')
+  const [searchQuery, setSearchQuery] = useState('')
 
   const { organization } = useOrganization()
   const { tickets, loading } = useTickets(organization?.id)
@@ -21,6 +23,16 @@ export default function InboxPage() {
     activeFilter === 'all'
       ? tickets
       : tickets.filter((t) => t.status === (activeFilter as TicketStatus))
+
+  const lowerQuery = searchQuery.trim().toLowerCase()
+  const searched =
+    lowerQuery === ''
+      ? filtered
+      : filtered.filter(
+          (t) =>
+            t.content.toLowerCase().includes(lowerQuery) ||
+            (t.customer_email?.toLowerCase().includes(lowerQuery) ?? false),
+        )
 
   const subtitle =
     pendingCount > 0
@@ -38,12 +50,18 @@ export default function InboxPage() {
           tickets={tickets}
         />
 
+        <InboxSearch value={searchQuery} onChange={setSearchQuery} />
+
         {loading ? (
           <div className="p-2">
             <LoadingSkeleton type="table" rows={8} />
           </div>
         ) : (
-          <InboxList tickets={filtered} />
+          <InboxList
+            tickets={searched}
+            emptyTitle={lowerQuery ? 'No tickets match your search' : undefined}
+            emptyDescription={lowerQuery ? 'Try a different keyword or email address.' : undefined}
+          />
         )}
       </div>
     </div>
