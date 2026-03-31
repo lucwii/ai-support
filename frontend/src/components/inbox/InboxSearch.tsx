@@ -21,6 +21,7 @@ export default function InboxSearch({ value, onChange }: InboxSearchProps) {
         />
         {value && (
           <button
+            data-testid="search-clear"
             onClick={() => onChange('')}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-[#334155] hover:text-[#94A3B8] transition-colors duration-150"
           >

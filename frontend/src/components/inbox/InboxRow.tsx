@@ -24,6 +24,7 @@ export default function InboxRow({ ticket }: InboxRowProps) {
 
   return (
     <div
+      data-testid="inbox-row"
       onClick={() => router.push(`/dashboard/inbox/${ticket.id}`)}
       className={`flex items-center gap-4 px-5 py-4 border-b border-white/[0.04] last:border-0 cursor-pointer transition-colors duration-100 group ${
         isPending ? 'hover:bg-indigo-500/[0.04]' : 'hover:bg-white/[0.02]'

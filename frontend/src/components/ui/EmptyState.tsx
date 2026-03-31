@@ -11,7 +11,7 @@ export default function EmptyState({ icon: Icon, title, description, action }: E
   return (
     <div className="flex flex-col items-center justify-center py-16">
       <Icon className="w-12 h-12 text-[#1E293B]" />
-      <p className="text-sm font-medium text-[#475569] mt-4">{title}</p>
+      <p data-testid="empty-title" className="text-sm font-medium text-[#475569] mt-4">{title}</p>
       {description && <p className="text-xs text-[#334155] mt-1">{description}</p>}
       {action && (
         <button
