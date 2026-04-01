@@ -98,3 +98,13 @@ export interface TicketLog {
   metadata: Record<string, unknown>
   created_at: string
 }
+
+export interface TicketNote {
+  id: string
+  ticket_id: string
+  organization_id: string
+  author_id: string
+  author_name: string
+  content: string
+  created_at: string
+}
