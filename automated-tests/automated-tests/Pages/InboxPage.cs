@@ -25,6 +25,7 @@ public class InboxPage
     {
         driver.Navigate().GoToUrl("http://localhost:3000/dashboard/inbox");
         wait.Until(ExpectedConditions.ElementIsVisible(searchInput));
+        wait.Until(d => d.FindElements(ticketRows).Count > 0);
     }
 
     // Prijavljuje se i tek onda otvara inbox
@@ -43,6 +44,7 @@ public class InboxPage
         var input = wait.Until(ExpectedConditions.ElementIsVisible(searchInput));
         input.Clear();
         input.SendKeys(query);
+        Thread.Sleep(1000); // čekaj debounce da se filter primijeni
     }
 
     public void ClearSearch()
@@ -53,16 +55,7 @@ public class InboxPage
 
     public int GetVisibleTicketCount()
     {
-        try
-        {
-            // Kratko čekanje da se DOM ažurira nakon unosa u search
-            wait.Until(d => d.FindElements(ticketRows).Count >= 0);
-            return driver.FindElements(ticketRows).Count;
-        }
-        catch
-        {
-            return 0;
-        }
+        return driver.FindElements(ticketRows).Count;
     }
 
     public string GetEmptyStateTitle()

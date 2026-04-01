@@ -34,13 +34,15 @@ public class InboxSearchTests : TestBase
     public void Search_ByContentKeyword_ShouldFilterResults()
     {
         int totalBefore = inboxPage.GetVisibleTicketCount();
+        Console.WriteLine($"totalBefore: {totalBefore}");
 
         inboxPage.EnterSearch(KnownContentWord);
 
         int totalAfter = inboxPage.GetVisibleTicketCount();
+        Console.WriteLine($"totalAfter: {totalAfter}");
 
         Assert.That(totalAfter, Is.GreaterThan(0), "Treba biti makar jedan rezultat za poznatu riječ");
-        Assert.That(totalAfter, Is.LessThanOrEqualTo(totalBefore), "Ne smije biti više rezultata nego ukupno");
+        Assert.That(totalAfter, Is.LessThanOrEqualTo(totalBefore), "Ne sme biti više rezultata nego ukupno");
     }
 
     // TC-02: Pretraga po dijelu emaila kupca
