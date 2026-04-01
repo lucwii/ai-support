@@ -11,6 +11,7 @@ import TicketDetailHeader from '@/components/inbox/TicketDetailHeader'
 import ConversationThread from '@/components/inbox/ConversationThread'
 import AgentReplyBox from '@/components/inbox/AgentReplyBox'
 import TicketInfoSidebar from '@/components/inbox/TicketInfoSidebar'
+import NotesCard from '@/components/inbox/NotesCard'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -67,12 +68,14 @@ export default function TicketDetailPage({ params }: PageProps) {
             <ConversationThread ticket={displayTicket} />
           </div>
 
+
           <div className="bg-[#0F172A] border border-white/[0.06] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.4)] p-5">
             <p className="text-[11px] font-semibold uppercase tracking-widest text-[#334155] mb-4">
               Agent Reply
             </p>
             <AgentReplyBox ticket={displayTicket} onUpdated={handleTicketUpdated} />
           </div>
+          <NotesCard ticketId={id} />
         </div>
 
         {/* Right: Info + Activity */}
