@@ -12,9 +12,10 @@ import { AuthModule } from './auth/auth.module';
 import { WidgetModule } from './widget/widget.module';
 import { PaymentsModule } from './payments/payments.module';
 import { ProfileModule } from './profile/profile.module';
+import { NotesModule } from './notes/notes.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), AiModule, SupabaseModule, KnowledgeModule, AiAnswerModule, TicketsModule, AuthModule, OrganizationsModule, WidgetModule, PaymentsModule, ProfileModule],
+  imports: [ConfigModule.forRoot(), AiModule, SupabaseModule, KnowledgeModule, AiAnswerModule, TicketsModule, AuthModule, OrganizationsModule, WidgetModule, PaymentsModule, ProfileModule, NotesModule],
   controllers: [AppController],
   providers: [AppService],
 })
