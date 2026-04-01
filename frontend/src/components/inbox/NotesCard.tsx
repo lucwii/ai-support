@@ -21,7 +21,7 @@ export default function NotesCard({ ticketId }: NotesCardProps) {
 
   return (
     <>
-      <div className="bg-[#0F172A] border border-white/[0.06] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.4)] p-5">
+      <div data-testid="notes-card" className="bg-[#0F172A] border border-white/[0.06] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.4)] p-5">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -31,6 +31,7 @@ export default function NotesCard({ ticketId }: NotesCardProps) {
             </p>
           </div>
           <button
+            data-testid="add-note-button"
             onClick={() => setModalOpen(true)}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500/20 transition-all duration-150"
           >
@@ -46,7 +47,7 @@ export default function NotesCard({ ticketId }: NotesCardProps) {
             <p className="text-xs">Loading notes...</p>
           </div>
         ) : notes.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-6 gap-2">
+          <div data-testid="notes-empty-state" className="flex flex-col items-center justify-center py-6 gap-2">
             <div className="w-9 h-9 rounded-xl bg-amber-500/[0.06] border border-amber-500/[0.12] flex items-center justify-center">
               <StickyNote className="w-4 h-4 text-amber-500/50" />
             </div>
@@ -57,6 +58,7 @@ export default function NotesCard({ ticketId }: NotesCardProps) {
             {notes.map((note) => (
               <div
                 key={note.id}
+                data-testid="note-item"
                 className="bg-amber-500/[0.04] border border-amber-500/[0.10] rounded-xl px-4 py-3"
               >
                 <p className="text-sm text-[#CBD5E1] whitespace-pre-wrap leading-relaxed">

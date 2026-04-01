@@ -46,7 +46,7 @@ export default function AddNoteModal({ open, submitting, error, onClose, onSubmi
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
       {/* Modal */}
-      <div className="relative w-full max-w-lg bg-[#0F172A] border border-white/[0.08] rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.6)] p-6">
+      <div data-testid="add-note-modal" className="relative w-full max-w-lg bg-[#0F172A] border border-white/[0.08] rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.6)] p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2.5">
@@ -69,6 +69,7 @@ export default function AddNoteModal({ open, submitting, error, onClose, onSubmi
         {/* Textarea */}
         <textarea
           ref={textareaRef}
+          data-testid="note-textarea"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Write your internal note here..."
@@ -89,6 +90,7 @@ export default function AddNoteModal({ open, submitting, error, onClose, onSubmi
         {/* Actions */}
         <div className="flex items-center justify-end gap-2.5">
           <button
+            data-testid="note-cancel-button"
             onClick={onClose}
             disabled={submitting}
             className="px-4 py-2 rounded-xl text-sm font-medium bg-white/[0.04] border border-white/[0.08] text-[#94A3B8] hover:bg-white/[0.07] hover:text-[#F1F5F9] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -96,6 +98,7 @@ export default function AddNoteModal({ open, submitting, error, onClose, onSubmi
             Cancel
           </button>
           <button
+            data-testid="note-submit-button"
             onClick={handleSubmit}
             disabled={submitting || !content.trim()}
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-amber-500/10 border border-amber-500/25 text-amber-300 hover:bg-amber-500/20 hover:-translate-y-px transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
