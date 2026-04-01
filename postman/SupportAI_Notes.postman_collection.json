@@ -1,0 +1,304 @@
+{
+  "info": {
+    "name": "SupportAI — Notes",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3001"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "description": "Supabase JWT access_token. Popuni nakon Google login koraka."
+    },
+    {
+      "key": "ticket_id",
+      "value": "",
+      "description": "ID ticketa na kojem testiramo notes."
+    },
+    {
+      "key": "note_id",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Create Note - Success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 201', function () {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('Response has success: true', function () {",
+              "  pm.expect(pm.response.json().success).to.be.true;",
+              "});",
+              "",
+              "pm.test('data has required note fields', function () {",
+              "  const note = pm.response.json().data;",
+              "  pm.expect(note).to.have.property('id');",
+              "  pm.expect(note).to.have.property('ticket_id');",
+              "  pm.expect(note).to.have.property('organization_id');",
+              "  pm.expect(note).to.have.property('author_id');",
+              "  pm.expect(note).to.have.property('author_name');",
+              "  pm.expect(note).to.have.property('content');",
+              "  pm.expect(note).to.have.property('created_at');",
+              "});",
+              "",
+              "pm.test('note.content matches sent content', function () {",
+              "  const note = pm.response.json().data;",
+              "  pm.expect(note.content).to.equal('Kontaktovao sam kupca, ceka na povrat sredstava.');",
+              "});",
+              "",
+              "pm.test('note.ticket_id matches request ticket', function () {",
+              "  const note = pm.response.json().data;",
+              "  pm.expect(note.ticket_id).to.equal(pm.collectionVariables.get('ticket_id'));",
+              "});",
+              "",
+              "pm.test('author_name is a non-empty string', function () {",
+              "  const note = pm.response.json().data;",
+              "  pm.expect(note.author_name).to.be.a('string').and.have.length.above(0);",
+              "});",
+              "",
+              "const noteId = pm.response.json().data.id;",
+              "if (noteId) {",
+              "  pm.collectionVariables.set('note_id', noteId);",
+              "  console.log('Saved note_id:', noteId);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"content\": \"Kontaktovao sam kupca, ceka na povrat sredstava.\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/notes/{{ticket_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["notes", "{{ticket_id}}"]
+        }
+      }
+    },
+    {
+      "name": "Create Note - Unauthorized",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 401', function () {",
+              "  pm.response.to.have.status(401);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"content\": \"Ova nota ne bi trebala biti kreirana.\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/notes/{{ticket_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["notes", "{{ticket_id}}"]
+        }
+      }
+    },
+    {
+      "name": "Create Note - Empty Content",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 400', function () {",
+              "  pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test('Validation error message exists', function () {",
+              "  pm.expect(pm.response.json().message).to.exist;",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"content\": \"\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/notes/{{ticket_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["notes", "{{ticket_id}}"]
+        }
+      }
+    },
+    {
+      "name": "Create Note - Ticket Not Found",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 404', function () {",
+              "  pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test('Error message exists', function () {",
+              "  pm.expect(pm.response.json().message).to.exist;",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"content\": \"Ova nota ne bi trebala biti kreirana.\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/notes/00000000-0000-0000-0000-000000000000",
+          "host": ["{{base_url}}"],
+          "path": ["notes", "00000000-0000-0000-0000-000000000000"]
+        }
+      }
+    },
+    {
+      "name": "Get Notes - Success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response has success: true', function () {",
+              "  pm.expect(pm.response.json().success).to.be.true;",
+              "});",
+              "",
+              "pm.test('data is an array', function () {",
+              "  pm.expect(pm.response.json().data).to.be.an('array');",
+              "});",
+              "",
+              "pm.test('array contains at least one note', function () {",
+              "  pm.expect(pm.response.json().data.length).to.be.above(0);",
+              "});",
+              "",
+              "pm.test('notes are sorted ascending by created_at', function () {",
+              "  const notes = pm.response.json().data;",
+              "  for (let i = 1; i < notes.length; i++) {",
+              "    pm.expect(new Date(notes[i].created_at).getTime()).to.be.at.least(new Date(notes[i - 1].created_at).getTime());",
+              "  }",
+              "});",
+              "",
+              "pm.test('each note has required fields', function () {",
+              "  pm.response.json().data.forEach(function (note) {",
+              "    pm.expect(note).to.have.property('id');",
+              "    pm.expect(note).to.have.property('ticket_id');",
+              "    pm.expect(note).to.have.property('author_name');",
+              "    pm.expect(note).to.have.property('content');",
+              "    pm.expect(note).to.have.property('created_at');",
+              "  });",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/notes/{{ticket_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["notes", "{{ticket_id}}"]
+        }
+      }
+    },
+    {
+      "name": "Get Notes - Unauthorized",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 401', function () {",
+              "  pm.response.to.have.status(401);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/notes/{{ticket_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["notes", "{{ticket_id}}"]
+        }
+      }
+    },
+    {
+      "name": "Get Notes - Ticket Not Found",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 404', function () {",
+              "  pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test('Error message exists', function () {",
+              "  pm.expect(pm.response.json().message).to.exist;",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/notes/00000000-0000-0000-0000-000000000000",
+          "host": ["{{base_url}}"],
+          "path": ["notes", "00000000-0000-0000-0000-000000000000"]
+        }
+      }
+    }
+  ]
+}
