@@ -114,4 +114,18 @@ public class TicketDetailPage
         var button = wait.Until(ExpectedConditions.ElementIsVisible(submitButton));
         button.Click();
     }
+
+    public void EnterNoteText(string text)
+    {
+        wait.Until(ExpectedConditions.ElementIsVisible(textArea));
+        driver.FindElement(textArea).Clear();
+        driver.FindElement(textArea).SendKeys(text);
+    }
+
+    public void CreateNote(string text)
+    {
+        ClickAddNote();
+        EnterContent(text);
+        ClickSubmit();
+    }
 }
