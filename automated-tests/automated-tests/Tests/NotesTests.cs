@@ -62,4 +62,21 @@ public class NotesTests : TestBase
         Assert.That(ticketDetailPage.GetNoteItemsCount(), Is.EqualTo(countBefore + 1), "There should be exactly 1 note after creating one");
         Assert.That(ticketDetailPage.IsModalOpened(), Is.Not.True);
     }
+
+    [Test]
+    public void CreateMultipleNotes_AllShouldBeVisible()
+    {
+        string firstNote = "First test note";
+        string secondNote = "Second test note";
+    
+        int countBefore = ticketDetailPage.GetNoteItemsCount();
+        
+        ticketDetailPage.CreateNote(firstNote);
+        
+        Assert.That(ticketDetailPage.GetNoteItemsCount(), Is.EqualTo(countBefore + 1));
+        
+        ticketDetailPage.CreateNote(secondNote);
+        
+        Assert.That(ticketDetailPage.GetNoteItemsCount(), Is.EqualTo(countBefore + 2));
+    }
 }
