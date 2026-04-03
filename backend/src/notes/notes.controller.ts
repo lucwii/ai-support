@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Body, UseGuards, HttpCode, HttpStatus, NotFoundException } from "@nestjs/common";
+import { Controller, Get, Post, Param, Body, UseGuards, HttpCode, HttpStatus, NotFoundException, Delete } from "@nestjs/common";
 import { NotesService } from "./notes.service";
 import { CreateTicketNoteDto } from "./dto/create-ticket-note.dto";
 import { AuthGuard } from "src/auth/auth.guard";
@@ -47,5 +47,22 @@ export class NotesController {
         const note = await this.notesService.createTicketNote(ticketId, organization.id, user.sub, dto.content);
 
         return { success: true, data: note };
+    }
+
+    @Delete(':ticketId/:noteId')
+    @UseGuards(AuthGuard)
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async deleteTicketNote(
+        @Param('ticketId') ticketId: string,
+        @Param('noteId') noteId: string,
+        @GetUser() user: JwtPayload,
+    ) {
+        const organization = await this.organizationsService.getOrganizationByUserId(user.sub);
+
+        if (!organization) {
+            throw new NotFoundException('Organization not found');
+        }
+
+        await this.notesService.deleteTicketNote(noteId, ticketId, organization.id);
     }
 }
