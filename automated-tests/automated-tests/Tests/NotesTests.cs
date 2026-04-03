@@ -79,4 +79,16 @@ public class NotesTests : TestBase
         
         Assert.That(ticketDetailPage.GetNoteItemsCount(), Is.EqualTo(countBefore + 2));
     }
+
+    [Test]
+    public void DeleteNote_ShouldReduceCount()
+    {
+        ticketDetailPage.CreateNote("Note za brisanje");
+        int countBefore = ticketDetailPage.GetNoteItemsCount();
+        
+        ticketDetailPage.ClickDeleteNote();
+        ticketDetailPage.ClickConfirmDelete();
+        
+        Assert.That(ticketDetailPage.GetNoteItemsCount(), Is.EqualTo(countBefore - 1));
+    }
 }
