@@ -45,5 +45,17 @@ export function useTicketNotes(ticketId: string) {
     }
   }
 
-  return { notes, loading, submitting, error, addNote }
+  const deleteNote = async (noteId: string): Promise<boolean> => {
+    setError(null)
+    try {
+      await apiClient.delete(`/notes/${ticketId}/${noteId}`)
+      setNotes((prev) => prev.filter((n) => n.id !== noteId))
+      return true
+    } catch {
+      setError('Failed to delete note')
+      return false
+    }
+  }
+
+  return { notes, loading, submitting, error, addNote, deleteNote }
 }
