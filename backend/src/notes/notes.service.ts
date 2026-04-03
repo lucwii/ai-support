@@ -1,6 +1,4 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { AiAnswerService } from "src/ai-answer/ai-answer.service";
-import { EmailService } from "src/email/email.service";
 import { SupabaseService } from "src/supabase/supabase.service";
 
 export interface Note {
@@ -85,5 +83,23 @@ export class NotesService {
         }
 
         return newNote as Note;
+    }
+
+    async deleteTicketNote(noteId: string, ticketId: string, organizationId: string) {
+        this.logger.log(`Deleting note ${noteId} for ticket ${ticketId}`);
+
+        const {data: note, error: noteError} = await this.supabaseService.db
+            .from('ticket_notes')
+            .delete()
+            .eq('id', noteId)
+            .eq('ticket_id', ticketId)
+            .eq('organization_id', organizationId)
+            .select('*')
+            .single();
+
+        if(noteError || !note) {
+            this.logger.error(`Error deleting note: ${noteError?.message}`);
+            throw new Error(`Error deleting note: ${noteError?.message}`);
+        }
     }
 }
