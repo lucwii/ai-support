@@ -10,7 +10,7 @@ const testimonials = [
     stars: 5,
   },
   {
-    quote: 'The confidence scoring is a game-changer. We trust the AI responses that come through because we know when it\'s unsure — and it routes them to us automatically.',
+    quote: "The confidence scoring is a game-changer. We trust the AI responses that come through because we know when it's unsure — and it routes them to us automatically.",
     name: 'Marcus T.',
     role: 'CTO',
     company: 'Pipecraft',
@@ -23,6 +23,30 @@ const testimonials = [
     role: 'Operations Lead',
     company: 'Zendara',
     initials: 'PM',
+    stars: 5,
+  },
+  {
+    quote: "I was skeptical about AI handling our niche product questions. But SupportAI answered them better than I expected — it actually cites the exact doc section, which builds customer trust.",
+    name: 'Alex B.',
+    role: 'Founder',
+    company: 'NovaMed',
+    initials: 'AB',
+    stars: 5,
+  },
+  {
+    quote: 'The ROI was immediate. We cancelled two contractor support contracts within the first month because SupportAI handles the volume they were covering.',
+    name: 'Diana L.',
+    role: 'VP of Customer Success',
+    company: 'Stackly',
+    initials: 'DL',
+    stars: 5,
+  },
+  {
+    quote: "What I love most is the agent handoff. When the AI isn't sure, it routes to us with a draft ready — so even our manual replies are 3x faster now.",
+    name: 'Tom R.',
+    role: 'Support Manager',
+    company: 'Lightbase',
+    initials: 'TR',
     stars: 5,
   },
 ]
@@ -45,12 +69,12 @@ export default function Testimonials() {
 
         <div className="grid md:grid-cols-3 gap-5">
           {testimonials.map((t, i) => (
-            <ScrollReveal key={t.name} delay={i * 100}>
+            <ScrollReveal key={t.name} delay={i * 80}>
               <div className="glass-card p-7 h-full flex flex-col">
-                {/* Quote mark */}
+                {/* Decorative quote mark */}
                 <div
                   className="font-sora font-extrabold mb-4 leading-none select-none"
-                  style={{ fontSize: '64px', lineHeight: 0.7, color: 'rgba(99,102,241,0.25)' }}
+                  style={{ fontSize: '56px', lineHeight: 0.7, color: 'rgba(99,102,241,0.2)' }}
                 >
                   &ldquo;
                 </div>
@@ -58,15 +82,15 @@ export default function Testimonials() {
                 {/* Stars */}
                 <div className="flex gap-0.5 mb-4">
                   {Array.from({ length: t.stars }).map((_, j) => (
-                    <svg key={j} width="15" height="15" viewBox="0 0 24 24" fill="#F59E0B" stroke="none">
+                    <svg key={j} width="14" height="14" viewBox="0 0 24 24" fill="#F59E0B" stroke="none">
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                     </svg>
                   ))}
                 </div>
 
-                {/* Quote */}
+                {/* Quote — no wrapping quotes, the decorative one above is enough */}
                 <p className="text-[15px] leading-[1.75] flex-1 mb-6" style={{ color: '#CBD5E1' }}>
-                  &ldquo;{t.quote}&rdquo;
+                  {t.quote}
                 </p>
 
                 {/* Author */}

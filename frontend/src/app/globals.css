@@ -134,6 +134,14 @@ body {
   box-shadow: 0 8px 40px rgba(99, 102, 241, 0.55) !important;
 }
 
+/* ── Marquee ─────────────────────────────── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.animate-marquee { animation: marquee 30s linear infinite; }
+.animate-marquee:hover { animation-play-state: paused; }
+
 /* ── Social icon hover ───────────────────── */
 .social-icon { color: #475569; transition: color 0.15s ease; }
 .social-icon:hover { color: #94A3B8; }

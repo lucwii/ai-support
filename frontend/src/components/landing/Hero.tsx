@@ -74,7 +74,7 @@ function FloatingCards() {
             className="text-[11px] font-semibold uppercase px-2.5 py-0.5 rounded-md"
             style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', color: '#10B981' }}
           >
-            auto_answered
+            ✓ Auto Answered
           </span>
           <span className="text-[11px]" style={{ color: '#64748B' }}>No agent needed</span>
         </div>
@@ -199,9 +199,41 @@ export default function Hero() {
           </p>
         </div>
 
-        {/* Right — floating cards */}
-        <div className="animate-fade-up hidden md:flex justify-center" style={{ animationDelay: '200ms' }}>
-          <FloatingCards />
+        {/* Right — floating cards (desktop) / compact card (mobile) */}
+        <div className="animate-fade-up flex justify-center" style={{ animationDelay: '200ms' }}>
+          {/* Desktop */}
+          <div className="hidden md:block">
+            <FloatingCards />
+          </div>
+
+          {/* Mobile — single compact card */}
+          <div
+            className="md:hidden glass-card p-5 w-full max-w-sm"
+            style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.5), 0 0 32px rgba(99,102,241,0.1)' }}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold"
+                style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', color: '#10B981' }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full animate-pulse-dot" style={{ background: '#10B981', display: 'inline-block' }} />
+                SupportAI resolved this
+              </div>
+              <span className="text-[11px]" style={{ color: '#64748B' }}>&lt; 2 seconds</span>
+            </div>
+            <div className="mb-3">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] font-medium" style={{ color: '#64748B' }}>Confidence</span>
+                <span className="text-[12px] font-bold" style={{ color: '#10B981' }}>96%</span>
+              </div>
+              <div className="h-1.5 rounded-full" style={{ background: '#1E293B' }}>
+                <div className="h-1.5 rounded-full" style={{ width: '96%', background: 'linear-gradient(90deg, #10B981, #06B6D4)' }} />
+              </div>
+            </div>
+            <p className="text-[13px] leading-relaxed" style={{ color: '#94A3B8' }}>
+              Hi! I&apos;m sorry to hear about the delay. Your package is expected to arrive within 2 more business days...
+            </p>
+          </div>
         </div>
       </div>
     </section>
