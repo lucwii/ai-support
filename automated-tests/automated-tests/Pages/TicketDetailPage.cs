@@ -1,4 +1,5 @@
 using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
 
@@ -17,6 +18,10 @@ public class TicketDetailPage
     private By textArea = By.CssSelector("[data-testid='note-textarea']");
     private By submitButton = By.CssSelector("[data-testid='note-submit-button']");
     private By ticketNoteItem = By.CssSelector("[data-testid='note-item']");
+    
+    private By deleteNoteButton = By.CssSelector("[data-testid='delete-note-button']");
+    private By confirmDeleteButton = By.CssSelector("[data-testid='confirm-delete-yes']");
+    private By cancelDeleteButton = By.CssSelector("[data-testid='confirm-delete-no']");
     
 
     public TicketDetailPage(IWebDriver driver)
@@ -127,5 +132,31 @@ public class TicketDetailPage
         ClickAddNote();
         EnterContent(text);
         ClickSubmit();
+    }
+    
+    public void HoverOverNote(int index = 0)
+    {
+        var note = driver.FindElements(ticketNoteItem);
+        var actions = new Actions(driver);
+        actions.MoveToElement(note[index]).Perform();
+    }
+
+    public void ClickDeleteNote(int index = 0)
+    {
+        HoverOverNote(index);
+        var button = wait.Until(ExpectedConditions.ElementIsVisible(deleteNoteButton));
+        button.Click();
+    }
+
+    public void ClickConfirmDelete()
+    {
+        var button = wait.Until(ExpectedConditions.ElementIsVisible(confirmDeleteButton));
+        button.Click();
+    }
+
+    public void CancelButtonClick()
+    {
+        var button = wait.Until(ExpectedConditions.ElementIsVisible(cancelDeleteButton));
+        button.Click();
     }
 }

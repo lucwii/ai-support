@@ -109,6 +109,7 @@ export default function NotesCard({ ticketId }: NotesCardProps) {
                             Delete?
                           </span>
                           <button
+                            data-testid="confirm-delete-yes"
                             onClick={() => handleDelete(note.id)}
                             disabled={deleting === note.id}
                             className="px-2 py-0.5 rounded text-[10px] font-semibold bg-red-500/15 border border-red-500/25 text-red-400 hover:bg-red-500/25 transition-all duration-100 disabled:opacity-50"
@@ -120,6 +121,7 @@ export default function NotesCard({ ticketId }: NotesCardProps) {
                             )}
                           </button>
                           <button
+                            data-testid="confirm-delete-no"
                             onClick={() => setConfirmDeleteId(null)}
                             className="px-2 py-0.5 rounded text-[10px] font-semibold bg-white/[0.05] border border-white/[0.08] text-[#475569] hover:text-[#94A3B8] transition-all duration-100"
                           >
