@@ -53,7 +53,7 @@ const testimonials = [
 
 export default function Testimonials() {
   return (
-    <section id="testimonials" className="py-[120px]" style={{ background: 'var(--bg-navy)' }}>
+    <section id="testimonials" className="py-16 md:py-[120px]" style={{ background: 'var(--bg-navy)' }}>
       <div className="max-w-[1200px] mx-auto px-6">
         <ScrollReveal className="text-center mb-14">
           <p className="text-[12px] font-semibold tracking-[0.1em] uppercase mb-4" style={{ color: '#6366F1' }}>
@@ -67,7 +67,7 @@ export default function Testimonials() {
           </h2>
         </ScrollReveal>
 
-        <div className="grid md:grid-cols-3 gap-5">
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
           {testimonials.map((t, i) => (
             <ScrollReveal key={t.name} delay={i * 80}>
               <div className="glass-card p-7 h-full flex flex-col">

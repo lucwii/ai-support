@@ -119,7 +119,7 @@ export default function Hero() {
         }}
       />
 
-      <div className="relative z-10 max-w-[1200px] mx-auto px-6 py-32 w-full grid md:grid-cols-[55%_45%] gap-12 items-center">
+      <div className="relative z-10 max-w-[1200px] mx-auto px-4 sm:px-6 pt-28 pb-16 md:py-32 w-full grid md:grid-cols-[55%_45%] gap-8 md:gap-12 items-center">
         {/* Left — copy */}
         <div>
           {/* Badge */}

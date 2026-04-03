@@ -35,7 +35,7 @@ const stats = [
 export default function Stats() {
   return (
     <section
-      className="py-[100px] relative overflow-hidden"
+      className="py-16 md:py-[100px] relative overflow-hidden"
       style={{ background: 'linear-gradient(135deg, #1a0533 0%, #0a0f1e 50%, #021630 100%)' }}
     >
       {/* Glow */}

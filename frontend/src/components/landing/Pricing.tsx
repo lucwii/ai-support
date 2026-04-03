@@ -44,17 +44,17 @@ export default function Pricing() {
   const [annual, setAnnual] = useState(false)
 
   return (
-    <section id="pricing" className="py-[120px]" style={{ background: 'var(--bg-base)' }}>
-      <div className="max-w-[1200px] mx-auto px-6">
-        <ScrollReveal className="text-center mb-14">
+    <section id="pricing" className="py-16 md:py-[120px]" style={{ background: 'var(--bg-base)' }}>
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
+        <ScrollReveal className="text-center mb-12 md:mb-14">
           <p className="text-[12px] font-semibold tracking-[0.1em] uppercase mb-4" style={{ color: '#6366F1' }}>Pricing</p>
           <h2
             className="font-sora font-bold mb-4"
-            style={{ fontSize: 'clamp(32px, 4vw, 48px)', letterSpacing: '-0.02em', color: '#FFFFFF' }}
+            style={{ fontSize: 'clamp(28px, 4vw, 48px)', letterSpacing: '-0.02em', color: '#FFFFFF' }}
           >
             Simple pricing. No surprises.
           </h2>
-          <p className="text-[17px] mb-8" style={{ color: '#94A3B8' }}>
+          <p className="text-[16px] sm:text-[17px] mb-8" style={{ color: '#94A3B8' }}>
             Start free, scale as you grow. Cancel anytime.
           </p>
 
@@ -67,9 +67,7 @@ export default function Pricing() {
               style={{
                 width: 48,
                 height: 26,
-                background: annual
-                  ? 'linear-gradient(135deg, #6366F1, #8B5CF6)'
-                  : 'transparent',
+                background: annual ? 'linear-gradient(135deg, #6366F1, #8B5CF6)' : 'transparent',
                 border: annual ? 'none' : '2px solid #334155',
                 boxShadow: annual ? '0 0 12px rgba(99,102,241,0.4)' : 'none',
               }}
@@ -100,11 +98,12 @@ export default function Pricing() {
         </ScrollReveal>
 
         {/* Tiers */}
-        <div className="grid md:grid-cols-3 gap-5 mb-10">
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 mb-10 items-start">
           {tiers.map((tier, i) => (
-            <ScrollReveal key={tier.name} delay={i * 100}>
+            // Featured card lifted only on md+ where 3-col grid makes it visible
+            <ScrollReveal key={tier.name} delay={i * 100} className={tier.featured ? 'md:-translate-y-1.5' : ''}>
               <div
-                className="relative rounded-2xl p-8 h-full flex flex-col transition-all duration-200"
+                className="relative rounded-2xl p-7 sm:p-8 h-full flex flex-col transition-all duration-200"
                 style={{
                   background: tier.featured ? 'rgba(15,23,42,0.9)' : 'rgba(15,23,42,0.5)',
                   border: tier.featured
@@ -113,7 +112,6 @@ export default function Pricing() {
                   boxShadow: tier.featured
                     ? '0 0 40px rgba(99,102,241,0.15), 0 8px 48px rgba(0,0,0,0.4)'
                     : '0 4px 32px rgba(0,0,0,0.3)',
-                  transform: tier.featured ? 'translateY(-6px)' : 'none',
                 }}
               >
                 {/* Top gradient border for featured */}
@@ -190,7 +188,7 @@ export default function Pricing() {
         </div>
 
         {/* Trust badges */}
-        <ScrollReveal className="flex items-center justify-center gap-6 flex-wrap">
+        <ScrollReveal className="flex items-center justify-center gap-4 sm:gap-6 flex-wrap">
           {trustBadges.map((badge) => (
             <div key={badge} className="flex items-center gap-2 text-[13px] font-medium" style={{ color: '#64748B' }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="2">

@@ -3,7 +3,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal'
 
 export default function FinalCTA() {
   return (
-    <section className="py-[140px] relative overflow-hidden" style={{ background: 'var(--bg-base)' }}>
+    <section className="py-16 md:py-[140px] relative overflow-hidden" style={{ background: 'var(--bg-base)' }}>
       {/* Outer radial glow */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -16,7 +16,7 @@ export default function FinalCTA() {
         <ScrollReveal>
           {/* Glowing card */}
           <div
-            className="relative rounded-3xl px-10 py-16 sm:px-16 text-center overflow-hidden"
+            className="relative rounded-3xl px-6 py-12 sm:px-10 sm:py-14 md:px-16 md:py-16 text-center overflow-hidden"
             style={{
               background: 'rgba(10, 15, 30, 0.8)',
               border: '1px solid rgba(99,102,241,0.25)',

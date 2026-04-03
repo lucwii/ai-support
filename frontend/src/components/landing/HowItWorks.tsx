@@ -74,7 +74,7 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-[120px]" style={{ background: 'var(--bg-navy)' }}>
+    <section id="how-it-works" className="py-16 md:py-[120px]" style={{ background: 'var(--bg-navy)' }}>
       <div className="max-w-[1200px] mx-auto px-6">
         {/* Header */}
         <ScrollReveal className="text-center mb-16">

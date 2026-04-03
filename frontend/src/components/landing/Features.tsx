@@ -60,7 +60,7 @@ const features = [
 
 export default function Features() {
   return (
-    <section id="features" className="py-[120px]" style={{ background: 'var(--bg-base)' }}>
+    <section id="features" className="py-16 md:py-[120px]" style={{ background: 'var(--bg-base)' }}>
       <div className="max-w-[1200px] mx-auto px-6">
         {/* Header */}
         <ScrollReveal className="text-center mb-16">
