@@ -102,4 +102,37 @@ export class NotesService {
             throw new Error(`Error deleting note: ${noteError?.message}`);
         }
     }
+
+    async updateTicketNote(noteId: string, ticketId: string, organizationId: string, content: string) {
+        this.logger.log(`Updating note ${noteId} for ticket ${ticketId}`);
+
+        const {data: note, error: noteError} = await this.supabaseService.db
+            .from('ticket_notes')
+            .select('*')
+            .eq('id', noteId)
+            .eq('ticket_id', ticketId)
+            .eq('organization_id', organizationId)
+            .single();
+
+        if(noteError || !note) {
+            this.logger.error(`Error updating note: ${noteError?.message}`);
+            throw new Error(`Error updating note: ${noteError?.message}`);
+        }
+
+        const {data: updatedNote, error: updateError} = await this.supabaseService.db
+            .from('ticket_notes')
+            .update({ content })
+            .eq('id', noteId)
+            .eq('ticket_id', ticketId)
+            .eq('organization_id', organizationId)
+            .select('*')
+            .single();
+
+        if(updateError || !updatedNote) {
+            this.logger.error(`Error updating note: ${updateError?.message}`);
+            throw new Error(`Error updating note: ${updateError?.message}`);
+        }
+
+        return updatedNote as Note;
+    }
 }
