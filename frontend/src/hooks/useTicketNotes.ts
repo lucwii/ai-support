@@ -57,5 +57,20 @@ export function useTicketNotes(ticketId: string) {
     }
   }
 
-  return { notes, loading, submitting, error, addNote, deleteNote }
+  const updateNote = async (noteId: string, content: string): Promise<boolean> => {
+    setError(null)
+    try {
+      const res = await apiClient.patch<{ success: boolean; data: TicketNote }>(
+        `/notes/${ticketId}/${noteId}`,
+        { content },
+      )
+      setNotes((prev) => prev.map((n) => (n.id === noteId ? res.data.data : n)))
+      return true
+    } catch {
+      setError('Failed to update note')
+      return false
+    }
+  }
+
+  return { notes, loading, submitting, error, addNote, deleteNote, updateNote }
 }
