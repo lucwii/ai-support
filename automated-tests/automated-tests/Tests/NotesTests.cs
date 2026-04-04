@@ -91,4 +91,15 @@ public class NotesTests : TestBase
         
         Assert.That(ticketDetailPage.GetNoteItemsCount(), Is.EqualTo(countBefore - 1));
     }
+
+    [Test]
+    public void CancelNote_ShouldNotAddNote()
+    {
+        int countBefore = ticketDetailPage.GetNoteItemsCount();
+        
+        ticketDetailPage.ClickDeleteNote();
+        ticketDetailPage.CancelButtonClick();
+        
+        Assert.That(ticketDetailPage.GetNoteItemsCount(), Is.EqualTo(countBefore));
+    }
 }
