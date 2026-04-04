@@ -23,6 +23,10 @@ public class TicketDetailPage
     private By confirmDeleteButton = By.CssSelector("[data-testid='confirm-delete-yes']");
     private By cancelDeleteButton = By.CssSelector("[data-testid='confirm-delete-no']");
     
+    private By editNoteButton = By.CssSelector("[data-testid='edit-note-button']");
+    private By cancelEditButton = By.CssSelector("[data-testid='cancel-edit-button']");
+    private By saveNoteButton = By.CssSelector("[data-testid='save-note-button']");
+    private By editTextarea = By.CssSelector("[data-testid='edit-note-textarea']");
 
     public TicketDetailPage(IWebDriver driver)
     {
@@ -158,5 +162,37 @@ public class TicketDetailPage
     {
         var button = wait.Until(ExpectedConditions.ElementIsVisible(cancelDeleteButton));
         button.Click();
+    }
+
+    public void ClickEditNote(int index = 0)
+    {
+        HoverOverNote(index);
+        var button = wait.Until(ExpectedConditions.ElementIsVisible(editNoteButton));
+        button.Click();
+    }
+
+    public void ClickConfirmEdit()
+    {
+        var button = wait.Until(ExpectedConditions.ElementIsVisible(saveNoteButton));
+        button.Click();
+    }
+
+    public void ClickCancelEdit()
+    {
+        var button = wait.Until(ExpectedConditions.ElementIsVisible(cancelEditButton));
+        button.Click();
+    }
+
+    public void EnterEditedText(string text)
+    {
+        wait.Until(ExpectedConditions.ElementIsVisible(editTextarea));
+        driver.FindElement(editTextarea).Clear();
+        driver.FindElement(editTextarea).SendKeys(text);
+    }
+
+    public bool NoteContainsText(string text, int index = 0)
+    {
+        var notes = driver.FindElements(ticketNoteItem);
+        return notes[index].Text.Contains(text);
     }
 }

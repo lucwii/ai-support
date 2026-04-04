@@ -102,4 +102,28 @@ public class NotesTests : TestBase
         
         Assert.That(ticketDetailPage.GetNoteItemsCount(), Is.EqualTo(countBefore));
     }
+
+    [Test]
+    public void EditNote_ShouldSave()
+    {
+        string editedText = "Promenjen note";
+        
+        ticketDetailPage.ClickEditNote();
+        ticketDetailPage.EnterEditedText(editedText);
+        ticketDetailPage.ClickConfirmEdit();
+        
+        Assert.That(ticketDetailPage.NoteContainsText(editedText));
+    }
+
+    [Test]
+    public void CancelEdit_ShouldCancel()
+    {
+        string editedText = "Novi note";
+        
+        ticketDetailPage.ClickEditNote();
+        ticketDetailPage.EnterEditedText(editedText);
+        ticketDetailPage.ClickCancelEdit();
+        
+        Assert.That(ticketDetailPage.NoteContainsText(editedText), Is.Not.True);
+    }
 }
