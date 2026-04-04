@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { PenLine, Plus, Loader2, StickyNote, Trash2, AlertTriangle } from 'lucide-react'
+import { PenLine, Plus, Loader2, StickyNote, Trash2, AlertTriangle, Pencil } from 'lucide-react'
 import { format } from 'date-fns'
 import { useTicketNotes } from '@/hooks/useTicketNotes'
 import AddNoteModal from './AddNoteModal'
@@ -11,10 +11,13 @@ interface NotesCardProps {
 }
 
 export default function NotesCard({ ticketId }: NotesCardProps) {
-  const { notes, loading, submitting, error, addNote, deleteNote } = useTicketNotes(ticketId)
+  const { notes, loading, submitting, error, addNote, deleteNote, updateNote } = useTicketNotes(ticketId)
   const [modalOpen, setModalOpen] = useState(false)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editContent, setEditContent] = useState('')
+  const [saving, setSaving] = useState<string | null>(null)
 
   const handleSubmit = async (content: string) => {
     const ok = await addNote(content)
@@ -26,6 +29,25 @@ export default function NotesCard({ ticketId }: NotesCardProps) {
     await deleteNote(noteId)
     setDeleting(null)
     setConfirmDeleteId(null)
+  }
+
+  const openEdit = (noteId: string, currentContent: string) => {
+    setConfirmDeleteId(null)
+    setEditingId(noteId)
+    setEditContent(currentContent)
+  }
+
+  const cancelEdit = () => {
+    setEditingId(null)
+    setEditContent('')
+  }
+
+  const handleUpdate = async (noteId: string) => {
+    if (!editContent.trim() || saving) return
+    setSaving(noteId)
+    const ok = await updateNote(noteId, editContent.trim())
+    setSaving(null)
+    if (ok) cancelEdit()
   }
 
   return (
@@ -83,63 +105,114 @@ export default function NotesCard({ ticketId }: NotesCardProps) {
                   data-testid="note-item"
                   className="group px-5 py-4 hover:bg-amber-500/[0.02] transition-colors duration-100"
                 >
-                  <p className="text-sm text-[#C8D8E8] whitespace-pre-wrap leading-relaxed">
-                    {note.content}
-                  </p>
-                  <div className="flex items-center gap-2 mt-3">
-                    <div className="w-5 h-5 rounded-full bg-amber-500/15 flex items-center justify-center flex-shrink-0">
-                      <span className="text-[9px] font-bold text-amber-400 uppercase">
-                        {note.author_name.charAt(0)}
-                      </span>
-                    </div>
-                    <p className="text-[11px] font-medium text-[#3D5570]">
-                      {note.author_name}
-                    </p>
-                    <span className="text-[#1E3050]">·</span>
-                    <p className="text-[11px] text-[#2D4060]">
-                      {format(new Date(note.created_at), 'MMM d · HH:mm')}
-                    </p>
-
-                    {/* Delete controls — appear on hover */}
-                    <div className="ml-auto flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-                      {confirmDeleteId === note.id ? (
-                        <>
-                          <span className="flex items-center gap-1 text-[10px] text-red-400/80">
-                            <AlertTriangle className="w-3 h-3" />
-                            Delete?
-                          </span>
+                  {editingId === note.id ? (
+                    /* ── Edit mode ── */
+                    <div>
+                      <textarea
+                        data-testid="edit-note-textarea"
+                        value={editContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                        rows={3}
+                        maxLength={5000}
+                        autoFocus
+                        className="w-full bg-white/[0.03] border border-amber-500/30 focus:border-amber-500/50 focus:outline-none focus:ring-1 focus:ring-amber-500/20 rounded-xl px-3 py-2.5 text-sm text-[#C8D8E8] placeholder:text-[#334155] resize-none transition-colors duration-150"
+                      />
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-[10px] text-[#2D4060]">{editContent.length}/5000</span>
+                        <div className="flex items-center gap-2">
                           <button
-                            data-testid="confirm-delete-yes"
-                            onClick={() => handleDelete(note.id)}
-                            disabled={deleting === note.id}
-                            className="px-2 py-0.5 rounded text-[10px] font-semibold bg-red-500/15 border border-red-500/25 text-red-400 hover:bg-red-500/25 transition-all duration-100 disabled:opacity-50"
+                            data-testid="cancel-edit-button"
+                            onClick={cancelEdit}
+                            className="px-3 py-1 rounded-lg text-[11px] font-medium bg-white/[0.04] border border-white/[0.08] text-[#475569] hover:text-[#94A3B8] transition-all duration-100"
                           >
-                            {deleting === note.id ? (
+                            Cancel
+                          </button>
+                          <button
+                            data-testid="save-note-button"
+                            onClick={() => handleUpdate(note.id)}
+                            disabled={saving === note.id || !editContent.trim()}
+                            className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-[11px] font-semibold bg-amber-500/10 border border-amber-500/25 text-amber-300 hover:bg-amber-500/20 transition-all duration-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {saving === note.id ? (
                               <Loader2 className="w-3 h-3 animate-spin" />
-                            ) : (
-                              'Yes'
-                            )}
+                            ) : null}
+                            Save
                           </button>
-                          <button
-                            data-testid="confirm-delete-no"
-                            onClick={() => setConfirmDeleteId(null)}
-                            className="px-2 py-0.5 rounded text-[10px] font-semibold bg-white/[0.05] border border-white/[0.08] text-[#475569] hover:text-[#94A3B8] transition-all duration-100"
-                          >
-                            No
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          data-testid="delete-note-button"
-                          onClick={() => setConfirmDeleteId(note.id)}
-                          className="w-6 h-6 rounded-lg flex items-center justify-center text-[#2D4060] hover:text-red-400 hover:bg-red-500/10 transition-all duration-150"
-                          title="Delete note"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
-                      )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    /* ── View mode ── */
+                    <>
+                      <p className="text-sm text-[#C8D8E8] whitespace-pre-wrap leading-relaxed">
+                        {note.content}
+                      </p>
+                      <div className="flex items-center gap-2 mt-3">
+                        <div className="w-5 h-5 rounded-full bg-amber-500/15 flex items-center justify-center flex-shrink-0">
+                          <span className="text-[9px] font-bold text-amber-400 uppercase">
+                            {note.author_name.charAt(0)}
+                          </span>
+                        </div>
+                        <p className="text-[11px] font-medium text-[#3D5570]">
+                          {note.author_name}
+                        </p>
+                        <span className="text-[#1E3050]">·</span>
+                        <p className="text-[11px] text-[#2D4060]">
+                          {format(new Date(note.created_at), 'MMM d · HH:mm')}
+                        </p>
+
+                        {/* Action buttons — appear on hover */}
+                        <div className="ml-auto flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                          {confirmDeleteId === note.id ? (
+                            <>
+                              <span className="flex items-center gap-1 text-[10px] text-red-400/80">
+                                <AlertTriangle className="w-3 h-3" />
+                                Delete?
+                              </span>
+                              <button
+                                data-testid="confirm-delete-yes"
+                                onClick={() => handleDelete(note.id)}
+                                disabled={deleting === note.id}
+                                className="px-2 py-0.5 rounded text-[10px] font-semibold bg-red-500/15 border border-red-500/25 text-red-400 hover:bg-red-500/25 transition-all duration-100 disabled:opacity-50"
+                              >
+                                {deleting === note.id ? (
+                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                ) : (
+                                  'Yes'
+                                )}
+                              </button>
+                              <button
+                                data-testid="confirm-delete-no"
+                                onClick={() => setConfirmDeleteId(null)}
+                                className="px-2 py-0.5 rounded text-[10px] font-semibold bg-white/[0.05] border border-white/[0.08] text-[#475569] hover:text-[#94A3B8] transition-all duration-100"
+                              >
+                                No
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                data-testid="edit-note-button"
+                                onClick={() => openEdit(note.id, note.content)}
+                                className="w-6 h-6 rounded-lg flex items-center justify-center text-[#2D4060] hover:text-amber-400 hover:bg-amber-500/10 transition-all duration-150"
+                                title="Edit note"
+                              >
+                                <Pencil className="w-3 h-3" />
+                              </button>
+                              <button
+                                data-testid="delete-note-button"
+                                onClick={() => setConfirmDeleteId(note.id)}
+                                className="w-6 h-6 rounded-lg flex items-center justify-center text-[#2D4060] hover:text-red-400 hover:bg-red-500/10 transition-all duration-150"
+                                title="Delete note"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               ))}
             </div>
