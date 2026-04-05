@@ -35,6 +35,32 @@ export async function registerWithEmail(fullName: string, email: string, passwor
   return { user: data.user, error: null }
 }
 
+export async function requestPasswordReset(email: string) {
+  const supabase = createClient()
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/auth/callback?next=/auth/reset-password`,
+  })
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  return { error: null }
+}
+
+export async function updatePassword(newPassword: string) {
+  const supabase = createClient()
+
+  const { error } = await supabase.auth.updateUser({ password: newPassword })
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  return { error: null }
+}
+
 export async function loginWithGoogle() {
   const supabase = createClient()
 
