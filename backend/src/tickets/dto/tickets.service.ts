@@ -102,9 +102,9 @@ export class TicketsService {
       },
     });
 
-    const orgInfo = await this.getOrganizationPrefrences(dto.organization_id);
+    const orgInfo = await this.getOrganizationPreferences(dto.organization_id);
 
-    if (status == 'auto_answered' && dto.customer_email) {
+    if (status === 'auto_answered' && dto.customer_email) {
       await this.emailService.sendTicketResolvedEmail({
         to: dto.customer_email,
         ticketContent: dto.content,
@@ -284,9 +284,9 @@ export class TicketsService {
     }
   }
 
-  private async getOrganizationPrefrences(organizationId: string): Promise<{
+  private async getOrganizationPreferences(organizationId: string): Promise<{
     name: string;
-    ownerEmail: string;
+    ownerEmail: string | null;
     email_on_new_ticket: boolean;
     email_on_low_confidence: boolean;
   } | null> {
