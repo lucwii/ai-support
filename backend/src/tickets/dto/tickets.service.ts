@@ -102,26 +102,42 @@ export class TicketsService {
       },
     });
 
-    // Auto-send email when AI answers with high confidence
-    if (status === 'auto_answered' && dto.customer_email) {
-      const { data: org } = await this.supabaseService.db
-        .from('organizations')
-        .select('name')
-        .eq('id', dto.organization_id)
-        .single();
+    const orgInfo = await this.getOrganizationPrefrences(dto.organization_id);
 
+    if (status == 'auto_answered' && dto.customer_email) {
       await this.emailService.sendTicketResolvedEmail({
         to: dto.customer_email,
         ticketContent: dto.content,
         response: aiResult.answer,
-        organizationName: org?.name ?? 'Support Team',
+        organizationName: orgInfo?.name ?? 'Support Team',
+      });
+    }
+
+    if (orgInfo?.email_on_new_ticket && orgInfo.ownerEmail) {
+      await this.emailService.sendNewTicketNotification({
+        to: orgInfo.ownerEmail,
+        ticketContent: dto.content,
+        ticketId: newTicket.id,
+        organizationName: orgInfo.name,
+      });
+    }
+
+    // Notifikacija owneru — AI nije siguran, treba human review
+    if (status === 'pending_agent' && orgInfo?.email_on_low_confidence && orgInfo.ownerEmail) {
+      await this.emailService.sendLowConfidenceNotification({
+        to: orgInfo.ownerEmail,
+        ticketContent: dto.content,
+        aiResponse: aiResult.answer,
+        confidence: aiResult.confidence,
+        ticketId: newTicket.id,
+        organizationName: orgInfo.name,
       });
     }
 
     return {
       ticket: updatedTicket as Ticket,
       wasAutoAnswered: status === 'auto_answered',
-    };
+    }
   }
 
   async getPublicTicketById(ticketId: string): Promise<Pick<Ticket, 'id' | 'content' | 'status' | 'ai_response' | 'agent_response' | 'created_at'>> {
@@ -265,6 +281,37 @@ export class TicketsService {
 
     if (error) {
       this.logger.error(`Failed to write ticket log: ${error.message}`);
+    }
+  }
+
+  private async getOrganizationPrefrences(organizationId: string): Promise<{
+    name: string;
+    ownerEmail: string;
+    email_on_new_ticket: boolean;
+    email_on_low_confidence: boolean;
+  } | null> {
+    const {data: org} = await this.supabaseService.db
+      .from('organizations')
+      .select('name, email_on_new_ticket, email_on_low_confidence')
+      .eq('id', organizationId)
+      .single();
+    
+    if (!org) {return null;}
+
+    const {data: owner} = await this.supabaseService.db
+      .from('organization_members')
+      .select('email')
+      .eq('organization_id', organizationId)
+      .eq('role', 'owner')
+      .single();
+      
+    if (!owner) {return null;}
+
+    return {
+      name: org.name,
+      ownerEmail: owner.email ?? null,
+      email_on_new_ticket: org.email_on_new_ticket,
+      email_on_low_confidence: org.email_on_low_confidence,
     }
   }
 }
