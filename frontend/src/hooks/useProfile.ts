@@ -12,17 +12,6 @@ export function useProfile() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // Pozivamo nas backend umesto Supabase direktno.
-    //
-    // Pre: supabase.auth.getUser() → vraca samo ono sto je u JWT tokenu
-    //      (id, email, user_metadata) — bez created_at, bez ticket_count
-    //
-    // Sada: apiClient.get('/profile/me') → backend poziva admin.getUserById()
-    //       i dodatno queryuje tickets tabelu, pa vraca enriched objekat
-    //       sa svim poljima koja nam trebaju za novu stranicu.
-    //
-    // apiClient automatski dodaje Authorization header sa Supabase JWT tokenom
-    // (pogledaj src/lib/axios.ts → request interceptor) pa ne moramo nista rucno.
     apiClient.get<{ data: UserProfile }>('/profile/me')
       .then(({ data: res }) => setProfile(res.data))
       .catch(() => setError('Failed to load profile'))

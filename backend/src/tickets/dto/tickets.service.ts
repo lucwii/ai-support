@@ -295,21 +295,37 @@ export class TicketsService {
       .select('name, email_on_new_ticket, email_on_low_confidence')
       .eq('id', organizationId)
       .single();
-    
-    if (!org) {return null;}
+
+    if (!org) {
+      this.logger.warn(`[notifications] org not found for id: ${organizationId}`);
+      return null;
+    }
 
     const {data: owner} = await this.supabaseService.db
       .from('organization_members')
-      .select('email')
+      .select('email, user_id')
       .eq('organization_id', organizationId)
       .eq('role', 'owner')
       .single();
-      
-    if (!owner) {return null;}
+
+    if (!owner) {
+      this.logger.warn(`[notifications] owner member not found for org: ${organizationId}`);
+      return null;
+    }
+
+    let ownerEmail = owner.email ?? null;
+
+    if (!ownerEmail) {
+      const { data: authUser } = await this.supabaseService.db.auth.admin.getUserById(owner.user_id);
+      ownerEmail = authUser?.user?.email ?? null;
+      this.logger.log(`[notifications] email fetched from auth.users: ${ownerEmail}`);
+    }
+
+    this.logger.log(`[notifications] org: ${org.name}, ownerEmail: ${ownerEmail}, new_ticket: ${org.email_on_new_ticket}, low_confidence: ${org.email_on_low_confidence}`);
 
     return {
       name: org.name,
-      ownerEmail: owner.email ?? null,
+      ownerEmail,
       email_on_new_ticket: org.email_on_new_ticket,
       email_on_low_confidence: org.email_on_low_confidence,
     }
