@@ -1,7 +1,11 @@
-import { Mail, Calendar, RefreshCw, Zap, Activity } from 'lucide-react'
+'use client'
+
+import { useState } from 'react'
+import { Mail, Calendar, RefreshCw, Zap, Activity, UserCheck } from 'lucide-react'
 import { format, formatDistanceToNow } from 'date-fns'
 import { Ticket, TicketLog } from '@/lib/types'
 import ConfidenceBar from '@/components/ui/ConfidenceBar'
+import AssigneeDropdown from './AssigneeDropdown'
 
 interface TicketInfoSidebarProps {
   ticket: Ticket
@@ -12,9 +16,12 @@ const ACTION_LABELS: Record<string, { label: string; color: string }> = {
   ai_response_generated: { label: 'AI generated a response', color: 'bg-indigo-500' },
   agent_resolved: { label: 'Agent resolved', color: 'bg-emerald-500' },
   ticket_created: { label: 'Ticket created', color: 'bg-blue-500' },
+  ticket_assigned: { label: 'Ticket assigned', color: 'bg-violet-500' },
 }
 
 export default function TicketInfoSidebar({ ticket, logs }: TicketInfoSidebarProps) {
+  const [assignedTo, setAssignedTo] = useState<string | null>(ticket.assigned_to)
+
   return (
     <div className="flex flex-col gap-4">
       {/* Ticket info card */}
@@ -71,6 +78,23 @@ export default function TicketInfoSidebar({ ticket, logs }: TicketInfoSidebarPro
               <p className="text-sm text-[#7A95B0]">
                 {formatDistanceToNow(new Date(ticket.updated_at), { addSuffix: true })}
               </p>
+            </div>
+          </div>
+
+          {/* Assignee */}
+          <div className="flex items-start gap-3">
+            <div className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center flex-shrink-0 mt-0.5">
+              <UserCheck className="w-3 h-3 text-[#3D5570]" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#2D4060] mb-1.5">
+                Assigned to
+              </p>
+              <AssigneeDropdown
+                ticketId={ticket.id}
+                assignedTo={assignedTo}
+                onAssigned={setAssignedTo}
+              />
             </div>
           </div>
 

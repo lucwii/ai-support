@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { formatDistanceToNow } from 'date-fns'
-import { Mail, User } from 'lucide-react'
+import { Mail, User, UserCheck } from 'lucide-react'
 import { Ticket } from '@/lib/types'
 import StatusBadge from '@/components/ui/StatusBadge'
 
@@ -70,8 +70,17 @@ export default function InboxRow({ ticket }: InboxRowProps) {
         {preview}
       </p>
 
-      {/* Status + time */}
+      {/* Status + assignee + time */}
       <div className="flex items-center gap-3 flex-shrink-0">
+        {ticket.assigned_to && (
+          <div
+            data-testid="assigned-indicator"
+            className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center"
+            title="Assigned"
+          >
+            <UserCheck className="w-3 h-3 text-indigo-400" />
+          </div>
+        )}
         <StatusBadge status={ticket.status} size="sm" />
         <span className="text-xs text-[#334155] w-16 text-right hidden md:block">
           {formatDistanceToNow(new Date(ticket.created_at), { addSuffix: false })}

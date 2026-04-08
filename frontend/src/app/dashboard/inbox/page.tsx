@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useOrganization } from '@/hooks/useOrganization'
 import { useTickets } from '@/hooks/useTickets'
+import { useProfile } from '@/hooks/useProfile'
 import { TicketStatus } from '@/lib/types'
 import PageHeader from '@/components/ui/PageHeader'
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton'
@@ -16,12 +17,15 @@ export default function InboxPage() {
 
   const { organization } = useOrganization()
   const { tickets, loading } = useTickets(organization?.id)
+  const { profile } = useProfile()
 
   const pendingCount = tickets.filter((t) => t.status === 'pending_agent').length
 
   const filtered =
     activeFilter === 'all'
       ? tickets
+      : activeFilter === 'assigned_to_me'
+      ? tickets.filter((t) => t.assigned_to === profile?.id)
       : tickets.filter((t) => t.status === (activeFilter as TicketStatus))
 
   const lowerQuery = searchQuery.trim().toLowerCase()

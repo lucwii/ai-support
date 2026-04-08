@@ -2,7 +2,7 @@
 
 import { Ticket, TicketStatus } from '@/lib/types'
 
-export type InboxFilter = 'all' | TicketStatus
+export type InboxFilter = 'all' | 'assigned_to_me' | TicketStatus
 
 interface Tab {
   key: InboxFilter
@@ -12,6 +12,7 @@ interface Tab {
 
 const TABS: Tab[] = [
   { key: 'all', label: 'All', dotClass: '' },
+  { key: 'assigned_to_me', label: 'Mine', dotClass: 'bg-indigo-400' },
   { key: 'pending_agent', label: 'Pending', dotClass: 'bg-amber-400' },
   { key: 'auto_answered', label: 'Auto-answered', dotClass: 'bg-emerald-400' },
   { key: 'resolved', label: 'Resolved', dotClass: 'bg-slate-500' },
@@ -30,7 +31,8 @@ function countByStatus(tickets: Ticket[], status: TicketStatus): number {
 
 function getCount(tickets: Ticket[], key: InboxFilter): number {
   if (key === 'all') return tickets.length
-  return countByStatus(tickets, key)
+  if (key === 'assigned_to_me') return tickets.filter((t) => t.assigned_to !== null).length
+  return countByStatus(tickets, key as TicketStatus)
 }
 
 export default function InboxFilters({ activeFilter, onChange, tickets }: InboxFiltersProps) {
@@ -43,6 +45,7 @@ export default function InboxFilters({ activeFilter, onChange, tickets }: InboxF
         return (
           <button
             key={tab.key}
+            data-testid={tab.key === 'assigned_to_me' ? 'filter-mine' : undefined}
             onClick={() => onChange(tab.key)}
             className={`relative flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium whitespace-nowrap transition-colors duration-150 rounded-t-lg ${
               isActive
