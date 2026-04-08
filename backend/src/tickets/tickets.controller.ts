@@ -19,6 +19,7 @@ import { AuthGuard } from '../auth/auth.guard';
 import { GetUser } from '../auth/get-user.decorator';
 import type { JwtPayload } from '../auth/types/jwt-payload.types';
 import { OrganizationsService } from '../organizations/organizations.service';
+import { AssignTicketDto } from './dto/assign-ticket.dto';
 
 @Controller('tickets')
 export class TicketsController {
@@ -112,5 +113,30 @@ export class TicketsController {
       success: true,
       data: ticket,
     };
+  }
+
+  @Patch(':id/assign')
+  @UseGuards(AuthGuard)
+  async assignTicket(
+    @Param('id') ticketId: string,
+    @Body() dto: AssignTicketDto,
+    @GetUser() user: JwtPayload,
+  ) {
+    const organization = await this.organizationsService.getOrganizationByUserId(user.sub);
+
+    if(!organization) {
+      throw new NotFoundException('Organization not found');
+    }
+
+    const ticket = await this.ticketsService.assignTicket(
+      ticketId,
+      organization.id,
+      dto.assigned_to || null,
+    )
+
+    return {
+      success: true,
+      data: ticket,
+    }
   }
 }
