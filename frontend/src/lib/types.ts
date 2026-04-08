@@ -18,6 +18,7 @@ export interface Ticket {
   confidence: number | null
   status: TicketStatus
   customer_email: string | null
+  assigned_to: string | null
   created_at: string
   updated_at: string
 }
