@@ -27,6 +27,11 @@ public class TicketDetailPage
     private By cancelEditButton = By.CssSelector("[data-testid='cancel-edit-button']");
     private By saveNoteButton = By.CssSelector("[data-testid='save-note-button']");
     private By editTextarea = By.CssSelector("[data-testid='edit-note-textarea']");
+    
+    private By assigneeDropDown = By.CssSelector("[data-testid='assignee-dropdown']");
+    private By assigneeDisplay = By.CssSelector("[data-testid='assignee-display']");
+    private By assigneeDropDownUnassigned = By.CssSelector("[data-testid='assignee-option-unassigned']");
+    private By assigneeDropDownOption = By.CssSelector("[data-testid='assignee-option']");
 
     public TicketDetailPage(IWebDriver driver)
     {
@@ -194,5 +199,46 @@ public class TicketDetailPage
     {
         var notes = driver.FindElements(ticketNoteItem);
         return notes[index].Text.Contains(text);
+    }
+
+    public bool IsDropDownOpen()
+    {
+        try
+        {
+            return wait.Until(ExpectedConditions.ElementIsVisible(assigneeDisplay)).Displayed;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public void DropDownClick()
+    {
+        var button = wait.Until(ExpectedConditions.ElementToBeClickable(assigneeDropDown));
+        button.Click();
+        System.Threading.Thread.Sleep(300);
+    }
+
+    public void SelectFirstAgent()
+    {
+        var options = wait.Until(d =>
+        {
+            var elements = d.FindElements(assigneeDropDownOption);
+            return elements.Count > 0 ? elements : null;
+        });
+        options![0].Click();
+        System.Threading.Thread.Sleep(500);
+    }
+
+    public void SelectUnassigned()
+    {
+        var button = wait.Until(ExpectedConditions.ElementToBeClickable(assigneeDropDownUnassigned));
+        button.Click();
+    }
+
+    public string GetAssigneeDisplayText()
+    {
+        return wait.Until(ExpectedConditions.ElementIsVisible(assigneeDropDownOption)).Text;
     }
 }
