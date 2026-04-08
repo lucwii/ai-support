@@ -45,6 +45,12 @@ public class TicketDetailPage
         wait.Until(ExpectedConditions.ElementIsVisible(notesCard));
     }
 
+    public void RefreshPage()
+    {
+        driver.Navigate().Refresh();
+        wait.Until(ExpectedConditions.ElementIsVisible(notesCard));
+    }
+
     public void LoginAndNavigate(string email, string password, string ticketId)
     {
         var loginPage = new LoginPage(driver);
@@ -228,17 +234,24 @@ public class TicketDetailPage
             return elements.Count > 0 ? elements : null;
         });
         options![0].Click();
-        System.Threading.Thread.Sleep(500);
+        wait.Until(d => {
+            var el = d.FindElements(assigneeDisplay);
+            return el.Count > 0 && el[0].Text != "Unassigned" && el[0].Text != "" ? el[0] : null;
+        });
     }
 
     public void SelectUnassigned()
     {
         var button = wait.Until(ExpectedConditions.ElementToBeClickable(assigneeDropDownUnassigned));
         button.Click();
+        wait.Until(d => {
+            var el = d.FindElements(assigneeDisplay);
+            return el.Count > 0 && el[0].Text == "Unassigned" ? el[0] : null;
+        });
     }
 
     public string GetAssigneeDisplayText()
     {
-        return wait.Until(ExpectedConditions.ElementIsVisible(assigneeDropDownOption)).Text;
+        return wait.Until(ExpectedConditions.ElementIsVisible(assigneeDisplay)).Text;
     }
 }
