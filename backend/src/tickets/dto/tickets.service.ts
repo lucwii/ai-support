@@ -264,6 +264,50 @@ export class TicketsService {
     return updated as Ticket;
   }
 
+  async assignTicket(
+    ticketId: string,
+    organizationId: string,
+    assignedTo: string | null
+  ): Promise<Ticket> {
+    const {data: existing, error: fetchError} = await this.supabaseService.db
+      .from('tickets')
+      .select('id')
+      .eq('id', ticketId)
+      .eq('organization_id', organizationId)
+      .single();
+
+      if(fetchError || !existing) {
+        throw new NotFoundException(`Ticket ${ticketId} not found`);
+      }
+
+    const {data: updated, error: updatedError} = await this.supabaseService.db
+      .from('tickets')
+      .update({
+        assigned_to: assignedTo,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', ticketId)
+      .eq('organization_id', organizationId)
+      .select('*')
+      .single();
+
+    if(updatedError || !updated) {
+      throw new InternalServerErrorException(`Failed to assign ticket: ${updatedError?.message}`);
+    }
+
+    await this.writeTicketLog({
+      ticketId,
+      organizationId,
+      action: 'ticket_assigned',
+      message: assignedTo ? `Ticket assigned to user ${assignedTo}` : 'Ticket unassigned',
+      metadata: {
+        assigned_to: assignedTo,
+      },
+    })
+
+    return updated as Ticket;
+  }
+
   private async writeTicketLog(params: {
     ticketId: string;
     organizationId: string;
