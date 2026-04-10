@@ -20,6 +20,7 @@ import { GetUser } from '../auth/get-user.decorator';
 import type { JwtPayload } from '../auth/types/jwt-payload.types';
 import { OrganizationsService } from '../organizations/organizations.service';
 import { AssignTicketDto } from './dto/assign-ticket.dto';
+import { SetPriorityDto } from './dto/set-priority.dto';
 
 @Controller('tickets')
 export class TicketsController {
@@ -132,6 +133,31 @@ export class TicketsController {
       ticketId,
       organization.id,
       dto.assigned_to || null,
+    )
+
+    return {
+      success: true,
+      data: ticket,
+    }
+  }
+
+  @Patch(':id/priority')
+  @UseGuards(AuthGuard)
+  async updateTicketPriority(
+    @Param('id') ticketId: string,
+    @Body() dto: SetPriorityDto,
+    @GetUser() user: JwtPayload,
+  ) {
+    const organization = await this.organizationsService.getOrganizationByUserId(user.sub);
+
+    if(!organization) {
+      throw new NotFoundException('Organization not found');
+    }
+
+    const ticket = await this.ticketsService.setPriority(
+      ticketId,
+      organization.id,
+      dto.priority,
     )
 
     return {

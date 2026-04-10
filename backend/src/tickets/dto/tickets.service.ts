@@ -312,7 +312,7 @@ export class TicketsService {
     return updated as Ticket;
   }
 
-  private async setPriority(
+   async setPriority(
     ticketId: string,
     organizationId: string,
     priority: 'low' | 'medium' | 'high' | 'urgent',
