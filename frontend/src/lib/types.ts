@@ -1,5 +1,7 @@
 export type TicketStatus = 'processing' | 'auto_answered' | 'pending_agent' | 'resolved'
 
+export type TicketPriority = 'low' | 'medium' | 'high' | 'urgent'
+
 export interface PublicTicket {
   id: string
   content: string
@@ -19,6 +21,7 @@ export interface Ticket {
   status: TicketStatus
   customer_email: string | null
   assigned_to: string | null
+  priority: TicketPriority
   created_at: string
   updated_at: string
 }
