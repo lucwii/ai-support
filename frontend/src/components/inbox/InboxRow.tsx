@@ -3,7 +3,14 @@
 import { useRouter } from 'next/navigation'
 import { formatDistanceToNow } from 'date-fns'
 import { Mail, User, UserCheck } from 'lucide-react'
-import { Ticket } from '@/lib/types'
+import { Ticket, TicketPriority } from '@/lib/types'
+
+const PRIORITY_BADGE: Record<TicketPriority, { label: string; className: string } | null> = {
+  low:    { label: 'Low',    className: 'bg-slate-500/20 text-slate-400' },
+  medium: null,
+  high:   { label: 'High',   className: 'bg-orange-500/20 text-orange-400' },
+  urgent: { label: 'Urgent', className: 'bg-red-500/20 text-red-400' },
+}
 import StatusBadge from '@/components/ui/StatusBadge'
 
 interface InboxRowProps {
@@ -72,6 +79,14 @@ export default function InboxRow({ ticket }: InboxRowProps) {
 
       {/* Status + assignee + time */}
       <div className="flex items-center gap-3 flex-shrink-0">
+        {ticket.priority && PRIORITY_BADGE[ticket.priority] && (
+          <span
+            data-testid="priority-badge"
+            className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${PRIORITY_BADGE[ticket.priority]!.className}`}
+          >
+            {PRIORITY_BADGE[ticket.priority]!.label}
+          </span>
+        )}
         {ticket.assigned_to && (
           <div
             data-testid="assigned-indicator"
