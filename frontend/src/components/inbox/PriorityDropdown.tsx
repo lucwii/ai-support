@@ -59,7 +59,7 @@ export default function PriorityDropdown({ ticketId, priority, onChanged }: Prio
       </button>
 
       {open && (
-        <div className="absolute z-20 mt-1 w-full bg-[#0A1628] border border-white/[0.08] rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] overflow-hidden">
+        <div className="absolute z-20 bottom-full mb-1 w-full bg-[#0A1628] border border-white/[0.08] rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] overflow-hidden">
           {PRIORITY_OPTIONS.map((option) => (
             <button
               key={option.value}

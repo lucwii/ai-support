@@ -145,7 +145,7 @@ export default function TicketInfoSidebar({ ticket, logs }: TicketInfoSidebarPro
             </p>
           </div>
 
-          <div className="p-5">
+          <div className="p-5 max-h-80 overflow-y-auto">
             <div className="relative">
               {/* Timeline line */}
               <div className="absolute left-[9px] top-2 bottom-2 w-px bg-white/[0.05]" />
