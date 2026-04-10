@@ -26,5 +26,5 @@ export function useAssignTicket() {
         }
     }
 
-    return { assign, loading, error }
+    return { assign, loading, error };
 }
