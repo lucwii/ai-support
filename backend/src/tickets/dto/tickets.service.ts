@@ -312,6 +312,50 @@ export class TicketsService {
     return updated as Ticket;
   }
 
+  private async setPriority(
+    ticketId: string,
+    organizationId: string,
+    priority: 'low' | 'medium' | 'high' | 'urgent',
+  ): Promise<Ticket> {
+    const {data: existing, error: fetchError} = await this.supabaseService.db
+      .from('tickets')
+      .select('id')
+      .eq('id', ticketId)
+      .eq('organization_id', organizationId)
+      .single();
+
+    if(fetchError || !existing) {
+      throw new NotFoundException(`Ticket ${ticketId} not found`);
+    }
+
+    const {data: updated, error: updateError} = await this.supabaseService.db
+      .from('tickets')
+      .update({
+        priority,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', ticketId)
+      .eq('organization_id', organizationId)
+      .select('*')
+      .single();
+
+    if(updateError || !updated) {
+      throw new InternalServerErrorException(`Failed to update ticket priority: ${updateError?.message}`);
+    }
+
+    await this.writeTicketLog({
+      ticketId,
+      organizationId,
+      action: 'priority_updated',
+      message: `Ticket priority set to "${priority}"`,
+      metadata: {
+        priority,
+      },
+    });
+
+    return updated as Ticket;
+  }
+ 
   private async writeTicketLog(params: {
     ticketId: string;
     organizationId: string;
