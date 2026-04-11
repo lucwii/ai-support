@@ -98,14 +98,24 @@ jobs:
         run: npm run build
 
       - name: Debug - nadji .next folder
-        run: find . -name ".next" -type d | head -10
+        run: |
+          echo "=== trenutni folder ==="
+          pwd
+          echo "=== sadrzaj root-a ==="
+          ls -la
+          echo "=== sadrzaj frontend/ ==="
+          ls -la frontend/
+          echo "=== trazim .next ==="
+          find . -name ".next" -type d 2>/dev/null || echo ".next nije nadjen nigdje"
 
       # Sacuvaj .next folder da ga selenium-tests job preuzme
       - name: Upload frontend build
         uses: actions/upload-artifact@v4
         with:
           name: frontend-build
-          path: frontend/.next
+          path: |
+            frontend/.next
+            .next
           retention-days: 1
           if-no-files-found: error
 
