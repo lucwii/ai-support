@@ -97,6 +97,9 @@ jobs:
           NEXT_PUBLIC_API_URL: http://localhost:3001
         run: npm run build
 
+      - name: Debug - nadji .next folder
+        run: find . -name ".next" -type d | head -10
+
       # Sacuvaj .next folder da ga selenium-tests job preuzme
       - name: Upload frontend build
         uses: actions/upload-artifact@v4
