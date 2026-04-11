@@ -104,6 +104,7 @@ jobs:
           name: frontend-build
           path: frontend/.next
           retention-days: 1
+          if-no-files-found: error
 
 # ──────────────────────────────────────────────────────────────────────────────
 # POSAO 3: Selenium E2E testovi
