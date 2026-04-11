@@ -97,27 +97,15 @@ jobs:
           NEXT_PUBLIC_API_URL: http://localhost:3001
         run: npm run build
 
-      - name: Debug - nadji .next folder
-        run: |
-          echo "=== trenutni folder ==="
-          pwd
-          echo "=== sadrzaj root-a ==="
-          ls -la
-          echo "=== sadrzaj frontend/ ==="
-          ls -la frontend/
-          echo "=== trazim .next ==="
-          find . -name ".next" -type d 2>/dev/null || echo ".next nije nadjen nigdje"
-
       # Sacuvaj .next folder da ga selenium-tests job preuzme
       - name: Upload frontend build
         uses: actions/upload-artifact@v4
         with:
           name: frontend-build
-          path: |
-            frontend/.next
-            .next
+          path: frontend/.next
           retention-days: 1
           if-no-files-found: error
+          include-hidden-files: true
 
 # ──────────────────────────────────────────────────────────────────────────────
 # POSAO 3: Selenium E2E testovi
