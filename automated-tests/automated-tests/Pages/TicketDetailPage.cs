@@ -151,19 +151,26 @@ public class TicketDetailPage
     
     public void HoverOverNote(int index = 0)
     {
-        var note = driver.FindElements(ticketNoteItem);
+        var notes = wait.Until(d => {
+            var els = d.FindElements(ticketNoteItem);
+            return els.Count > index ? els : null;
+        });
         var actions = new Actions(driver);
-        actions.MoveToElement(note[index]).Perform();
+        actions.MoveToElement(notes![index]).Perform();
         ((IJavaScriptExecutor)driver).ExecuteScript(
             "arguments[0].dispatchEvent(new MouseEvent('mouseover', {bubbles: true}))",
-            note[index]);
+            notes[index]);
     }
 
     public void ClickDeleteNote(int index = 0)
     {
-        HoverOverNote(index);
-        var button = wait.Until(ExpectedConditions.ElementIsVisible(deleteNoteButton));
-        button.Click();
+        wait.Until(d => {
+            var els = d.FindElements(ticketNoteItem);
+            return els.Count > index ? els : null;
+        });
+        var notes = driver.FindElements(ticketNoteItem);
+        var deleteBtn = notes[index].FindElement(By.CssSelector("[data-testid='delete-note-button']"));
+        ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click()", deleteBtn);
     }
 
     public void ClickConfirmDelete()
@@ -180,9 +187,13 @@ public class TicketDetailPage
 
     public void ClickEditNote(int index = 0)
     {
-        HoverOverNote(index);
-        var button = wait.Until(ExpectedConditions.ElementIsVisible(editNoteButton));
-        button.Click();
+        wait.Until(d => {
+            var els = d.FindElements(ticketNoteItem);
+            return els.Count > index ? els : null;
+        });
+        var notes = driver.FindElements(ticketNoteItem);
+        var editBtn = notes[index].FindElement(By.CssSelector("[data-testid='edit-note-button']"));
+        ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click()", editBtn);
     }
 
     public void ClickConfirmEdit()
@@ -237,6 +248,8 @@ public class TicketDetailPage
             return elements.Count > 0 ? elements : null;
         });
         options![0].Click();
+        // Wait for dropdown to close, then wait for the display to reflect the new assignment
+        wait.Until(d => d.FindElements(assigneeDropDownOption).Count == 0 ? (object)true : null);
         wait.Until(d => {
             var el = d.FindElements(assigneeDisplay);
             return el.Count > 0 && el[0].Text != "Unassigned" && el[0].Text != "" ? el[0] : null;

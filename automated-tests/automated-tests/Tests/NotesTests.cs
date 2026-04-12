@@ -108,8 +108,9 @@ public class NotesTests : TestBase
     [Test]
     public void EditNote_ShouldSave()
     {
+        ticketDetailPage.CreateNote("Note za editovanje");
         string editedText = "Promenjen note";
-        
+
         ticketDetailPage.ClickEditNote();
         ticketDetailPage.EnterEditedText(editedText);
         ticketDetailPage.ClickConfirmEdit();
@@ -120,8 +121,9 @@ public class NotesTests : TestBase
     [Test]
     public void CancelEdit_ShouldCancel()
     {
+        ticketDetailPage.CreateNote("Note za cancel edit");
         string editedText = "Novi note";
-        
+
         ticketDetailPage.ClickEditNote();
         ticketDetailPage.EnterEditedText(editedText);
         ticketDetailPage.ClickCancelEdit();
