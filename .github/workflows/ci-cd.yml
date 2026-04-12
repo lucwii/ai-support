@@ -180,7 +180,7 @@ jobs:
           LEMON_SQUEEZY_VARIANT_STARTER: ${{ secrets.LEMON_SQUEEZY_VARIANT_STARTER }}
           LEMON_SQUEEZY_VARIANT_PRO: ${{ secrets.LEMON_SQUEEZY_VARIANT_PRO }}
           FRONTEND_URL: http://localhost:3000
-        run: npm run start:prod &
+        run: nohup npm run start:prod > /tmp/backend.log 2>&1 &
 
       # ── Pokreni frontend u pozadini ─────────────────────────────────────────
       - name: Pokreni frontend server
@@ -190,15 +190,15 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_API_URL: http://localhost:3001
           PORT: 3000
-        run: npm run start &
+        run: nohup npm run start > /tmp/frontend.log 2>&1 &
 
       # ── Cekaj dok serveri ne budu spremni ───────────────────────────────────
       # wait-on svakih 250ms pinga URL dok ne dobije 200 odgovor (timeout 90s)
       - name: Cekaj backend (port 3001)
-        run: npx wait-on http://localhost:3001 --timeout 90000 --interval 500
+        run: npx wait-on http://localhost:3001 --timeout 90000 --interval 500 || (echo "=== BACKEND LOG ===" && cat /tmp/backend.log && exit 1)
 
       - name: Cekaj frontend (port 3000)
-        run: npx wait-on http://localhost:3000 --timeout 90000 --interval 500
+        run: npx wait-on http://localhost:3000 --timeout 90000 --interval 500 || (echo "=== FRONTEND LOG ===" && cat /tmp/frontend.log && exit 1)
 
       # ── Pokreni Selenium testove ─────────────────────────────────────────────
       - name: Restore NuGet paketi
