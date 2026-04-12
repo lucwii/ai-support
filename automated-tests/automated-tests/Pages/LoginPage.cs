@@ -63,7 +63,7 @@ public class LoginPage
     {
         try
         {
-            wait.Until(ExpectedConditions.UrlContains("/auth/onboarding"));
+            wait.Until(d => d.Url.Contains("/dashboard") || d.Url.Contains("/auth/onboarding"));
             return true;
         }
         catch

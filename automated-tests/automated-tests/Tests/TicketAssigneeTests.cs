@@ -38,13 +38,17 @@ public class TicketAssigneeTests : TestBase
     [Test]
     public void Assignment_PersistsAfterRefresh()
     {
+        // Reset to clean state first
+        ticketDetailPage.DropDownClick();
+        ticketDetailPage.SelectUnassigned();
+
         ticketDetailPage.DropDownClick();
         ticketDetailPage.SelectFirstAgent();
         string nameBefore = ticketDetailPage.GetAssigneeDisplayText();
 
         ticketDetailPage.RefreshPage();
         string nameAfter = ticketDetailPage.GetAssigneeDisplayText();
-        
+
         Assert.That(nameBefore, Is.EqualTo(nameAfter));
     }
 

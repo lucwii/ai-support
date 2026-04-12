@@ -154,6 +154,9 @@ public class TicketDetailPage
         var note = driver.FindElements(ticketNoteItem);
         var actions = new Actions(driver);
         actions.MoveToElement(note[index]).Perform();
+        ((IJavaScriptExecutor)driver).ExecuteScript(
+            "arguments[0].dispatchEvent(new MouseEvent('mouseover', {bubbles: true}))",
+            note[index]);
     }
 
     public void ClickDeleteNote(int index = 0)
