@@ -107,8 +107,16 @@ public class TicketDetailPage
     {
         try
         {
-            wait.Until(d => d.FindElements(ticketNoteItem).Count >= 0);
-            Thread.Sleep(1000);
+            // Poll until count stabilizes (two consecutive reads agree) so we don't
+            // read a stale value while the DOM is still updating after an API call.
+            int prev = -1;
+            for (int i = 0; i < 10; i++)
+            {
+                int curr = driver.FindElements(ticketNoteItem).Count;
+                if (curr == prev) return curr;
+                prev = curr;
+                Thread.Sleep(400);
+            }
             return driver.FindElements(ticketNoteItem).Count;
         }
         catch
@@ -133,6 +141,8 @@ public class TicketDetailPage
     {
         var button = wait.Until(ExpectedConditions.ElementIsVisible(submitButton));
         button.Click();
+        // Wait for the modal to close so callers can immediately read updated note count
+        wait.Until(ExpectedConditions.InvisibilityOfElementLocated(addNoteModal));
     }
 
     public void EnterNoteText(string text)
@@ -175,14 +185,35 @@ public class TicketDetailPage
 
     public void ClickConfirmDelete()
     {
-        var button = wait.Until(ExpectedConditions.ElementIsVisible(confirmDeleteButton));
-        button.Click();
+        // confirm-delete-yes lives inside opacity-0 group-hover container, so
+        // ElementIsVisible returns false even after the element is in the DOM.
+        // Wait for DOM presence only, then click via JS.
+        var button = wait.Until(d => {
+            var els = d.FindElements(confirmDeleteButton);
+            return els.Count > 0 ? els[0] : null;
+        });
+        ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click()", button);
     }
 
     public void CancelButtonClick()
     {
-        var button = wait.Until(ExpectedConditions.ElementIsVisible(cancelDeleteButton));
-        button.Click();
+        // confirm-delete-no lives inside opacity-0 group-hover container, same issue.
+        var button = wait.Until(d => {
+            var els = d.FindElements(cancelDeleteButton);
+            return els.Count > 0 ? els[0] : null;
+        });
+        ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click()", button);
+    }
+
+    public void WaitForAssigneeDisplayToBe(string expected)
+    {
+        // After a page refresh, useMembers() re-fetches asynchronously. While it's
+        // loading, currentMember is null and the display shows "Unassigned" even when
+        // assigned_to is set in the DB. Wait until the display reflects the true value.
+        wait.Until(d => {
+            var el = d.FindElements(assigneeDisplay);
+            return el.Count > 0 && el[0].Text == expected ? el[0] : null;
+        });
     }
 
     public void ClickEditNote(int index = 0)

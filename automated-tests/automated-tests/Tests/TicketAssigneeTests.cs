@@ -47,6 +47,9 @@ public class TicketAssigneeTests : TestBase
         string nameBefore = ticketDetailPage.GetAssigneeDisplayText();
 
         ticketDetailPage.RefreshPage();
+        // useMembers() fetches asynchronously after mount; wait for the display to
+        // reflect the assigned member before reading the final value.
+        ticketDetailPage.WaitForAssigneeDisplayToBe(nameBefore);
         string nameAfter = ticketDetailPage.GetAssigneeDisplayText();
 
         Assert.That(nameBefore, Is.EqualTo(nameAfter));

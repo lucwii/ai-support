@@ -97,8 +97,9 @@ public class NotesTests : TestBase
     [Test]
     public void CancelNote_ShouldNotAddNote()
     {
+        ticketDetailPage.CreateNote("Note za cancel delete");
         int countBefore = ticketDetailPage.GetNoteItemsCount();
-        
+
         ticketDetailPage.ClickDeleteNote();
         ticketDetailPage.CancelButtonClick();
         
