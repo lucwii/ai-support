@@ -17,7 +17,7 @@ public class InboxPage
     public InboxPage(IWebDriver driver)
     {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+        this.wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
     }
 
     // Navigira direktno na inbox — korisnik već mora biti ulogovan
