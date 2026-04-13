@@ -108,6 +108,7 @@ export default function TicketsChart({ tickets }: Props) {
 
   return (
     <div
+      data-testid="tickets-chart"
       className="rounded-2xl p-6"
       style={{
         background: '#0F172A',
@@ -127,6 +128,7 @@ export default function TicketsChart({ tickets }: Props) {
           {PERIODS.map((p) => (
             <button
               key={p.key}
+              data-testid={`chart-period-${p.key}`}
               onClick={() => setPeriod(p.key)}
               className="px-3 py-1 rounded-md text-xs font-medium transition-all duration-150"
               style={

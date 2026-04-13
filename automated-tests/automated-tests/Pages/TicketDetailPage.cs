@@ -105,24 +105,16 @@ public class TicketDetailPage
 
     public int GetNoteItemsCount()
     {
-        try
+        // Wait until useTicketNotes finishes loading: the DOM will show either
+        // note-item elements (notes exist) or notes-empty-state (no notes).
+        // While loading, neither is present, so polling on count alone returns 0 too early.
+        wait.Until(d =>
         {
-            // Poll until count stabilizes (two consecutive reads agree) so we don't
-            // read a stale value while the DOM is still updating after an API call.
-            int prev = -1;
-            for (int i = 0; i < 10; i++)
-            {
-                int curr = driver.FindElements(ticketNoteItem).Count;
-                if (curr == prev) return curr;
-                prev = curr;
-                Thread.Sleep(400);
-            }
-            return driver.FindElements(ticketNoteItem).Count;
-        }
-        catch
-        {
-            return 0;
-        }
+            var items = d.FindElements(ticketNoteItem);
+            var empty = d.FindElements(emptyState);
+            return items.Count > 0 || empty.Count > 0 ? (object)true : null;
+        });
+        return driver.FindElements(ticketNoteItem).Count;
     }
 
     public void ClickCancelButton()

@@ -24,10 +24,11 @@ export default function RecentTicketsTable({
   const recent = tickets.slice(0, 10)
 
   return (
-    <div className="bg-[#0F172A] border border-white/[0.06] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.4)] p-6">
+    <div data-testid="recent-tickets-table" className="bg-[#0F172A] border border-white/[0.06] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.4)] p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-base font-semibold text-[#F1F5F9]">Recent tickets</h2>
         <Link
+          data-testid="view-all-tickets-link"
           href="/dashboard/tickets"
           className="text-sm text-[#818CF8] hover:text-indigo-300 transition-colors duration-150"
         >
@@ -45,7 +46,7 @@ export default function RecentTicketsTable({
         />
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[480px]">
+          <table data-testid="tickets-table" className="w-full min-w-[480px]">
             <thead>
               <tr className="bg-white/[0.02] border-b border-white/[0.06]">
                 <th className="text-[11px] font-semibold uppercase tracking-widest text-[#475569] py-3 px-4 text-left">
@@ -63,6 +64,8 @@ export default function RecentTicketsTable({
               {recent.map((ticket) => (
                 <tr
                   key={ticket.id}
+                  data-testid="ticket-row"
+                  data-ticket-id={ticket.id}
                   onClick={() =>
                     router.push(
                       `/dashboard/tickets/${ticket.id}?organization_id=${organizationId}`,

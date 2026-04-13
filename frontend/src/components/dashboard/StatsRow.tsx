@@ -18,8 +18,9 @@ export default function StatsRow({ stats }: StatsRowProps) {
       : undefined
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div data-testid="stats-row" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <StatCard
+        testId="stat-tickets-today"
         title="Tickets today"
         value={todayTotal}
         icon={MessageSquare}
@@ -28,6 +29,7 @@ export default function StatsRow({ stats }: StatsRowProps) {
         trend={todayTrend}
       />
       <StatCard
+        testId="stat-auto-resolved"
         title="Auto-resolved"
         value={todayAuto}
         subtitle={todayTotal > 0 ? `${todayAutoPct}% of today's tickets` : 'No tickets today'}
@@ -37,6 +39,7 @@ export default function StatsRow({ stats }: StatsRowProps) {
         iconBg="bg-emerald-500/10"
       />
       <StatCard
+        testId="stat-pending-review"
         title="Pending review"
         value={pendingTotal}
         subtitle={pendingTotal > 0 ? 'Needs attention' : 'All clear'}
@@ -47,6 +50,7 @@ export default function StatsRow({ stats }: StatsRowProps) {
         accentTop={pendingTotal > 0}
       />
       <StatCard
+        testId="stat-avg-response"
         title="Avg. AI response"
         value="< 2s"
         subtitle="Real-time"

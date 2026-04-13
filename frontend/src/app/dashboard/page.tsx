@@ -18,7 +18,7 @@ export default function DashboardPage() {
   const dateLabel = format(new Date(), 'EEEE, MMMM d, yyyy')
 
   return (
-    <div>
+    <div data-testid="dashboard-page">
       <PageHeader title="Dashboard" subtitle={dateLabel} />
 
       {/* Stats */}
