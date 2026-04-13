@@ -193,6 +193,9 @@ public class TicketDetailPage
             return els.Count > 0 ? els[0] : null;
         });
         ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click()", button);
+        // Wait for the async delete to complete: handleDelete calls setConfirmDeleteId(null)
+        // after the API returns, which removes confirm-delete-yes from the DOM.
+        wait.Until(d => d.FindElements(confirmDeleteButton).Count == 0 ? (object)true : null);
     }
 
     public void CancelButtonClick()
