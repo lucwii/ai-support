@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from "@nestjs/common";
+import { Injectable, Logger, NotFoundException, BadRequestException, InternalServerErrorException } from "@nestjs/common";
 import { SupabaseService } from "src/supabase/supabase.service";
 
 @Injectable()
@@ -80,7 +80,7 @@ export class ProfileService {
 
         if (uploadError) {
             this.logger.error(`Storage upload failed: ${uploadError.message}`);
-            throw new Error(`Failed to upload avatar: ${uploadError.message}`);
+            throw new InternalServerErrorException(`Storage upload failed: ${uploadError.message}`);
         }
 
         const { data: urlData } = this.supabaseService.db.storage
@@ -96,7 +96,7 @@ export class ProfileService {
 
         if (updateError) {
             this.logger.error(`Failed to update user metadata: ${updateError.message}`);
-            throw new Error(`Failed to save avatar URL: ${updateError.message}`);
+            throw new InternalServerErrorException(`Failed to save avatar URL: ${updateError.message}`);
         }
 
         this.logger.log(`Avatar uploaded for user: ${userId}`);
