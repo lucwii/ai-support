@@ -19,15 +19,15 @@ interface Props {
 }
 
 export default function PersonalInfoSection({ profile, onUpdate }: Props) {
-  const [form, setForm] = useState<FormState>({ full_name: profile.full_name, email: profile.email })
-  const [initial, setInitial] = useState<FormState>({ full_name: profile.full_name, email: profile.email })
+  const [form, setForm] = useState<FormState>({ full_name: profile.full_name ?? '', email: profile.email ?? '' })
+  const [initial, setInitial] = useState<FormState>({ full_name: profile.full_name ?? '', email: profile.email ?? '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [emailConfirmSent, setEmailConfirmSent] = useState(false)
 
   useEffect(() => {
-    const base = { full_name: profile.full_name, email: profile.email }
+    const base = { full_name: profile.full_name ?? '', email: profile.email ?? '' }
     setForm(base)
     setInitial(base)
   }, [profile])
@@ -48,7 +48,7 @@ export default function PersonalInfoSection({ profile, onUpdate }: Props) {
       if (form.email !== initial.email) payload.email = form.email
 
       const updated = await onUpdate(payload)
-      setInitial({ full_name: updated.full_name, email: updated.email })
+      setInitial({ full_name: updated.full_name ?? '', email: updated.email ?? '' })
 
       if (form.email !== initial.email) {
         setEmailConfirmSent(true)
