@@ -13,8 +13,8 @@ public class InboxSearchTests : TestBase
 {
     private InboxPage inboxPage;
 
-    private const string AgentEmail = "test@gmail.com";
-    private const string AgentPassword = "Luka1310";
+    private const string AgentEmail = "agent@supportai.dev";
+    private const string AgentPassword = "TestPassword123!";
 
     // Poznate vrijednosti koje postoje u testnim podacima
     private const string KnownContentWord = "gmail";

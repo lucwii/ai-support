@@ -9,7 +9,7 @@ public class RegisterTests : TestBase
 
     private const string ValidName = "Test User";
     private const string ValidPassword = "Password123";
-    private const string ExistingEmail = "milanoviclukaa23@gmail.com";
+    private const string ExistingEmail = "existing@supportai.dev";
 
     [SetUp]
     public void Setup()
@@ -83,7 +83,7 @@ public class RegisterTests : TestBase
     [Test]
     public void Register_WithInvalicEmail()
     {
-        registerPage.Register(ValidName, "milanoviclukaa23", ValidPassword);
+        registerPage.Register(ValidName, "notanemail", ValidPassword);
         
         Assert.That(registerPage.IsRegisterSuccessful(), Is.Not.True);
     }

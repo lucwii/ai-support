@@ -7,8 +7,8 @@ public class TicketAssigneeTests : TestBase
 {
     private TicketDetailPage ticketDetailPage;
 
-    private const string AgentEmail = "test@gmail.com";
-    private const string AgentPassword = "Luka1310";
+    private const string AgentEmail = "agent@supportai.dev";
+    private const string AgentPassword = "TestPassword123!";
     private const string ticketId = "b48a8608-c4a5-48e6-a660-f0f57566eaf8";
 
     [SetUp]

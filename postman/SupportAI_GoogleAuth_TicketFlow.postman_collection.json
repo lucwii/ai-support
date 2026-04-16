@@ -12,12 +12,12 @@
     },
     {
       "key": "supabase_url",
-      "value": "https://dhhrqhwudwklgrvajmgv.supabase.co",
+      "value": "https://your-project-id.supabase.co",
       "type": "string"
     },
     {
       "key": "supabase_anon_key",
-      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRoaHJxaHd1ZHdrbGdydmFqbWd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1NjI4MjIsImV4cCI6MjA4ODEzODgyMn0.rh7oYIbpTN1aWPDZYWV8pohSFk0owKYe2R96XoTwHfY",
+      "value": "your_supabase_anon_key",
       "type": "string"
     },
     {

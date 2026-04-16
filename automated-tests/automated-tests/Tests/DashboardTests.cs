@@ -7,8 +7,8 @@ public class DashboardTests : TestBase
 {
     private DashboardPage dashboardPage;
     
-    private const string AgentEmail = "test@gmail.com";
-    private const string AgentPassword = "Luka1310";
+    private const string AgentEmail = "agent@supportai.dev";
+    private const string AgentPassword = "TestPassword123!";
 
     [SetUp]
     public void SetUp()

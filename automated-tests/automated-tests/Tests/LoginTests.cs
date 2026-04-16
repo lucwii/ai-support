@@ -20,20 +20,20 @@ public class LoginTests : TestBase
     [Test]
     public void Login_WithValidCredentials()
     {
-        string email = "test@gmail.com";
-        string password = "Luka1310";
-        
+        string email = "agent@supportai.dev";
+        string password = "TestPassword123!";
+
         loginPage.Login(email, password);
-        
+
         Assert.That(loginPage.IsLoginSuccessful());
     }
 
     [Test]
     public void Login_WithWrongPassword()
     {
-        string email = "milanoviclukaa23@gmail.com";
-        string wrongPassword = "Luka1310";
-        
+        string email = "existing@supportai.dev";
+        string wrongPassword = "WrongPassword999!";
+
         loginPage.Login(email, wrongPassword);
 
         string error = loginPage.GetErrorMessage();
@@ -43,9 +43,9 @@ public class LoginTests : TestBase
     [Test]
     public void Login_WithNonExistantEmail()
     {
-        string wrongEmail = "wrongemail@gmail.com";
-        string password = "Luka1310";
-        
+        string wrongEmail = "nonexistent@supportai.dev";
+        string password = "TestPassword123!";
+
         loginPage.Login(wrongEmail, password);
 
         string error = loginPage.GetErrorMessage();
@@ -55,24 +55,24 @@ public class LoginTests : TestBase
     [Test]
     public void Login_WithEmptyPassword()
     {
-        loginPage.Login("milanoviclukaa23@gmail.com", "");
-        
+        loginPage.Login("existing@supportai.dev", "");
+
         Assert.That(loginPage.IsLoginSuccessful(), Is.Not.True);
     }
-    
+
     [Test]
     public void Login_WithEmptyEmail()
     {
-        loginPage.Login("", "Luka1310");
-        
+        loginPage.Login("", "TestPassword123!");
+
         Assert.That(loginPage.IsLoginSuccessful(), Is.Not.True);
     }
 
     [Test]
     public void Login_WithInvalidEmailForm()
     {
-        loginPage.Login("milanoviclukaa23", "Luka1310");
-        
+        loginPage.Login("notanemail", "TestPassword123!");
+
         Assert.That(loginPage.IsLoginSuccessful(), Is.Not.True);
     }
 
