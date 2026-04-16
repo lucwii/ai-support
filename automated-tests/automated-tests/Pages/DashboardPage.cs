@@ -61,44 +61,66 @@ public class DashboardPage
         NavigateTo();
     }
 
-    public bool DashboardPage_IsVisible()
+    private bool IsVisible(By selector)
     {
         try
         {
-            return wait.Until(ExpectedConditions.ElementIsVisible(dashboardPage)).Displayed;
+            return wait.Until(ExpectedConditions.ElementIsVisible(selector)).Displayed;
         }
-        catch (NoSuchElementException)
+        catch (WebDriverTimeoutException)
         {
             return false;
         }
     }
 
-    public bool StatRows_IsVisible()
+    // Dashboard
+    public bool DashboardPage_IsVisible() => IsVisible(dashboardPage);
+    public bool StatRows_IsVisible()      => IsVisible(statsRow);
+
+    // Stat cards
+    public bool TicketsTodayCard_IsVisible()  => IsVisible(ticketsTodayCard);
+    public bool AutoResolvedCard_IsVisible()  => IsVisible(autoResolvedCard);
+    public bool PendingReviewCard_IsVisible() => IsVisible(pendingReviewCard);
+    public bool AvgResponseCard_IsVisible()   => IsVisible(avgResponseCard);
+
+    public string GetAvgResponseValue()
     {
-        try
-        {
-            return wait.Until(ExpectedConditions.ElementIsVisible(statsRow)).Displayed;
-        }
-        catch (NoSuchElementException)
-        {
-            return false;
-        }
+        return wait.Until(ExpectedConditions.ElementIsVisible(avgResponseValue)).Text;
     }
 
-    public bool TicketsTable_IsVisible()
+    // Chart
+    public bool TicketsChart_IsVisible() => IsVisible(ticketsChart);
+
+    public void ClickChartPeriod7d()  => driver.FindElement(chartPeriod7d).Click();
+    public void ClickChartPeriod14d() => driver.FindElement(chartPeriod14d).Click();
+
+    public bool IsChartPeriodActive(string period)
     {
-        try
+        var selector = period switch
         {
-            return wait.Until(ExpectedConditions.ElementIsVisible(ticketsTable)).Displayed;
-        }
-        catch (NoSuchElementException)
-        {
-            return false;
-        }
+            "7d"  => chartPeriod7d,
+            "14d" => chartPeriod14d,
+            "30d" => chartPeriod30d,
+            _     => throw new ArgumentException($"Unknown period: {period}")
+        };
+        var color = driver.FindElement(selector).GetCssValue("color");
+        // Aktivno dugme ima indigo boju: rgb(129, 140, 248)
+        return color == "rgba(129, 140, 248, 1)" || color == "rgb(129, 140, 248)";
     }
+
+    // Recent tickets
+    public bool RecentTicketsTable_IsVisible() => IsVisible(recentTicketsTable);
+    public bool TicketsTable_IsVisible()       => IsVisible(ticketsTable);
+    public bool ViewAllTicketsLink_IsVisible() => IsVisible(viewAllTicketsLink);
 
     public int RecentTickets_Count()
     {
         return driver.FindElements(ticketRows).Count;
+    }
+
+    public void ClickFirstTicketRow()
+    {
+        wait.Until(ExpectedConditions.ElementIsVisible(ticketRows));
+        driver.FindElements(ticketRows).First().Click();
     }
 }
