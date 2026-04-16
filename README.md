@@ -15,105 +15,105 @@
 
 ---
 
-## O projektu
+## About the Project
 
-**SupportAI** je platforma za upravljanje korisnickom podrskom koja kombinuje klasican ticketing sistem sa vestackom inteligencijom. Cilj projekta je da kompanijama omoguci automatizovano odgovaranje na cesta pitanja korisnika, dok agenti podrske mogu da se fokusiraju na slozenije upite.
+**SupportAI** is a customer support management platform that combines a traditional ticketing system with artificial intelligence. The goal of the project is to enable companies to automatically answer frequently asked questions, while support agents can focus on more complex requests.
 
-### Sta aplikacija radi?
+### What does the app do?
 
-- Korisnici mogu da prijave problem ili pitanje putem **formulara za podrsku** (moze biti ugraden na bilo koji sajt)
-- Sistem automatski pokusava da **odgovori na tiket koristeci AI** na osnovu baze znanja koju je tim uneo
-- Agenti dobijaju **inbox** u kome vide sve tikete, mogu ih dodeljivati kolegama i pratiti statusе
-- Tim moze da upravljа **bazom znanja** — unosom clanaka i odgovora koje AI koristi
-- Dostupan je **dashboard** sa statistikama i pregledom aktivnosti
-- Podrska za vise organizacija sa izolovanim podacima po timu
-
----
-
-## Screenshotovi
-
-> Dodaj screenshotove aplikacije ovde
-
-| Landing stranica | Dashboard |
-|:---:|:---:|
-| _screenshot_ | _screenshot_ |
-
-| Inbox | Pregled tiketa |
-|:---:|:---:|
-| _screenshot_ | _screenshot_ |
-
-| Baza znanja | Podesavanja |
-|:---:|:---:|
-| _screenshot_ | _screenshot_ |
+- Users can submit a problem or question via a **support form** (can be embedded on any website)
+- The system automatically attempts to **answer the ticket using AI** based on the knowledge base entered by the team
+- Agents get an **inbox** where they can see all tickets, assign them to colleagues, and track statuses
+- The team can manage the **knowledge base** — adding articles and answers that the AI uses
+- A **dashboard** is available with statistics and activity overview
+- Support for multiple organizations with isolated data per team
 
 ---
 
-## Tehnologije
+## Screenshots
+
+> Add application screenshots here
+
+| Landing Page | Dashboard |
+|:---:|:---:|
+| ![Landing Page](screenshots/landing-page.png) | ![Dashboard](screenshots/dashboard.png) |
+
+| Inbox | Ticket View |
+|:---:|:---:|
+| ![Inbox](screenshots/inbox.png) | ![Ticket View](screenshots/ticket-view.png) |
+
+| Knowledge Base | Settings |
+|:---:|:---:|
+| ![Knowledge Base](screenshots/knowledge-base.png) | ![Settings](screenshots/settings.png) |
+
+---
+
+## Tech Stack
 
 ### Backend
-| Tehnologija | Verzija | Uloga |
+| Technology | Version | Role |
 |---|---|---|
 | NestJS | 11 | REST API framework |
-| TypeScript | 5 | Programski jezik |
-| Supabase | 2 | PostgreSQL baza i autentikacija |
-| OpenAI SDK | 6 | GPT-4o-mini i embeddings |
-| Resend | 6 | Transakcioni email servis |
+| TypeScript | 5 | Programming language |
+| Supabase | 2 | PostgreSQL database and authentication |
+| OpenAI SDK | 6 | GPT-4o-mini and embeddings |
+| Resend | 6 | Transactional email service |
 
 ### Frontend
-| Tehnologija | Verzija | Uloga |
+| Technology | Version | Role |
 |---|---|---|
 | Next.js | 16 | React framework (App Router) |
-| React | 19 | UI biblioteka |
-| Tailwind CSS | 4 | Stilizovanje |
-| shadcn/ui | latest | Komponente bazirane na Radix UI |
-| Recharts | 3 | Grafici i statistike |
-| Motion | 12 | Animacije |
+| React | 19 | UI library |
+| Tailwind CSS | 4 | Styling |
+| shadcn/ui | latest | Components based on Radix UI |
+| Recharts | 3 | Charts and statistics |
+| Motion | 12 | Animations |
 
-### Testiranje
-| Alat | Uloga |
+### Testing
+| Tool | Role |
 |---|---|
-| Selenium + NUnit (C#/.NET 10) | End-to-end UI testovi |
-| Jest | Unit testovi za backend |
-| Postman | API testovi |
+| Selenium + NUnit (C#/.NET 10) | End-to-end UI tests |
+| Jest | Backend unit tests |
+| Postman | API tests |
 
 ---
 
-## Preduslovi
+## Prerequisites
 
-Pre pokretanja projekta, potrebno je imati instalirano:
+Before running the project, make sure you have the following installed:
 
-- [Node.js](https://nodejs.org/) v20 ili noviji
-- [npm](https://www.npmjs.com/) (dolazi uz Node.js)
-- [.NET SDK](https://dotnet.microsoft.com/download) v10 — samo za pokretanje Selenium testova
+- [Node.js](https://nodejs.org/) v20 or higher
+- [npm](https://www.npmjs.com/) (comes with Node.js)
+- [.NET SDK](https://dotnet.microsoft.com/download) v10 — only required for running Selenium tests
 
-Takodje su potrebni sledeci eksterni servisi:
+The following external services are also required:
 
-- **Supabase** nalog i projekat — [supabase.com](https://supabase.com)
-- **OpenAI** API kljuc — [platform.openai.com](https://platform.openai.com)
-- **Resend** API kljuc (za emailove) — [resend.com](https://resend.com)
+- **Supabase** account and project — [supabase.com](https://supabase.com)
+- **OpenAI** API key — [platform.openai.com](https://platform.openai.com)
+- **Resend** API key (for emails) — [resend.com](https://resend.com)
 
 ---
 
-## Instalacija i pokretanje
+## Installation & Setup
 
-### 1. Kloniranje repozitorijuma
+### 1. Clone the repository
 
 ```bash
-git clone https://github.com/<tvoj-username>/ai-support.git
+git clone https://github.com/<your-username>/ai-support.git
 cd ai-support
 ```
 
-### 2. Instalacija root zavisnosti
+### 2. Install root dependencies
 
 ```bash
 npm install
 ```
 
-### 3. Podesavanje environment varijabli
+### 3. Configure environment variables
 
 #### Backend
 
-Napravi fajl `backend/.env` i popuni ga:
+Create the file `backend/.env` and fill it in:
 
 ```env
 PORT=3001
@@ -132,9 +132,9 @@ OPENAI_CHAT_MODEL=gpt-4o-mini
 
 # Email (Resend)
 RESEND_API_KEY=re_...
-FROM_EMAIL=SupportAI <support@tvoj-domen.com>
+FROM_EMAIL=SupportAI <support@your-domain.com>
 
-# Placanja - Lemon Squeezy (opciono)
+# Payments - Lemon Squeezy (optional)
 LEMON_SQUEEZY_API_KEY=
 LEMON_SQUEEZY_STORE_ID=
 LEMON_SQUEEZY_WEBHOOK_SECRET=
@@ -142,7 +142,7 @@ LEMON_SQUEEZY_WEBHOOK_SECRET=
 
 #### Frontend
 
-Napravi fajl `frontend/.env.local` i popuni ga:
+Create the file `frontend/.env.local` and fill it in:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://xxxxxxxxxxxx.supabase.co
@@ -150,29 +150,29 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
-### 4. Instalacija zavisnosti
+### 4. Install dependencies
 
 ```bash
-# Backend zavisnosti
+# Backend dependencies
 cd backend && npm install && cd ..
 
-# Frontend zavisnosti
+# Frontend dependencies
 cd frontend && npm install && cd ..
 ```
 
-### 5. Pokretanje u razvojnom modu
+### 5. Run in development mode
 
-#### Oba servisa istovremeno (preporuceno)
+#### Both services at once (recommended)
 
-Iz root direktorijuma:
+From the root directory:
 
 ```bash
 npm run dev
 ```
 
-Ovo pokrece backend i frontend paralelno pomocu `concurrently`.
+This runs backend and frontend in parallel using `concurrently`.
 
-#### Odvojeno pokretanje
+#### Run separately
 
 ```bash
 # Terminal 1 — backend (port 3001)
@@ -184,13 +184,13 @@ cd frontend
 npm run dev
 ```
 
-Aplikacija je dostupna na:
+The application will be available at:
 - **Frontend**: [http://localhost:3000](http://localhost:3000)
 - **Backend API**: [http://localhost:3001](http://localhost:3001)
 
 ---
 
-## Produkcijsko pokretanje
+## Production
 
 ### Build
 
@@ -202,146 +202,146 @@ cd backend && npm run build
 cd frontend && npm run build
 ```
 
-### Pokretanje
+### Start
 
 ```bash
-# Pokretanje backend-a
+# Start backend
 cd backend && npm run start:prod
 
-# Pokretanje frontend-a
+# Start frontend
 cd frontend && npm start
 ```
 
 ---
 
-## Testiranje
+## Testing
 
-### Unit testovi (Jest — backend)
+### Unit tests (Jest — backend)
 
 ```bash
 cd backend
 
-# Pokreni testove
+# Run tests
 npm run test
 
-# Watch mod
+# Watch mode
 npm run test:watch
 
-# Coverage izvestaj
+# Coverage report
 npm run test:cov
 ```
 
-### End-to-end testovi (Selenium — C#)
+### End-to-end tests (Selenium — C#)
 
-Testovi pokrivaju sledece scenarije:
-- Login i registracija
-- Dashboard pregled
-- Pretraga inbox-a
-- Dodela tiketa agentima
-- Beleske na tiketima
+Tests cover the following scenarios:
+- Login and registration
+- Dashboard overview
+- Inbox search
+- Assigning tickets to agents
+- Ticket notes
 
 ```bash
 cd automated-tests
 dotnet test
 ```
 
-> **Napomena:** Pre pokretanja Selenium testova, aplikacija mora biti pokrenuta lokalno.
+> **Note:** The application must be running locally before executing Selenium tests.
 
-### API testovi (Postman)
+### API tests (Postman)
 
-U `postman/` direktorijumu se nalaze kolekcije za testiranje API endpointa:
+The `postman/` directory contains collections for testing API endpoints:
 
-- `ai-support.postman_collection.json` — Kompletni API testovi
-- `SupportAI_GoogleAuth_TicketFlow.postman_collection.json` — Auth i ticket flow
-- `SupportAI_Notes.postman_collection.json` — Notes endpoint testovi
+- `ai-support.postman_collection.json` — Full API tests
+- `SupportAI_GoogleAuth_TicketFlow.postman_collection.json` — Auth and ticket flow
+- `SupportAI_Notes.postman_collection.json` — Notes endpoint tests
 
-Importuj kolekcije u Postman i podesi `base_url` promenljivu na `http://localhost:3001`.
+Import the collections into Postman and set the `base_url` variable to `http://localhost:3001`.
 
 ---
 
-## Struktura projekta
+## Project Structure
 
 ```
 ai-support/
 ├── backend/                    # NestJS REST API
 │   └── src/
-│       ├── ai/                 # OpenAI integracija
-│       ├── ai-answer/          # Generisanje AI odgovora
-│       ├── auth/               # JWT autentikacija
-│       ├── tickets/            # CRUD operacije nad tiketima
-│       ├── knowledge/          # Upravljanje bazom znanja
-│       ├── organizations/      # Podrska za vise organizacija
-│       ├── notes/              # Beleske na tiketima
-│       ├── profile/            # Korisnicki profili
+│       ├── ai/                 # OpenAI integration
+│       ├── ai-answer/          # AI response generation
+│       ├── auth/               # JWT authentication
+│       ├── tickets/            # Ticket CRUD operations
+│       ├── knowledge/          # Knowledge base management
+│       ├── organizations/      # Multi-organization support
+│       ├── notes/              # Ticket notes
+│       ├── profile/            # User profiles
 │       ├── widget/             # Embeddable widget
-│       ├── email/              # Email notifikacije
-│       └── payments/           # Integracija sa Lemon Squeezy
+│       ├── email/              # Email notifications
+│       └── payments/           # Lemon Squeezy integration
 │
-├── frontend/                   # Next.js aplikacija
+├── frontend/                   # Next.js application
 │   └── src/
-│       ├── app/                # Next.js App Router stranice
-│       │   ├── auth/           # Login, registracija, reset lozinke
-│       │   ├── dashboard/      # Dashboard, inbox, podesavanja
-│       │   ├── submit/         # Javni formular za tiket
-│       │   └── ticket/         # Prikaz pojedinacnog tiketa
-│       ├── components/         # React komponente
+│       ├── app/                # Next.js App Router pages
+│       │   ├── auth/           # Login, register, password reset
+│       │   ├── dashboard/      # Dashboard, inbox, settings
+│       │   ├── submit/         # Public ticket submission form
+│       │   └── ticket/         # Individual ticket view
+│       ├── components/         # React components
 │       ├── hooks/              # Custom React hooks
-│       └── lib/                # API klijenti i helperi
+│       └── lib/                # API clients and helpers
 │
-├── automated-tests/            # C# Selenium testovi
+├── automated-tests/            # C# Selenium tests
 │   └── automated-tests/
-│       ├── Tests/              # Test klase
-│       └── Pages/              # Page Object Model klase
+│       ├── Tests/              # Test classes
+│       └── Pages/              # Page Object Model classes
 │
-├── postman/                    # Postman kolekcije
+├── postman/                    # Postman collections
 ├── .github/workflows/          # GitHub Actions CI/CD pipeline
-└── package.json                # Root monorepo konfiguracija
+└── package.json                # Root monorepo configuration
 ```
 
 ---
 
 ## CI/CD
 
-Projekat koristi **GitHub Actions** za automatizovanu verifikaciju koda.
+The project uses **GitHub Actions** for automated code verification.
 
-Pipeline se aktivira na svaki push i pull request ka `main` grani:
+The pipeline is triggered on every push and pull request to the `main` branch:
 
-1. **Build backend** — Kompajlira NestJS aplikaciju
-2. **Build frontend** — Pravi Next.js produkcijski build
-3. **Selenium testovi** — Pokrece E2E testove u browser okruzenju
+1. **Build backend** — Compiles the NestJS application
+2. **Build frontend** — Creates the Next.js production build
+3. **Selenium tests** — Runs E2E tests in a browser environment
 
 ---
 
-## Dostupni skriptovi
+## Available Scripts
 
 ### Root
 
-| Komanda | Opis |
+| Command | Description |
 |---|---|
-| `npm run dev` | Pokrece backend i frontend istovremeno |
+| `npm run dev` | Runs backend and frontend simultaneously |
 
 ### Backend (`cd backend`)
 
-| Komanda | Opis |
+| Command | Description |
 |---|---|
-| `npm run dev` | Razvojni server sa hot-reload |
-| `npm run build` | Kompajlira TypeScript |
-| `npm run start:prod` | Produkcijsko pokretanje |
-| `npm run test` | Pokrece Jest testove |
-| `npm run test:cov` | Testovi sa coverage izvestajem |
-| `npm run lint` | ESLint provera i auto-fix |
+| `npm run dev` | Development server with hot-reload |
+| `npm run build` | Compiles TypeScript |
+| `npm run start:prod` | Production start |
+| `npm run test` | Run Jest tests |
+| `npm run test:cov` | Tests with coverage report |
+| `npm run lint` | ESLint check and auto-fix |
 
 ### Frontend (`cd frontend`)
 
-| Komanda | Opis |
+| Command | Description |
 |---|---|
-| `npm run dev` | Razvojni server na portu 3000 |
-| `npm run build` | Produkcijski build |
-| `npm start` | Pokrece produkcijski build |
-| `npm run lint` | ESLint provera |
+| `npm run dev` | Development server on port 3000 |
+| `npm run build` | Production build |
+| `npm start` | Run production build |
+| `npm run lint` | ESLint check |
 
 ---
 
-## Licenca
+## License
 
-Ovaj projekat je licenciran pod [MIT licencom](LICENSE).
+This project is licensed under the [MIT License](LICENSE).
