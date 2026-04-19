@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   Inbox,
   BookOpen,
-  Plug2,
   Settings,
   Zap,
   LogOut,
@@ -29,7 +28,7 @@ const navSections = (pendingCount: number) => [
     label: 'TOOLS',
     items: [
       { label: 'Knowledge Base', icon: BookOpen, href: '/dashboard/knowledge' },
-      { label: 'Integrations',   icon: Plug2,    href: '/dashboard/integrations' },
+      // { label: 'Integrations', icon: Plug2, href: '/dashboard/integrations' },
     ],
   },
   {

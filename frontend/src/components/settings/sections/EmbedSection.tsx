@@ -42,7 +42,9 @@ interface Props {
 
 export default function EmbedSection({ organization }: Props) {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
-  const submitUrl = `${baseUrl}/submit/${organization.id}`
+  const submitUrl = organization.slug
+    ? `${baseUrl}/submit/${organization.slug}`
+    : `${baseUrl}/submit/${organization.id}`
 
   return (
     <div className="bg-[#0F172A] border border-white/[0.06] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.4)] p-6">

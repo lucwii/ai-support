@@ -1,6 +1,6 @@
-import { Building2, Users, Bell, Code2, LucideIcon } from 'lucide-react'
+import { Building2, Users, Bell, Code2, Globe, LucideIcon } from 'lucide-react'
 
-export type SettingsSection = 'general' | 'team' | 'notifications' | 'embed'
+export type SettingsSection = 'support' | 'general' | 'team' | 'notifications' | 'embed'
 
 interface Section {
   id: SettingsSection
@@ -10,6 +10,7 @@ interface Section {
 }
 
 const SECTIONS: Section[] = [
+  { id: 'support',       label: 'Support Page',  icon: Globe,     description: 'Your public link' },
   { id: 'general',       label: 'General',       icon: Building2, description: 'Organization profile' },
   { id: 'team',          label: 'Team',           icon: Users,     description: 'Members & invites' },
   { id: 'notifications', label: 'Notifications',  icon: Bell,      description: 'Email preferences' },
