@@ -7,11 +7,12 @@ import GeneralSection from '@/components/settings/sections/GeneralSection'
 import TeamSection from '@/components/settings/sections/TeamSection'
 import NotificationsSection from '@/components/settings/sections/NotificationsSection'
 import EmbedSection from '@/components/settings/sections/EmbedSection'
+import SupportLinkSection from '@/components/settings/sections/SupportLinkSection'
 import { useOrganization } from '@/hooks/useOrganization'
 import type { Organization } from '@/lib/types'
 
 export default function SettingsPage() {
-  const [activeSection, setActiveSection] = useState<SettingsSection>('general')
+  const [activeSection, setActiveSection] = useState<SettingsSection>('support')
   const { organization: initialOrg, loading } = useOrganization()
   const [organization, setOrganization] = useState<Organization | null>(null)
 
@@ -38,6 +39,9 @@ export default function SettingsPage() {
           <SettingsSidebar active={activeSection} onChange={setActiveSection} />
 
           <div className="flex-1 min-w-0">
+            {activeSection === 'support' && (
+              <SupportLinkSection organization={organization} onUpdated={setOrganization} />
+            )}
             {activeSection === 'general' && (
               <GeneralSection organization={organization} onUpdated={setOrganization} />
             )}
