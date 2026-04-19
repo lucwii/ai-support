@@ -26,6 +26,12 @@ import type { JwtPayload } from '../auth/types/jwt-payload.types';
 export class OrganizationsController {
   constructor(private readonly organizationsService: OrganizationsService) {}
 
+  @Get('public/:slug')
+  @Public()
+  async getPublicOrganization(@Param('slug') slug: string) {
+    return this.organizationsService.getPublicOrganizationBySlug(slug);
+  }
+
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createOrganization(

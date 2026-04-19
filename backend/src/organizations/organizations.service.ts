@@ -5,6 +5,7 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
+
 import { SupabaseService } from '../supabase/supabase.service';
 import { EmailService } from '../email/email.service';
 import type { CreateOrganizationDto } from './dto/create-organization.dto';
@@ -21,6 +22,53 @@ export class OrganizationsService {
     private readonly supabaseService: SupabaseService,
     private readonly emailService: EmailService,
   ) {}
+
+  private generateSlug(name: string): string {
+    return name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
+  private async generateUniqueSlug(name: string): Promise<string> {
+    const base = this.generateSlug(name);
+    let slug = base;
+    let counter = 2;
+    while (true) {
+      const { data } = await this.supabaseService.db
+        .from('organizations')
+        .select('id')
+        .eq('slug', slug)
+        .single();
+      if (!data) return slug;
+      slug = `${base}-${counter}`;
+      counter++;
+    }
+  }
+
+  async getPublicOrganizationBySlug(slug: string) {
+    const { data, error } = await this.supabaseService.db
+      .from('organizations')
+      .select('id, name, slug, logo_url, support_page_headline, brand_color')
+      .eq('slug', slug)
+      .single();
+
+    if (error || !data) {
+      throw new NotFoundException('Organization not found');
+    }
+
+    return {
+      id: data.id,
+      name: data.name,
+      slug: data.slug,
+      logo_url: data.logo_url ?? null,
+      support_page_headline: data.support_page_headline ?? 'How can we help you?',
+      brand_color: data.brand_color ?? '#6366F1',
+    };
+  }
 
   /**
    * Kreira organizaciju i automatski dodaje korisnika kao owner-a.

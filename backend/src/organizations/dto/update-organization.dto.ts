@@ -5,6 +5,7 @@ import {
   IsUrl,
   MinLength,
   MaxLength,
+  Matches,
 } from 'class-validator';
 import {
   Industry,
@@ -40,4 +41,19 @@ export class UpdateOrganizationDto {
   @IsUrl()
   @MaxLength(255)
   website?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  support_page_headline?: string;
+
+  @IsOptional()
+  @IsString()
+  @Matches(/^#[0-9A-Fa-f]{6}$/, { message: 'brand_color must be a valid hex color' })
+  brand_color?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(512)
+  logo_url?: string;
 }
