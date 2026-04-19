@@ -93,6 +93,8 @@ export class OrganizationsService {
       throw new ConflictException('User already belongs to an organization');
     }
 
+    const slug = await this.generateUniqueSlug(dto.name);
+
     // Korak 1: Kreiraj organizaciju
     const { data: organization, error: orgError } = await this.supabaseService.db
       .from('organizations')
@@ -104,6 +106,9 @@ export class OrganizationsService {
         monthly_tickets: dto.monthly_tickets ?? null,
         website: dto.website ?? null,
         owner_id: userId,
+        slug,
+        support_page_headline: 'How can we help you?',
+        brand_color: '#6366F1',
       })
       .select()
       .single();
@@ -180,6 +185,12 @@ export class OrganizationsService {
       throw new ForbiddenException('Only owner or admin can update organization');
     }
 
+    // Auto-generate slug for existing orgs that don't have one yet
+    let slugUpdate: { slug?: string } = {};
+    if (!org.slug) {
+      slugUpdate.slug = await this.generateUniqueSlug(org.name);
+    }
+
     const { data, error } = await this.supabaseService.db
       .from('organizations')
       .update({
@@ -189,6 +200,10 @@ export class OrganizationsService {
         ...(dto.team_size !== undefined && { team_size: dto.team_size }),
         ...(dto.monthly_tickets !== undefined && { monthly_tickets: dto.monthly_tickets }),
         ...(dto.website !== undefined && { website: dto.website }),
+        ...(dto.support_page_headline !== undefined && { support_page_headline: dto.support_page_headline }),
+        ...(dto.brand_color !== undefined && { brand_color: dto.brand_color }),
+        ...(dto.logo_url !== undefined && { logo_url: dto.logo_url }),
+        ...slugUpdate,
       })
       .eq('id', org.id)
       .select()
