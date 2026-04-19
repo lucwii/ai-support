@@ -11,6 +11,9 @@ export interface UpdateOrgPayload {
   primary_language?: string
   team_size?: string
   monthly_tickets?: string
+  support_page_headline?: string
+  brand_color?: string
+  logo_url?: string
 }
 
 export function useUpdateOrganization() {

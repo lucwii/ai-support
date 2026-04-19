@@ -41,8 +41,21 @@ export interface Organization {
   widget_position: 'bottom-right' | 'bottom-left'
   widget_placeholder_text: string
   widget_button_text: string
+  slug: string | null
+  logo_url: string | null
+  support_page_headline: string
+  brand_color: string
   role: string
   created_at: string
+}
+
+export interface PublicOrganization {
+  id: string
+  name: string
+  slug: string
+  logo_url: string | null
+  support_page_headline: string
+  brand_color: string
 }
 
 export interface WidgetSettings {
