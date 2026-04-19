@@ -35,7 +35,7 @@ export default function SettingsPage() {
       )}
 
       {!loading && organization && (
-        <div className="flex gap-6 items-start">
+        <div className="flex flex-col lg:flex-row lg:gap-6 lg:items-start">
           <SettingsSidebar active={activeSection} onChange={setActiveSection} />
 
           <div className="flex-1 min-w-0">
