@@ -17,6 +17,7 @@ import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 import { UpdateWidgetSettingsDto } from './dto/update-widget-settings.dto';
 import { InviteMemberDto } from './dto/invite-member.dto';
 import { AuthGuard } from '../auth/auth.guard';
+import { Public } from '../auth/public.decorator';
 import { GetUser } from '../auth/get-user.decorator';
 import type { JwtPayload } from '../auth/types/jwt-payload.types';
 
