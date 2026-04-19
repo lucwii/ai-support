@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SupportAI — Resolve 90% of support tickets automatically",
+  title: "Kleo — Resolve 90% of support tickets automatically",
   description:
-    "SupportAI learns from your documentation and instantly answers customer support tickets using RAG. High-confidence tickets auto-resolve — others go to your agents with the AI response pre-filled.",
+    "Kleo learns from your documentation and instantly answers customer support tickets using RAG. High-confidence tickets auto-resolve — others go to your agents with the AI response pre-filled.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

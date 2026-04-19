@@ -190,7 +190,7 @@ export default function ProductDemo() {
           >
             See exactly how your team
             <br />
-            will use SupportAI
+            will use Kleo
           </h2>
         </ScrollReveal>
 

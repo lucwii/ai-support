@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "SupportAI — Google Auth + Ticket Flow",
+    "name": "Kleo — Google Auth + Ticket Flow",
     "description": "Kompletan flow: Google OAuth autentifikacija → organizacija → kreiranje i pregled tiketa.\n\n⚠️  NAPOMENA o Google OAuth:\nGoogle login koristi browser OAuth flow (redirect + consent screen) i ne može se u potpunosti automatizovati kroz Postman API pozive. Korak 1.1 objašnjava kako da dobiješ token iz browsera i nastaviš testiranje u Postmanu.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },

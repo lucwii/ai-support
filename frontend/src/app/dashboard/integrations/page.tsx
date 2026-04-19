@@ -27,7 +27,7 @@ export default function IntegrationsPage() {
     <div>
       <PageHeader
         title="Integrations"
-        subtitle="Embed SupportAI on your website with a customizable chat widget"
+        subtitle="Embed Kleo on your website with a customizable chat widget"
       />
 
       {loading && (

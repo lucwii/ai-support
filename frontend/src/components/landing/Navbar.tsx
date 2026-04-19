@@ -57,7 +57,7 @@ export default function Navbar() {
                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
               </svg>
             </motion.div>
-            <span className="font-semibold text-[15px] text-white tracking-tight">SupportAI</span>
+            <span className="font-semibold text-[15px] text-white tracking-tight">Kleo</span>
           </Link>
 
           {/* Desktop nav */}

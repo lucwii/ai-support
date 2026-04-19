@@ -44,7 +44,7 @@ export default function Footer() {
                   <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                 </svg>
               </div>
-              <span className="font-sora font-semibold text-[17px] text-white">SupportAI</span>
+              <span className="font-sora font-semibold text-[17px] text-white">Kleo</span>
             </Link>
             <p className="text-[14px] leading-relaxed max-w-[240px] mb-6" style={{ color: '#64748B' }}>
               AI-powered customer support that resolves tickets automatically using your knowledge base.
@@ -114,7 +114,7 @@ export default function Footer() {
           className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[13px]"
           style={{ borderTop: '1px solid rgba(255,255,255,0.05)', color: '#475569' }}
         >
-          <p>&copy; {new Date().getFullYear()} SupportAI. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Kleo. All rights reserved.</p>
           <p>Built with ❤️ for support teams</p>
         </div>
       </div>

@@ -98,7 +98,7 @@ export default function Sidebar() {
         >
           <Zap className="w-3.5 h-3.5 text-white" />
         </motion.div>
-        <span className="text-base font-bold text-[#F1F5F9] font-sora">SupportAI</span>
+        <span className="text-base font-bold text-[#F1F5F9] font-sora">Kleo</span>
       </motion.div>
 
       {/* Nav */}

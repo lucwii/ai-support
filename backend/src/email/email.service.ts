@@ -12,7 +12,7 @@ export class EmailService {
     const apiKey = this.configService.get<string>('RESEND_API_KEY') ?? '';
     this.resend = new Resend(apiKey);
     this.fromEmail =
-      this.configService.get<string>('FROM_EMAIL') ?? 'SupportAI <onboarding@resend.dev>';
+      this.configService.get<string>('FROM_EMAIL') ?? 'Kleo <onboarding@resend.dev>';
   }
 
   async sendTicketResolvedEmail(params: {
@@ -46,7 +46,7 @@ export class EmailService {
             </div>
 
             <p style="font-size: 13px; color: #94a3b8; margin-top: 32px;">
-              Powered by SupportAI
+              Powered by Kleo
             </p>
           </div>
         `,
@@ -89,7 +89,7 @@ export class EmailService {
           </p>
 
           <p style="font-size: 13px; color: #94a3b8; margin-top: 32px;">
-            Powered by SupportAI
+            Powered by Kleo
           </p>
         </div>
       `,
@@ -141,7 +141,7 @@ export class EmailService {
           </p>
 
           <p style="font-size: 13px; color: #94a3b8; margin-top: 32px;">
-            Powered by SupportAI
+            Powered by Kleo
           </p>
         </div>
       `,

@@ -1,8 +1,8 @@
 import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm'
 
 export const metadata = {
-  title: 'Reset Password — SupportAI',
-  description: 'Reset your SupportAI account password.',
+  title: 'Reset Password — Kleo',
+  description: 'Reset your Kleo account password.',
 }
 
 export default function ForgotPasswordPage() {

@@ -38,7 +38,7 @@ export default function Solution() {
             Automate routine tickets with AI
           </h2>
           <p className="text-[17px] leading-relaxed mb-8" style={{ color: '#94A3B8' }}>
-            SupportAI uses your company&apos;s own knowledge base to generate accurate response suggestions — keeping your team in control while cutting response times dramatically.
+            Kleo uses your company&apos;s own knowledge base to generate accurate response suggestions — keeping your team in control while cutting response times dramatically.
           </p>
           <ul className="flex flex-col gap-4">
             {benefits.map((b) => (

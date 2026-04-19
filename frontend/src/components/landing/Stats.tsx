@@ -25,7 +25,7 @@ const stats = [
   },
   {
     target: '200', suffix: '+', prefix: '',
-    label: 'businesses powered by SupportAI',
+    label: 'businesses powered by Kleo',
     color: '#F59E0B',
     glow: 'rgba(245,158,11,0.15)',
     border: 'rgba(245,158,11,0.2)',

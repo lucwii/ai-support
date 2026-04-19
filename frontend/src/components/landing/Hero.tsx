@@ -26,7 +26,7 @@ function FloatingCards() {
         </p>
         {/* Typing indicator */}
         <div className="flex items-center gap-1.5">
-          <span className="text-[11px]" style={{ color: '#64748B' }}>SupportAI is responding</span>
+          <span className="text-[11px]" style={{ color: '#64748B' }}>Kleo is responding</span>
           <span className="w-1.5 h-1.5 rounded-full animate-typing" style={{ background: '#6366F1', display: 'inline-block' }} />
           <span className="w-1.5 h-1.5 rounded-full animate-typing-2" style={{ background: '#6366F1', display: 'inline-block' }} />
           <span className="w-1.5 h-1.5 rounded-full animate-typing-3" style={{ background: '#6366F1', display: 'inline-block' }} />
@@ -45,7 +45,7 @@ function FloatingCards() {
             style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', color: '#10B981' }}
           >
             <span className="w-1.5 h-1.5 rounded-full animate-pulse-dot" style={{ background: '#10B981', display: 'inline-block' }} />
-            SupportAI resolved this
+            Kleo resolved this
           </div>
           <span className="text-[11px]" style={{ color: '#64748B' }}>&lt; 2 seconds</span>
         </div>
@@ -156,7 +156,7 @@ export default function Hero() {
             className="animate-fade-up text-[18px] leading-[1.75] mb-9 max-w-[480px]"
             style={{ color: '#CBD5E1', animationDelay: '160ms' }}
           >
-            SupportAI learns from your documentation and answers customer questions instantly —
+            Kleo learns from your documentation and answers customer questions instantly —
             with confidence scores your team can trust.
           </p>
 
@@ -217,7 +217,7 @@ export default function Hero() {
                 style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', color: '#10B981' }}
               >
                 <span className="w-1.5 h-1.5 rounded-full animate-pulse-dot" style={{ background: '#10B981', display: 'inline-block' }} />
-                SupportAI resolved this
+                Kleo resolved this
               </div>
               <span className="text-[11px]" style={{ color: '#64748B' }}>&lt; 2 seconds</span>
             </div>

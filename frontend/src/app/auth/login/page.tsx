@@ -1,8 +1,8 @@
 import LoginForm from '@/components/auth/LoginForm'
 
 export const metadata = {
-  title: 'Sign In — SupportAI',
-  description: 'Sign in to your SupportAI workspace.',
+  title: 'Sign In — Kleo',
+  description: 'Sign in to your Kleo workspace.',
 }
 
 export default function LoginPage() {

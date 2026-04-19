@@ -26,7 +26,7 @@ const testimonials = [
     stars: 5,
   },
   {
-    quote: "I was skeptical about AI handling our niche product questions. But SupportAI answered them better than I expected — it actually cites the exact doc section, which builds customer trust.",
+    quote: "I was skeptical about AI handling our niche product questions. But Kleo answered them better than I expected — it actually cites the exact doc section, which builds customer trust.",
     name: 'Alex B.',
     role: 'Founder',
     company: 'NovaMed',
@@ -34,7 +34,7 @@ const testimonials = [
     stars: 5,
   },
   {
-    quote: 'The ROI was immediate. We cancelled two contractor support contracts within the first month because SupportAI handles the volume they were covering.',
+    quote: 'The ROI was immediate. We cancelled two contractor support contracts within the first month because Kleo handles the volume they were covering.',
     name: 'Diana L.',
     role: 'VP of Customer Success',
     company: 'Stackly',
@@ -63,7 +63,7 @@ export default function Testimonials() {
             className="font-sora font-bold"
             style={{ fontSize: 'clamp(32px, 4vw, 48px)', letterSpacing: '-0.02em', color: '#FFFFFF' }}
           >
-            Support teams love SupportAI
+            Support teams love Kleo
           </h2>
         </ScrollReveal>
 

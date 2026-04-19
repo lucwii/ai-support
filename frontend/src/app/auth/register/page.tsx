@@ -1,8 +1,8 @@
 import RegisterForm from '@/components/auth/RegisterForm'
 
 export const metadata = {
-  title: 'Get Started — SupportAI',
-  description: 'Create your SupportAI account and start resolving tickets automatically.',
+  title: 'Get Started — Kleo',
+  description: 'Create your Kleo account and start resolving tickets automatically.',
 }
 
 export default function RegisterPage() {

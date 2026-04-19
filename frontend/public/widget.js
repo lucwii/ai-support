@@ -71,7 +71,7 @@
   }
 
   function footer() {
-    return '<div class="sai-footer">Powered by <a href="#" target="_blank">SupportAI</a></div>';
+    return '<div class="sai-footer">Powered by <a href="#" target="_blank">Kleo</a></div>';
   }
 
   function checkIcon() {

@@ -40,7 +40,7 @@ export default function ForgotPasswordForm() {
               <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
             </svg>
           </div>
-          <span className="font-sora font-semibold text-[18px] text-white">SupportAI</span>
+          <span className="font-sora font-semibold text-[18px] text-white">Kleo</span>
         </Link>
         <h1 className="font-sora font-bold text-[26px] mb-2" style={{ color: '#FFFFFF', letterSpacing: '-0.02em' }}>
           Reset your password

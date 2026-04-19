@@ -1,6 +1,6 @@
 <div align="center">
 
-# SupportAI
+# Kleo
 
 **AI-powered customer support ticketing system**
 
@@ -17,7 +17,7 @@
 
 ## About the Project
 
-**SupportAI** is a customer support management platform that combines a traditional ticketing system with artificial intelligence. The goal of the project is to enable companies to automatically answer frequently asked questions, while support agents can focus on more complex requests.
+**Kleo** is a customer support management platform that combines a traditional ticketing system with artificial intelligence. The goal of the project is to enable companies to automatically answer frequently asked questions, while support agents can focus on more complex requests.
 
 ### What does the app do?
 
@@ -132,7 +132,7 @@ OPENAI_CHAT_MODEL=gpt-4o-mini
 
 # Email (Resend)
 RESEND_API_KEY=re_...
-FROM_EMAIL=SupportAI <support@your-domain.com>
+FROM_EMAIL=Kleo <support@your-domain.com>
 
 # Payments - Lemon Squeezy (optional)
 LEMON_SQUEEZY_API_KEY=
@@ -252,8 +252,8 @@ dotnet test
 The `postman/` directory contains collections for testing API endpoints:
 
 - `ai-support.postman_collection.json` — Full API tests
-- `SupportAI_GoogleAuth_TicketFlow.postman_collection.json` — Auth and ticket flow
-- `SupportAI_Notes.postman_collection.json` — Notes endpoint tests
+- `Kleo_GoogleAuth_TicketFlow.postman_collection.json` — Auth and ticket flow
+- `Kleo_Notes.postman_collection.json` — Notes endpoint tests
 
 Import the collections into Postman and set the `base_url` variable to `http://localhost:3001`.
 

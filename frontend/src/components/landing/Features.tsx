@@ -8,7 +8,7 @@ const features = [
       </svg>
     ),
     title: 'Answers from your data, not the internet',
-    body: 'Unlike generic AI chatbots, SupportAI only answers from your uploaded knowledge base. No hallucination. No off-brand responses.',
+    body: 'Unlike generic AI chatbots, Kleo only answers from your uploaded knowledge base. No hallucination. No off-brand responses.',
     featured: true,
   },
   {

@@ -48,7 +48,7 @@ export default function EmbedSection({ organization }: Props) {
     <div className="bg-[#0F172A] border border-white/[0.06] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.4)] p-6">
       <h2 className="text-base font-semibold text-[#F1F5F9] mb-1">Embed & Integration</h2>
       <p className="text-sm text-[#475569] mb-5">
-        Use these values to connect SupportAI to your website or external tools.
+        Use these values to connect Kleo to your website or external tools.
       </p>
 
       <CopyField

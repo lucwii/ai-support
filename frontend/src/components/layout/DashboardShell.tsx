@@ -102,7 +102,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#6366F1] to-[#4F46E5] flex items-center justify-center">
               <Zap className="w-3 h-3 text-white" />
             </div>
-            <span className="text-sm font-bold text-[#F1F5F9] font-sora">SupportAI</span>
+            <span className="text-sm font-bold text-[#F1F5F9] font-sora">Kleo</span>
           </div>
         </div>
 

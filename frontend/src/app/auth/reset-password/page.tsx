@@ -1,8 +1,8 @@
 import ResetPasswordForm from '@/components/auth/ResetPasswordForm'
 
 export const metadata = {
-  title: 'Set New Password — SupportAI',
-  description: 'Choose a new password for your SupportAI account.',
+  title: 'Set New Password — Kleo',
+  description: 'Choose a new password for your Kleo account.',
 }
 
 export default function ResetPasswordPage() {
