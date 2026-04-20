@@ -96,5 +96,5 @@ public class LoginTests : TestBase
         var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
         wait.Until(ExpectedConditions.UrlContains("/auth/register"));
         Assert.That(driver.Url.Contains("/auth/register"));
-    }
+    }  
 }
