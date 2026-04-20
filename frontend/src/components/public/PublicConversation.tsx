@@ -54,29 +54,35 @@ function MessageBubble({ icon, label, text, variant }: BubbleProps) {
 export default function PublicConversation({ ticket }: PublicConversationProps) {
   return (
     <div className="flex flex-col gap-4">
-      <MessageBubble
-        variant="customer"
-        icon={<User className="w-3.5 h-3.5" />}
-        label="Your question"
-        text={ticket.content}
-      />
+      <div data-testid="customer-message">
+        <MessageBubble
+          variant="customer"
+          icon={<User className="w-3.5 h-3.5" />}
+          label="Your question"
+          text={ticket.content}
+        />
+      </div>
 
       {ticket.ai_response && (
-        <MessageBubble
-          variant="ai"
-          icon={<Zap className="w-3.5 h-3.5" />}
-          label="AI Response"
-          text={ticket.ai_response}
-        />
+        <div data-testid="ai-message">
+          <MessageBubble
+            variant="ai"
+            icon={<Zap className="w-3.5 h-3.5" />}
+            label="AI Response"
+            text={ticket.ai_response}
+          />
+        </div>
       )}
 
       {ticket.agent_response && (
-        <MessageBubble
-          variant="agent"
-          icon={<HeadphonesIcon className="w-3.5 h-3.5" />}
-          label="Agent Response"
-          text={ticket.agent_response}
-        />
+        <div data-testid="agent-message">
+          <MessageBubble
+            variant="agent"
+            icon={<HeadphonesIcon className="w-3.5 h-3.5" />}
+            label="Agent Response"
+            text={ticket.agent_response}
+          />
+        </div>
       )}
     </div>
   )

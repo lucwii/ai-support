@@ -35,7 +35,7 @@ function CompanyHeader({ org }: { org: PublicOrganization }) {
           />
         </div>
       )}
-      <p className="font-sora text-xl font-bold text-slate-900 text-center">{org.name}</p>
+      <p className="font-sora text-xl font-bold text-slate-900 text-center" data-testid="org-name">{org.name}</p>
     </div>
   )
 }

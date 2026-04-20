@@ -16,7 +16,7 @@ export default function SuccessPending({ onNewQuestion }: Props) {
         </div>
       </div>
 
-      <h2 className="font-sora text-xl font-bold text-slate-900 mb-2">
+      <h2 className="font-sora text-xl font-bold text-slate-900 mb-2" data-testid="success-pending-heading">
         We received your question
       </h2>
       <p className="text-sm text-slate-500 leading-relaxed max-w-[320px] mx-auto mb-7">
@@ -43,6 +43,7 @@ export default function SuccessPending({ onNewQuestion }: Props) {
 
       <button
         onClick={onNewQuestion}
+        data-testid="ask-another-button"
         className="text-sm text-slate-400 hover:text-slate-600 underline underline-offset-2 transition-colors duration-150 cursor-pointer"
       >
         Ask another question

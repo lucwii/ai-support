@@ -36,7 +36,7 @@ export default function TrackTicketPage({ params }: PageProps) {
           )}
 
           {!loading && error && (
-            <div className="flex items-center gap-3 p-4 bg-red-500/[0.07] border border-red-500/20 rounded-xl">
+            <div data-testid="ticket-not-found" className="flex items-center gap-3 p-4 bg-red-500/[0.07] border border-red-500/20 rounded-xl">
               <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
               <div>
                 <p className="text-sm font-medium text-red-300">Ticket not found</p>
@@ -50,7 +50,7 @@ export default function TrackTicketPage({ params }: PageProps) {
           {!loading && ticket && (
             <>
               {/* Status header */}
-              <div className="pb-6 border-b border-white/[0.06]">
+              <div data-testid="status-section" className="pb-6 border-b border-white/[0.06]">
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-[#334155] mb-4">
                   Status
                 </p>
@@ -58,7 +58,7 @@ export default function TrackTicketPage({ params }: PageProps) {
               </div>
 
               {/* Conversation */}
-              <div>
+              <div data-testid="conversation-section">
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-[#334155] mb-4">
                   Conversation
                 </p>

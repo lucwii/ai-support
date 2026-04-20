@@ -46,7 +46,7 @@ export default function Navbar() {
           }}
         >
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 shrink-0">
+          <Link href="/" data-testid="navbar-logo" className="flex items-center gap-2.5 shrink-0">
             <motion.div
               className="w-8 h-8 rounded-lg flex items-center justify-center"
               style={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}
@@ -90,6 +90,7 @@ export default function Navbar() {
           >
             <Link
               href="/auth/login"
+              data-testid="navbar-signin"
               className="text-[13px] font-medium px-4 py-2 rounded-full transition-colors duration-150 hover:text-white"
               style={{ color: '#94A3B8' }}
             >
@@ -98,6 +99,7 @@ export default function Navbar() {
             <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
               <Link
                 href="/auth/register"
+                data-testid="navbar-start-trial"
                 className="text-[13px] font-semibold text-white px-5 py-2 rounded-full transition-all duration-150 hover:brightness-110"
                 style={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}
               >

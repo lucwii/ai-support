@@ -33,14 +33,14 @@ export default function SuccessAutoAnswered({ answer, confidence, brandColor, on
           <CheckCircle2 className="w-5 h-5 text-emerald-500" />
         </div>
         <div>
-          <p className="text-base font-semibold text-slate-900 leading-tight">Here is your answer</p>
+          <p className="text-base font-semibold text-slate-900 leading-tight" data-testid="success-auto-heading">Here is your answer</p>
           <p className="text-xs text-slate-400 mt-0.5">Answered instantly by AI</p>
         </div>
       </div>
 
       {/* Answer block */}
       <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 mb-4">
-        <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">{answer}</p>
+        <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap" data-testid="ai-answer">{answer}</p>
       </div>
 
       {/* Confidence row */}
@@ -49,7 +49,7 @@ export default function SuccessAutoAnswered({ answer, confidence, brandColor, on
           <Sparkles className="w-3 h-3 text-slate-400" />
           <span className="text-xs text-slate-400">AI confidence</span>
         </div>
-        <span className={`text-xs font-semibold ${confidenceColor}`}>{confidence}%</span>
+        <span className={`text-xs font-semibold ${confidenceColor}`} data-testid="confidence-value">{confidence}%</span>
       </div>
       <div className="h-1 rounded-full bg-slate-100 mb-5 overflow-hidden">
         <div
@@ -65,12 +65,14 @@ export default function SuccessAutoAnswered({ answer, confidence, brandColor, on
           <div className="flex gap-2">
             <button
               onClick={() => setFeedback('yes')}
+              data-testid="feedback-yes"
               className="border border-slate-200 rounded-lg px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all duration-150 cursor-pointer"
             >
               Yes, thanks!
             </button>
             <button
               onClick={() => setFeedback('no')}
+              data-testid="feedback-no"
               className="border border-slate-200 rounded-lg px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all duration-150 cursor-pointer"
             >
               No, I need more help
@@ -78,10 +80,10 @@ export default function SuccessAutoAnswered({ answer, confidence, brandColor, on
           </div>
         )}
         {feedback === 'yes' && (
-          <p className="text-sm text-emerald-600 font-medium">✓ Glad we could help!</p>
+          <p className="text-sm text-emerald-600 font-medium" data-testid="feedback-confirmed-yes">✓ Glad we could help!</p>
         )}
         {feedback === 'no' && (
-          <p className="text-sm text-slate-500">A human agent will follow up on your email soon.</p>
+          <p className="text-sm text-slate-500" data-testid="feedback-confirmed-no">A human agent will follow up on your email soon.</p>
         )}
       </div>
 
@@ -89,6 +91,7 @@ export default function SuccessAutoAnswered({ answer, confidence, brandColor, on
       <div className="mt-7 pt-6 border-t border-slate-100 text-center">
         <button
           onClick={onNewQuestion}
+          data-testid="ask-another-button"
           className="text-sm text-slate-400 hover:text-slate-600 underline underline-offset-2 transition-colors duration-150 cursor-pointer"
         >
           Ask another question

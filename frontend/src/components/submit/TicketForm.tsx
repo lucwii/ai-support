@@ -83,6 +83,7 @@ export default function TicketForm({ org, onSubmit, loading, error, autoFocus = 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={loading}
+            data-testid="email-input"
             className="w-full h-12 border border-[#E2E8F0] rounded-[10px] px-4 text-[15px] text-slate-900 placeholder:text-slate-400 bg-white focus:outline-none transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
             style={focusRingStyle}
             onFocus={(e) => (e.target.style.borderColor = org.brand_color)}
@@ -103,6 +104,7 @@ export default function TicketForm({ org, onSubmit, loading, error, autoFocus = 
             id="content"
             required
             placeholder="Describe your issue or question in detail..."
+            data-testid="content-input"
             value={content}
             onChange={(e) => {
               if (e.target.value.length <= MAX_CHARS) {
@@ -121,10 +123,10 @@ export default function TicketForm({ org, onSubmit, loading, error, autoFocus = 
           <div className="flex items-start justify-between mt-1.5 gap-2">
             <div>
               {validationError && (
-                <p className="text-xs text-red-500" role="alert">{validationError}</p>
+                <p className="text-xs text-red-500" role="alert" data-testid="validation-error">{validationError}</p>
               )}
             </div>
-            <span className={`text-xs shrink-0 ${isOverWarn ? 'text-amber-500' : 'text-slate-400'}`}>
+            <span data-testid="char-counter" className={`text-xs shrink-0 ${isOverWarn ? 'text-amber-500' : 'text-slate-400'}`}>
               {charsLeft} / {MAX_CHARS}
             </span>
           </div>
@@ -135,6 +137,7 @@ export default function TicketForm({ org, onSubmit, loading, error, autoFocus = 
           <div
             className="bg-red-50 border border-red-200 rounded-xl px-4 py-3"
             role="alert"
+            data-testid="api-error"
           >
             <p className="text-sm text-red-600">{error}</p>
           </div>
@@ -144,6 +147,7 @@ export default function TicketForm({ org, onSubmit, loading, error, autoFocus = 
         <button
           type="submit"
           disabled={isDisabled}
+          data-testid="submit-button"
           className="w-full h-[52px] rounded-xl text-[15px] font-semibold text-white transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           style={{
             backgroundColor: org.brand_color,
