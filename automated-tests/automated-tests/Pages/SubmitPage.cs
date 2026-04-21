@@ -23,7 +23,9 @@ public class SubmitPage
     private By feedbackNo = By.CssSelector("[data-testid='feedback-no']");
     private By askAnotherButton = By.CssSelector("[data-testid='ask-another-button']");
     private By feedbackYesConfirmation = By.CssSelector("[data-testid='feedback-confirmed-yes']");
-    private By feedbackNoConfirmation = By.CssSelector("[data-testi='feedback-confirmed-no']");
+    private By feedbackNoConfirmation = By.CssSelector("[data-testid='feedback-confirmed-no']");
+    
+    private By notFoundPage = By.CssSelector("[data-testid='not-found-page']");
 
     public SubmitPage(IWebDriver driver)
     {
@@ -35,6 +37,11 @@ public class SubmitPage
     {
         driver.Navigate().GoToUrl($"http://localhost:3000/submit/{slug}");
         wait.Until(ExpectedConditions.ElementIsVisible(emailInput));
+    }
+    
+    public void NavigateError(string slug)
+    {
+        driver.Navigate().GoToUrl($"http://localhost:3000/submit/{slug}");
     }
 
     public string OrgName_Text()
@@ -146,6 +153,49 @@ public class SubmitPage
         try
         {
             return wait.Until(ExpectedConditions.ElementIsVisible(feedbackNoConfirmation)).Displayed;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public string GetButtonText()
+    {
+        return driver.FindElement(submitButton).Text;
+    }
+
+    public bool Is_ValidationError_Visible()
+    {
+        try
+        {
+            return wait.Until(ExpectedConditions.ElementIsVisible(validationError)).Displayed;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public bool Is_EmailField_Empty()
+    {
+        var input = wait.Until(ExpectedConditions.ElementIsVisible(emailInput));
+        string value = input.GetAttribute("value");
+        return string.IsNullOrEmpty(value);
+    }
+
+    public bool Is_ContentField_Empty()
+    {
+        var input = wait.Until(ExpectedConditions.ElementIsVisible(contentInput));
+        string value = input.GetAttribute("value");
+        return string.IsNullOrEmpty(value);
+    }
+
+    public bool Is_NotFound_Visible()
+    {
+        try
+        {
+            return wait.Until(ExpectedConditions.ElementIsVisible(notFoundPage)).Displayed;
         }
         catch
         {
