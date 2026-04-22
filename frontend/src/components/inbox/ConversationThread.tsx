@@ -52,7 +52,7 @@ function MessageBubble({ icon, label, text, variant }: BubbleProps) {
           {label}
         </span>
       </div>
-      <p className={`px-4 py-3.5 text-sm leading-relaxed whitespace-pre-wrap ${styles.text}`}>
+      <p className={`px-4 py-3.5 text-sm leading-relaxed whitespace-pre-wrap break-all ${styles.text}`}>
         {text}
       </p>
     </div>
