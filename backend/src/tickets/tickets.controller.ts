@@ -182,4 +182,24 @@ export class TicketsController {
 
     await this.ticketsService.deleteTicket(ticketId, organization.id);
   }
+
+  @Patch(':id/reopen')
+  @UseGuards(AuthGuard)
+  async reopenTicket(
+    @Param('id') ticketId: string,
+    @GetUser() user: JwtPayload
+  ) {
+    const organization = await this.organizationsService.getOrganizationByUserId(user.sub);
+
+    if (!organization) {
+      throw new NotFoundException('Organization not found');
+    }
+
+    const ticket = await this.ticketsService.reopenTicket(ticketId, organization.id);
+
+    return {
+      success: true,
+      data: ticket
+    }
+  }
 }
