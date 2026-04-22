@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle, Send, Loader2 } from 'lucide-react'
+import { CheckCircle, Send, Loader2, RotateCcw } from 'lucide-react'
 import { Ticket } from '@/lib/types'
 import { useUpdateTicket } from '@/hooks/useUpdateTicket'
+import { useReopenTicket } from '@/hooks/useReopenTicket'
 
 interface AgentReplyBoxProps {
   ticket: Ticket
@@ -13,8 +14,9 @@ interface AgentReplyBoxProps {
 export default function AgentReplyBox({ ticket, onUpdated }: AgentReplyBoxProps) {
   const [customReply, setCustomReply] = useState('')
   const { update, loading, error } = useUpdateTicket()
+  const { reopen, loading: reopenLoading, error: reopenError } = useReopenTicket()
 
-  const isResolved = ticket.status === 'resolved'
+  const isResolved = ticket.status === 'resolved' || ticket.status === 'auto_answered'
 
   const handleResolveWithAI = async () => {
     const updated = await update(ticket.id, { status: 'resolved' })
@@ -33,11 +35,34 @@ export default function AgentReplyBox({ ticket, onUpdated }: AgentReplyBoxProps)
     }
   }
 
+  const handleReopen = async () => {
+    const updated = await reopen(ticket.id)
+    if (updated) onUpdated(updated)
+  }
+
   if (isResolved) {
     return (
-      <div className="flex items-center gap-2.5 px-4 py-3.5 bg-emerald-500/[0.07] border border-emerald-500/20 rounded-xl">
-        <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-        <p className="text-sm text-emerald-300 font-medium">This ticket has been resolved.</p>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2.5 px-4 py-3.5 bg-emerald-500/[0.07] border border-emerald-500/20 rounded-xl">
+          <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+          <p className="text-sm text-emerald-300 font-medium">This ticket has been resolved.</p>
+        </div>
+        <div className="flex justify-end">
+          <button
+            data-testid="reopen-ticket-button"
+            onClick={handleReopen}
+            disabled={reopenLoading}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-white/[0.04] border border-white/[0.08] text-[#94A3B8] hover:bg-white/[0.07] hover:text-[#F1F5F9] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {reopenLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <RotateCcw className="w-4 h-4" />
+            )}
+            Reopen ticket
+          </button>
+        </div>
+        {reopenError && <p className="text-xs text-red-400 text-right">{reopenError}</p>}
       </div>
     )
   }
