@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -354,6 +355,53 @@ export class TicketsService {
     });
 
     return updated as Ticket;
+  }
+
+  async reopenTicket(ticketId: string, organizationId: string): Promise<Ticket> {
+    const { data: existing, error: existingError } = await this.supabaseService.db
+      .from('tickets')
+      .select('id, status')
+      .eq('id', ticketId)
+      .eq('organization_id', organizationId)
+      .single();
+
+    if (existingError || !existing) {
+      throw new NotFoundException(`Ticket ${ticketId} was not found`);
+    }
+
+    if (!['resolved', 'auto_answered'].includes(existing.status)) {
+      throw new BadRequestException(
+        `Ticket cannot be reopened because status is '${existing.status}'`,
+      );
+    }
+
+    const { data: updated, error: updatedError } = await this.supabaseService.db
+      .from('tickets')
+      .update({
+        status: 'pending_agent',
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', ticketId)
+      .eq('organization_id', organizationId)
+      .select('*')
+      .single();
+
+    if (updatedError || !updated) {
+      throw new InternalServerErrorException('Failed to reopen ticket');
+    }
+
+    await this.writeTicketLog({
+      ticketId,
+      organizationId,
+      action: 'ticket_reopened',
+      message: 'Ticket reopened by agent',
+      metadata: {
+        previous_status: existing.status,
+        new_status: 'pending_agent',
+      },
+    });
+
+    return updated;
   }
  
   async deleteTicket(ticketId: string, organizationId: string): Promise<void> {
