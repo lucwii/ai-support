@@ -356,6 +356,29 @@ export class TicketsService {
     return updated as Ticket;
   }
  
+  async deleteTicket(ticketId: string, organizationId: string): Promise<void> {
+    const { data: existing, error: fetchError } = await this.supabaseService.db
+      .from('tickets')
+      .select('id')
+      .eq('id', ticketId)
+      .eq('organization_id', organizationId)
+      .single();
+
+    if (fetchError || !existing) {
+      throw new NotFoundException(`Ticket ${ticketId} not found`);
+    }
+
+    const { error } = await this.supabaseService.db
+      .from('tickets')
+      .delete()
+      .eq('id', ticketId)
+      .eq('organization_id', organizationId);
+
+    if (error) {
+      throw new InternalServerErrorException(`Failed to delete ticket: ${error.message}`);
+    }
+  }
+
   private async writeTicketLog(params: {
     ticketId: string;
     organizationId: string;

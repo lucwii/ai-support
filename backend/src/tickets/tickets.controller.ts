@@ -3,6 +3,7 @@ import {
   Post,
   Get,
   Patch,
+  Delete,
   Body,
   Param,
   Query,
@@ -164,5 +165,21 @@ export class TicketsController {
       success: true,
       data: ticket,
     }
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteTicket(
+    @Param('id') ticketId: string,
+    @GetUser() user: JwtPayload,
+  ) {
+    const organization = await this.organizationsService.getOrganizationByUserId(user.sub);
+
+    if (!organization) {
+      throw new NotFoundException('Organization not found');
+    }
+
+    await this.ticketsService.deleteTicket(ticketId, organization.id);
   }
 }
