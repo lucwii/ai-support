@@ -68,6 +68,7 @@ export interface WidgetSettings {
 export interface OrgPreferences {
   email_on_new_ticket: boolean
   email_on_low_confidence: boolean
+  ai_confidence_threshold: number
 }
 
 export type MemberRole = 'owner' | 'admin' | 'agent'
