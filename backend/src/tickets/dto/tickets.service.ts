@@ -66,15 +66,18 @@ export class TicketsService {
       throw new Error(`Failed to create ticket: ${insertError?.message}`);
     }
 
+    const orgInfo = await this.getOrganizationPreferences(dto.organization_id);
+    const threshold = orgInfo?.ai_confidence_threshold ?? 90;
+
     const aiResult = await this.aiAnswerService.generateAnswer(
       dto.organization_id,
       dto.content,
     );
 
-    const status = this.aiAnswerService.determineTicketStatus(aiResult.confidence);
+    const status = this.aiAnswerService.determineTicketStatus(aiResult.confidence, threshold);
 
     this.logger.log(
-      `Ticket ${newTicket.id} → confidence: ${aiResult.confidence}% → status: "${status}"`,
+      `Ticket ${newTicket.id} → confidence: ${aiResult.confidence}% → threshold: ${threshold}% → status: "${status}"`,
     );
 
     const { data: updatedTicket, error: updateError } = await this.supabaseService.db
@@ -98,16 +101,15 @@ export class TicketsService {
       ticketId: newTicket.id,
       organizationId: dto.organization_id,
       action: 'ai_response_generated',
-      message: `AI generated response with confidence ${aiResult.confidence}%. Status set to "${status}".`,
+      message: `AI generated response with confidence ${aiResult.confidence}% (threshold: ${threshold}%). Status set to "${status}".`,
       metadata: {
         confidence: aiResult.confidence,
+        threshold,
         status,
         sourcesCount: aiResult.sources.length,
         hasRelevantContext: aiResult.hasRelevantContext,
       },
     });
-
-    const orgInfo = await this.getOrganizationPreferences(dto.organization_id);
 
     if (status === 'auto_answered' && dto.customer_email) {
       await this.emailService.sendTicketResolvedEmail({
@@ -452,10 +454,11 @@ export class TicketsService {
     ownerEmail: string | null;
     email_on_new_ticket: boolean;
     email_on_low_confidence: boolean;
+    ai_confidence_threshold: number;
   } | null> {
     const {data: org} = await this.supabaseService.db
       .from('organizations')
-      .select('name, email_on_new_ticket, email_on_low_confidence')
+      .select('name, email_on_new_ticket, email_on_low_confidence, ai_confidence_threshold')
       .eq('id', organizationId)
       .single();
 
@@ -491,6 +494,7 @@ export class TicketsService {
       ownerEmail,
       email_on_new_ticket: org.email_on_new_ticket,
       email_on_low_confidence: org.email_on_low_confidence,
+      ai_confidence_threshold: org.ai_confidence_threshold ?? 90,
     }
   }
 }

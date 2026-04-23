@@ -391,6 +391,7 @@ export class OrganizationsService {
     return {
       email_on_new_ticket: org.email_on_new_ticket ?? true,
       email_on_low_confidence: org.email_on_low_confidence ?? true,
+      ai_confidence_threshold: org.ai_confidence_threshold ?? 90,
     };
   }
 
@@ -409,9 +410,10 @@ export class OrganizationsService {
       .update({
         ...(dto.email_on_new_ticket !== undefined && { email_on_new_ticket: dto.email_on_new_ticket }),
         ...(dto.email_on_low_confidence !== undefined && { email_on_low_confidence: dto.email_on_low_confidence }),
+        ...(dto.ai_confidence_threshold !== undefined && { ai_confidence_threshold: dto.ai_confidence_threshold }),
       })
       .eq('id', org.id)
-      .select('email_on_new_ticket, email_on_low_confidence')
+      .select('email_on_new_ticket, email_on_low_confidence, ai_confidence_threshold')
       .single();
 
     if (error) {
