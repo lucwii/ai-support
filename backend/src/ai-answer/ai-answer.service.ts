@@ -53,7 +53,7 @@ export class AiAnswerService {
         question,
         organizationContext,
       );
-    } catch (err) {
+    } catch (err: any) {
       this.logger.error(`GPT call failed: ${err.message}`);
       return {
         answer: 'An error occurred while generating the answer. Please try again.',
@@ -75,12 +75,11 @@ export class AiAnswerService {
     };
   }
 
-  determineTicketStatus(confidence: number): 'auto_answered' | 'pending_agent' {
-    const AUTO_ANSWER_THRESHOLD = 90;
-    const status = confidence >= AUTO_ANSWER_THRESHOLD ? 'auto_answered' : 'pending_agent';
+  determineTicketStatus(confidence: number, threshold: number = 90): 'auto_answered' | 'pending_agent' {
+    const status = confidence >= threshold ? 'auto_answered' : 'pending_agent';
 
     this.logger.debug(
-      `Confidence ${confidence}% → status: "${status}"`,
+      `Confidence ${confidence}% vs threshold ${threshold}% → status: "${status}"`,
     );
 
     return status;
