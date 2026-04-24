@@ -41,6 +41,7 @@ export default function KnowledgeUploadForm({ onUpload }: KnowledgeUploadFormPro
       <h2 className="text-base font-semibold text-[#F1F5F9] mb-4">Add Knowledge</h2>
 
       <textarea
+        data-testid="knowledge-textarea"
         value={content}
         onChange={(e) => {
           setContent(e.target.value)
@@ -53,7 +54,7 @@ export default function KnowledgeUploadForm({ onUpload }: KnowledgeUploadFormPro
       />
 
       <div className="flex items-center justify-between mt-3">
-        <span className="text-xs text-[#334155]">
+        <span data-testid="knowledge-char-count" className="text-xs text-[#334155]">
           {charCount > 0 ? (
             <span className={charCount < 10 ? 'text-amber-500/70' : 'text-[#475569]'}>
               {charCount} characters
@@ -64,6 +65,7 @@ export default function KnowledgeUploadForm({ onUpload }: KnowledgeUploadFormPro
         </span>
 
         <button
+          data-testid="knowledge-upload-button"
           onClick={handleSubmit}
           disabled={loading || charCount < 10}
           className="inline-flex items-center gap-2 bg-[#6366F1] hover:bg-[#4F46E5] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2 rounded-xl transition-all duration-150 hover:-translate-y-px disabled:hover:translate-y-0"
@@ -83,7 +85,7 @@ export default function KnowledgeUploadForm({ onUpload }: KnowledgeUploadFormPro
       </div>
 
       {result && (
-        <div className="mt-3 px-4 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+        <div data-testid="knowledge-success-message" className="mt-3 px-4 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
           <p className="text-sm text-emerald-400 font-medium">
             Uploaded — {result.savedChunks} chunk{result.savedChunks !== 1 ? 's' : ''} created
           </p>
@@ -91,7 +93,7 @@ export default function KnowledgeUploadForm({ onUpload }: KnowledgeUploadFormPro
       )}
 
       {error && (
-        <div className="mt-3 px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+        <div data-testid="knowledge-error-message" className="mt-3 px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl">
           <p className="text-sm text-red-400">{error}</p>
         </div>
       )}

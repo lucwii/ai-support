@@ -27,11 +27,11 @@ export default function KnowledgeList({ knowledge, loading, onDelete }: Knowledg
   }
 
   return (
-    <div className="bg-[#0F172A] border border-white/[0.06] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.4)] p-6">
+    <div data-testid="knowledge-list-card" className="bg-[#0F172A] border border-white/[0.06] rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.4)] p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-base font-semibold text-[#F1F5F9]">Knowledge Chunks</h2>
         {knowledge.length > 0 && (
-          <span className="text-xs font-semibold text-[#475569] bg-white/[0.04] px-2.5 py-1 rounded-lg">
+          <span data-testid="knowledge-chunk-count" className="text-xs font-semibold text-[#475569] bg-white/[0.04] px-2.5 py-1 rounded-lg">
             {knowledge.length} chunk{knowledge.length !== 1 ? 's' : ''}
           </span>
         )}
@@ -70,6 +70,7 @@ export default function KnowledgeList({ knowledge, loading, onDelete }: Knowledg
               {knowledge.map((chunk, i) => (
                 <tr
                   key={chunk.id}
+                  data-testid="knowledge-chunk-row"
                   className="border-b border-white/[0.04] last:border-0 hover:bg-white/[0.03] transition-colors duration-150"
                 >
                   <td className="px-3 py-3.5 text-xs text-[#475569] w-8">{i + 1}</td>
@@ -85,12 +86,14 @@ export default function KnowledgeList({ knowledge, loading, onDelete }: Knowledg
                     {confirmId === chunk.id ? (
                       <div className="flex items-center justify-end gap-2">
                         <button
+                          data-testid="knowledge-cancel-delete"
                           onClick={() => setConfirmId(null)}
                           className="text-xs text-[#475569] hover:text-[#94A3B8] transition-colors duration-150"
                         >
                           Cancel
                         </button>
                         <button
+                          data-testid="knowledge-confirm-delete"
                           onClick={() => handleDelete(chunk.id)}
                           className="text-xs text-red-400 hover:text-red-300 font-medium transition-colors duration-150"
                         >
@@ -98,9 +101,10 @@ export default function KnowledgeList({ knowledge, loading, onDelete }: Knowledg
                         </button>
                       </div>
                     ) : deletingId === chunk.id ? (
-                      <Loader2 className="w-4 h-4 animate-spin text-[#475569] ml-auto" />
+                      <Loader2 data-testid="knowledge-deleting-spinner" className="w-4 h-4 animate-spin text-[#475569] ml-auto" />
                     ) : (
                       <button
+                        data-testid="knowledge-delete-icon-button"
                         onClick={() => setConfirmId(chunk.id)}
                         className="p-1.5 text-[#334155] hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all duration-150 ml-auto flex"
                       >

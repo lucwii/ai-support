@@ -12,7 +12,7 @@ export default function KnowledgePage() {
   const { knowledge, loading, upload, remove } = useKnowledge(organization?.id)
 
   return (
-    <div>
+    <div data-testid="knowledge-page">
       <PageHeader
         title="Knowledge Base"
         subtitle="Upload texts that the AI uses to answer customer questions"
@@ -51,7 +51,7 @@ export default function KnowledgePage() {
                 Stats
               </span>
             </div>
-            <p className="text-2xl font-bold text-[#F1F5F9]">{knowledge.length}</p>
+            <p data-testid="knowledge-stats-count" className="text-2xl font-bold text-[#F1F5F9]">{knowledge.length}</p>
             <p className="text-xs text-[#475569] mt-0.5">
               chunk{knowledge.length !== 1 ? 's' : ''} in knowledge base
             </p>
