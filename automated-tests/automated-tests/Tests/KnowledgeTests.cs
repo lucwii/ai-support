@@ -3,18 +3,18 @@ using automated_tests.Pages;
 
 namespace automated_tests.Tests;
 
-// PRETPOSTAVKA: Testna organizacija za agent@supportai.dev ima makar
-// jedan knowledge chunk u bazi (potrebno za StatsCount i ChunkCount testove).
-// Testovi koji kreiraju chunk čiste se sami (brišu ono što su dodali).
+// ASSUMPTION: The test organization for the configured agent account has at least
+// one knowledge chunk in the database (required for StatsCount and ChunkCount tests).
+// Tests that create a chunk clean up after themselves (delete what they added).
 
-public class  KnowledgeTests : TestBase
+public class KnowledgeTests : TestBase
 {
     private KnowledgePage knowledgePage;
 
     private const string AgentEmail    = "test@gmail.com";
     private const string AgentPassword = "Luka1310";
 
-    // Dovoljno dugačak sadržaj da prođe validaciju (>= 10 karaktera)
+    // Long enough to pass validation (>= 10 characters)
     private const string ValidContent =
         "Our refund policy allows customers to request a full refund within 30 days of purchase. " +
         "To initiate a refund, please contact our support team with your order number and reason for the request. " +
@@ -27,7 +27,7 @@ public class  KnowledgeTests : TestBase
         knowledgePage.LoginAndNavigate(AgentEmail, AgentPassword);
     }
 
-    // --- Vidljivost stranice ---
+    // --- Page visibility ---
 
     [Test]
     public void KnowledgePage_IsVisible()
@@ -47,29 +47,29 @@ public class  KnowledgeTests : TestBase
         Assert.That(knowledgePage.IsListCardVisible());
     }
 
-    // --- Upload forma: validacija dugmeta ---
+    // --- Upload form: button validation ---
 
     [Test]
     public void UploadButton_DisabledOnLoad()
     {
         Assert.That(knowledgePage.IsUploadButtonDisabled(),
-            "Upload dugme mora biti disabled kada je textarea prazna");
+            "Upload button should be disabled when the textarea is empty");
     }
 
     [Test]
     public void UploadButton_DisabledWhenContentTooShort()
     {
-        knowledgePage.EnterContent("short"); // 5 karaktera
+        knowledgePage.EnterContent("short"); // 5 characters
         Assert.That(knowledgePage.IsUploadButtonDisabled(),
-            "Upload dugme mora biti disabled za sadržaj kraći od 10 karaktera");
+            "Upload button should be disabled when content is fewer than 10 characters");
     }
 
     [Test]
     public void UploadButton_EnabledWhenContentValid()
     {
-        knowledgePage.EnterContent("1234567890"); // tačno 10 karaktera
+        knowledgePage.EnterContent("1234567890"); // exactly 10 characters
         Assert.That(knowledgePage.IsUploadButtonEnabled(),
-            "Upload dugme mora biti enabled kada ima >= 10 karaktera");
+            "Upload button should be enabled when content has >= 10 characters");
     }
 
     // --- Char count ---
@@ -78,7 +78,7 @@ public class  KnowledgeTests : TestBase
     public void CharCount_ShowsMinimumMessage_WhenEmpty()
     {
         Assert.That(knowledgePage.GetCharCountText(), Is.EqualTo("Minimum 10 characters"),
-            "Treba prikazati minimum poruku kada je textarea prazna");
+            "Should display the minimum message when the textarea is empty");
     }
 
     [Test]
@@ -86,7 +86,7 @@ public class  KnowledgeTests : TestBase
     {
         knowledgePage.EnterContent("Hello");
         Assert.That(knowledgePage.GetCharCountText(), Is.EqualTo("5 characters"),
-            "Char count mora prikazati tačan broj unesenih karaktera");
+            "Char count should display the exact number of characters entered");
     }
 
     // --- Upload flow ---
@@ -96,9 +96,9 @@ public class  KnowledgeTests : TestBase
     {
         knowledgePage.EnterContent(ValidContent);
         knowledgePage.ClickUpload();
-        // Tekst se mijenja odmah — provjeri prije nego što AI vrati odgovor
+        // Text changes immediately — verify before the AI returns a response
         Assert.That(knowledgePage.GetUploadButtonText(), Does.Contain("Uploading"),
-            "Dugme mora prikazati loading tekst tokom uploada");
+            "Button should display loading text while the upload is in progress");
     }
 
     [Test]
@@ -106,7 +106,7 @@ public class  KnowledgeTests : TestBase
     {
         knowledgePage.UploadAndWait(ValidContent);
         Assert.That(knowledgePage.IsSuccessMessageVisible(),
-            "Success poruka mora biti vidljiva nakon uspješnog uploada");
+            "Success message should be visible after a successful upload");
     }
 
     [Test]
@@ -115,7 +115,7 @@ public class  KnowledgeTests : TestBase
         knowledgePage.UploadAndWait(ValidContent);
         string msg = knowledgePage.GetSuccessMessageText();
         Assert.That(msg, Does.Contain("chunk"),
-            "Success poruka mora sadržavati broj kreirana chunkova");
+            "Success message should mention the number of chunks created");
     }
 
     [Test]
@@ -123,7 +123,7 @@ public class  KnowledgeTests : TestBase
     {
         knowledgePage.UploadAndWait(ValidContent);
         Assert.That(knowledgePage.GetTextareaValue(), Is.Empty,
-            "Textarea mora biti prazna nakon uspješnog uploada");
+            "Textarea should be empty after a successful upload");
     }
 
     [Test]
@@ -133,16 +133,16 @@ public class  KnowledgeTests : TestBase
         knowledgePage.UploadAndWait(ValidContent);
         int countAfter = knowledgePage.GetChunkRowCount();
         Assert.That(countAfter, Is.GreaterThan(countBefore),
-            "Broj redova u listi mora porasti nakon uploada");
+            "The number of rows in the list should increase after an upload");
     }
 
     [Test]
     public void Upload_SuccessMessageDisappears_WhenTextareaEdited()
     {
         knowledgePage.UploadAndWait(ValidContent);
-        knowledgePage.EnterContent("x"); // bilo koji input resetuje result state
+        knowledgePage.EnterContent("x"); // any input resets the result state
         Assert.That(knowledgePage.IsSuccessMessageVisible(), Is.False,
-            "Success poruka mora nestati čim korisnik počne kucati novi sadržaj");
+            "Success message should disappear as soon as the user starts typing new content");
     }
 
     // --- Delete flow ---
@@ -153,7 +153,7 @@ public class  KnowledgeTests : TestBase
         knowledgePage.UploadAndWait(ValidContent);
         knowledgePage.ClickDeleteIconButton();
         Assert.That(knowledgePage.IsConfirmDeleteVisible(),
-            "Confirm UI mora biti vidljiv nakon klika na trash dugme");
+            "Confirm UI should be visible after clicking the trash button");
     }
 
     [Test]
@@ -163,7 +163,7 @@ public class  KnowledgeTests : TestBase
         knowledgePage.ClickDeleteIconButton();
         knowledgePage.ClickCancelDelete();
         Assert.That(knowledgePage.IsConfirmDeleteVisible(), Is.False,
-            "Confirm UI mora nestati nakon klika na Cancel");
+            "Confirm UI should disappear after clicking Cancel");
     }
 
     [Test]
@@ -174,7 +174,7 @@ public class  KnowledgeTests : TestBase
         knowledgePage.ClickDeleteIconButton();
         knowledgePage.ClickCancelDelete();
         Assert.That(knowledgePage.GetChunkRowCount(), Is.EqualTo(countBefore),
-            "Broj chunkova ne smije se promijeniti nakon Cancel-a");
+            "The chunk count should not change after clicking Cancel");
     }
 
     [Test]
@@ -184,21 +184,21 @@ public class  KnowledgeTests : TestBase
         int countBefore = knowledgePage.GetChunkRowCount();
         knowledgePage.ClickDeleteIconButton();
         knowledgePage.ClickConfirmDelete();
-        // Čekaj da red fizički nestane iz DOM-a (API call + state update)
+        // Wait for the row to physically disappear from the DOM (API call + state update)
         knowledgePage.WaitForChunkCountToBe(countBefore - 1);
         Assert.That(knowledgePage.GetChunkRowCount(), Is.EqualTo(countBefore - 1),
-            "Broj chunkova mora se smanjiti za 1 nakon potvrde brisanja");
+            "The chunk count should decrease by 1 after confirming deletion");
     }
 
-    // --- Stats kartica ---
+    // --- Stats card ---
 
     [Test]
     public void StatsCount_MatchesListCount()
     {
-        int listCount  = knowledgePage.GetChunkRowCount();
-        int stats      = knowledgePage.GetStatsCount();
+        int listCount = knowledgePage.GetChunkRowCount();
+        int stats     = knowledgePage.GetStatsCount();
         Assert.That(stats, Is.EqualTo(listCount),
-            "Stats count u Tips kartici mora odgovarati broju redova u tabeli");
+            "The stats count in the Tips card should match the number of rows in the table");
     }
 
     [Test]
@@ -208,11 +208,11 @@ public class  KnowledgeTests : TestBase
         knowledgePage.UploadAndWait(ValidContent);
         int statsAfter = knowledgePage.GetStatsCount();
         Assert.That(statsAfter, Is.GreaterThan(statsBefore),
-            "Stats count mora porasti nakon što se doda novi chunk");
+            "The stats count should increase after a new chunk is added");
     }
 
-    // ZAKOMENTARISANO: zahtijeva da organizacija nema nijedan knowledge chunk
-    // Obriši sve chunkove iz Supabase za testnog agenta pa ukloni komentar
+    // COMMENTED OUT: requires the organization to have no knowledge chunks at all.
+    // Delete all chunks from Supabase for the test account and then remove this comment.
     // [Test]
     // public void EmptyState_IsVisible_WhenNoKnowledge()
     // {

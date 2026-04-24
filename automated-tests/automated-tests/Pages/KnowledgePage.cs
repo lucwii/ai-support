@@ -58,11 +58,11 @@ public class KnowledgePage
         }
     }
 
-    // --- Vidljivost ---
+    // --- Visibility ---
 
-    public bool IsPageVisible()     => IsVisible(pageWrapper);
+    public bool IsPageVisible()       => IsVisible(pageWrapper);
     public bool IsUploadFormVisible() => IsVisible(textarea);
-    public bool IsListCardVisible() => IsVisible(listCard);
+    public bool IsListCardVisible()   => IsVisible(listCard);
 
     // --- Textarea ---
 
@@ -85,7 +85,7 @@ public class KnowledgePage
         return wait.Until(ExpectedConditions.ElementIsVisible(charCount)).Text;
     }
 
-    // --- Upload dugme ---
+    // --- Upload button ---
 
     public bool IsUploadButtonDisabled()
     {
@@ -110,7 +110,7 @@ public class KnowledgePage
         button.Click();
     }
 
-    // --- Poruke ---
+    // --- Messages ---
 
     public bool IsSuccessMessageVisible() => IsVisible(successMessage);
     public bool IsErrorMessageVisible()   => IsVisible(errorMessage);
@@ -120,7 +120,7 @@ public class KnowledgePage
         return wait.Until(ExpectedConditions.ElementIsVisible(successMessage)).Text;
     }
 
-    // --- Upload i čekanje (AI može trajati duže) ---
+    // --- Upload and wait (AI embedding creation can take a while) ---
 
     public void UploadAndWait(string content)
     {
@@ -130,11 +130,11 @@ public class KnowledgePage
         longWait.Until(ExpectedConditions.ElementIsVisible(successMessage));
     }
 
-    // --- Chunk lista ---
+    // --- Chunk list ---
 
     public int GetChunkRowCount()
     {
-        // Čekaj dok se lista stabilizuje — pojave se redovi ili empty-state
+        // Wait until the list stabilizes — either rows or the empty state appear
         wait.Until(d =>
         {
             var rows  = d.FindElements(chunkRows);
@@ -146,7 +146,7 @@ public class KnowledgePage
 
     public void WaitForChunkCountToBe(int expected)
     {
-        // Koristi se nakon brisanja da se sačeka da red nestane iz DOM-a
+        // Used after deletion to wait for the row to be removed from the DOM
         var longWait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
         longWait.Until(d => d.FindElements(chunkRows).Count == expected ? (object)true : null);
     }
@@ -158,7 +158,7 @@ public class KnowledgePage
         return wait.Until(ExpectedConditions.ElementIsVisible(chunkCountBadge)).Text;
     }
 
-    // --- Stats kartica ---
+    // --- Stats card ---
 
     public int GetStatsCount()
     {
@@ -201,7 +201,7 @@ public class KnowledgePage
             return els.Count > 0 ? els[0] : null;
         });
         button!.Click();
-        // Čekaj da se spinner pojavi (delete je in progress) ili da red odmah nestane
+        // Wait for the confirm UI to disappear before returning
         wait.Until(d => d.FindElements(confirmDelete).Count == 0 ? (object)true : null);
     }
 
