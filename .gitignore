@@ -29,6 +29,7 @@ pnpm-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 .idea/
+*.DotSettings.user
 
 # Testing
 coverage/
