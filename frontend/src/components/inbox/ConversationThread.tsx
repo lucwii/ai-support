@@ -43,7 +43,7 @@ function MessageBubble({ icon, label, text, variant }: BubbleProps) {
   const styles = VARIANT_STYLES[variant]
 
   return (
-    <div className={`rounded-xl overflow-hidden ${styles.wrapper}`}>
+    <div data-testid={`${variant}-message-bubble`} className={`rounded-xl overflow-hidden ${styles.wrapper}`}>
       <div className={`flex items-center gap-2.5 px-4 py-2.5 ${styles.header}`}>
         <div className={`w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 ${styles.icon}`}>
           {icon}

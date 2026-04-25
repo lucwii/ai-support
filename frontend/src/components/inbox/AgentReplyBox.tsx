@@ -43,7 +43,7 @@ export default function AgentReplyBox({ ticket, onUpdated }: AgentReplyBoxProps)
   if (isResolved) {
     return (
       <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2.5 px-4 py-3.5 bg-emerald-500/[0.07] border border-emerald-500/20 rounded-xl">
+        <div data-testid="resolved-banner" className="flex items-center gap-2.5 px-4 py-3.5 bg-emerald-500/[0.07] border border-emerald-500/20 rounded-xl">
           <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />
           <p className="text-sm text-emerald-300 font-medium">This ticket has been resolved.</p>
         </div>
@@ -71,6 +71,7 @@ export default function AgentReplyBox({ ticket, onUpdated }: AgentReplyBoxProps)
     <div className="flex flex-col gap-3">
       <div className="relative">
         <textarea
+          data-testid="reply-textarea"
           value={customReply}
           onChange={(e) => setCustomReply(e.target.value)}
           placeholder="Write a custom response to send to the customer..."
@@ -85,6 +86,7 @@ export default function AgentReplyBox({ ticket, onUpdated }: AgentReplyBoxProps)
 
       <div className="flex items-center gap-2.5 justify-end">
         <button
+          data-testid="resolve-ai-button"
           onClick={handleResolveWithAI}
           disabled={loading}
           className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-white/[0.04] border border-white/[0.08] text-[#94A3B8] hover:bg-white/[0.07] hover:text-[#F1F5F9] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -98,6 +100,7 @@ export default function AgentReplyBox({ ticket, onUpdated }: AgentReplyBoxProps)
         </button>
 
         <button
+          data-testid="send-reply-button"
           onClick={handleSendCustom}
           disabled={loading || !customReply.trim()}
           className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-[#6366F1] hover:bg-[#4F46E5] text-white transition-all duration-150 hover:-translate-y-px disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
