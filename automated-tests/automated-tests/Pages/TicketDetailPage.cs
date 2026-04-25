@@ -28,6 +28,13 @@ public class TicketDetailPage
     private By saveNoteButton = By.CssSelector("[data-testid='save-note-button']");
     private By editTextarea = By.CssSelector("[data-testid='edit-note-textarea']");
     
+    private By replyTextarea = By.CssSelector("[data-testid='reply-textarea']");
+    private By sendReplyButton = By.CssSelector("[data-testid='send-reply-button']");
+    private By resolveAiButton = By.CssSelector("[data-testid='resolve-ai-button']");
+    private By reopenTicketButton = By.CssSelector("[data-testid='reopen-ticket-button']");
+    private By resolvedBanner = By.CssSelector("[data-testid='resolved-banner']");
+    private By agentMessageBubble = By.CssSelector("[data-testid='agent-message-bubble']");
+
     private By assigneeDropDown = By.CssSelector("[data-testid='assignee-dropdown']");
     private By assigneeDisplay = By.CssSelector("[data-testid='assignee-display']");
     private By assigneeDropDownUnassigned = By.CssSelector("[data-testid='assignee-option-unassigned']");
@@ -295,5 +302,80 @@ public class TicketDetailPage
     public string GetAssigneeDisplayText()
     {
         return wait.Until(ExpectedConditions.ElementIsVisible(assigneeDisplay)).Text;
+    }
+
+    // --- Reply Box ---
+
+    public bool IsReplyTextareaVisible()
+    {
+        try
+        {
+            return wait.Until(ExpectedConditions.ElementIsVisible(replyTextarea)).Displayed;
+        }
+        catch { return false; }
+    }
+
+    public bool IsSendReplyButtonDisabled()
+    {
+        var btn = wait.Until(ExpectedConditions.ElementIsVisible(sendReplyButton));
+        return !btn.Enabled || btn.GetAttribute("disabled") != null;
+    }
+
+    public void EnterReply(string text)
+    {
+        var input = wait.Until(ExpectedConditions.ElementIsVisible(replyTextarea));
+        input.Clear();
+        input.SendKeys(text);
+    }
+
+    public void ClickSendReply()
+    {
+        var btn = wait.Until(ExpectedConditions.ElementToBeClickable(sendReplyButton));
+        btn.Click();
+        wait.Until(ExpectedConditions.ElementIsVisible(resolvedBanner));
+    }
+
+    public void ClickResolveWithAI()
+    {
+        var btn = wait.Until(ExpectedConditions.ElementToBeClickable(resolveAiButton));
+        btn.Click();
+        wait.Until(ExpectedConditions.ElementIsVisible(resolvedBanner));
+    }
+
+    public void ClickReopenTicket()
+    {
+        var btn = wait.Until(ExpectedConditions.ElementToBeClickable(reopenTicketButton));
+        btn.Click();
+        wait.Until(ExpectedConditions.ElementIsVisible(replyTextarea));
+    }
+
+    public bool IsResolvedBannerVisible()
+    {
+        try
+        {
+            return wait.Until(ExpectedConditions.ElementIsVisible(resolvedBanner)).Displayed;
+        }
+        catch { return false; }
+    }
+
+    public bool IsAgentMessageBubbleVisible()
+    {
+        try
+        {
+            return wait.Until(ExpectedConditions.ElementIsVisible(agentMessageBubble)).Displayed;
+        }
+        catch { return false; }
+    }
+
+    public string GetAgentMessageText()
+    {
+        var bubble = wait.Until(ExpectedConditions.ElementIsVisible(agentMessageBubble));
+        return bubble.FindElement(By.TagName("p")).Text;
+    }
+
+    public void SendReply(string text)
+    {
+        EnterReply(text);
+        ClickSendReply();
     }
 }
