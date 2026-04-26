@@ -378,4 +378,10 @@ public class TicketDetailPage
         EnterReply(text);
         ClickSendReply();
     }
+
+    public string GetReplyTextareaValue()
+    {
+        var input = wait.Until(ExpectedConditions.ElementIsVisible(replyTextarea));
+        return input.GetAttribute("value") ?? string.Empty;
+    }
 }
