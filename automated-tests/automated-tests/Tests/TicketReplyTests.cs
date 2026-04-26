@@ -94,6 +94,25 @@ public class TicketReplyTests : TestBase
         Assert.That(ticketDetailPage.GetAgentMessageText(), Does.Contain(replyText));
     }
 
+    [Test]
+    public void SendReply_WithLongText_ShouldDisplay()
+    {
+        string replyText = new string('a', 2000);
+        ticketDetailPage.SendReply(replyText);
+        Assert.That(ticketDetailPage.IsAgentMessageBubbleVisible(), "Agent bubble should be visible after sending long reply");
+        Assert.That(ticketDetailPage.GetAgentMessageText(), Does.Contain(replyText.Substring(0, 100)));
+    }
+
+    [Test]
+    public void SendReply_WithSpecialCharacters_ShouldDisplay()
+    {
+        string replyText = "<b>Bold</b> & 'quotes' and emoji 🚀";
+        ticketDetailPage.SendReply(replyText);
+        Assert.That(ticketDetailPage.IsAgentMessageBubbleVisible(), "Agent bubble should be visible after sending reply with special chars");
+        Assert.That(ticketDetailPage.GetAgentMessageText(), Does.Contain("Bold"));
+        Assert.That(ticketDetailPage.GetAgentMessageText(), Does.Contain("quotes"));
+    }
+
     // --- Resolve with AI ---
 
     [Test]
@@ -126,5 +145,23 @@ public class TicketReplyTests : TestBase
         ticketDetailPage.ClickResolveWithAI();
         ticketDetailPage.ClickReopenTicket();
         Assert.That(ticketDetailPage.IsResolvedBannerVisible(), Is.False);
+    }
+
+    [Test]
+    public void ReopenTicket_TextareaIsEmpty()
+    {
+        ticketDetailPage.SendReply("Reply before reopen");
+        ticketDetailPage.ClickReopenTicket();
+        Assert.That(ticketDetailPage.GetReplyTextareaValue(), Is.Empty, "Textarea should be empty after reopening — previous reply text should not persist");
+    }
+
+    // --- Persistence ---
+
+    [Test]
+    public void ResolvedState_PersistsAfterRefresh()
+    {
+        ticketDetailPage.ClickResolveWithAI();
+        ticketDetailPage.RefreshPage();
+        Assert.That(ticketDetailPage.IsResolvedBannerVisible(), "Ticket should remain resolved after page refresh");
     }
 }
